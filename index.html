@@ -6,10 +6,11 @@
 <title>الشبح 👻</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
-:root{
-  --bg:#0a0a0f;--surface:#13131a;--card:#1a1a26;--border:#2a2a3d;
-  --accent:#7c3aed;--accent2:#c026d3;--danger:#dc2626;
-  --success:#16a34a;--gold:#f59e0b;--text:#e2e8f0;--muted:#94a3b8;--cop:#0ea5e9;
+:root {
+  --bg:#0a0a0f; --surface:#13131a; --card:#1a1a26; --border:#2a2a3d;
+  --accent:#7c3aed; --accent2:#c026d3; --danger:#dc2626;
+  --success:#16a34a; --gold:#f59e0b; --text:#e2e8f0; --muted:#94a3b8;
+  --cop:#0ea5e9;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;font-size:19px;min-height:100vh;overflow-x:hidden;}
@@ -27,10 +28,10 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .btn-primary:hover{box-shadow:0 6px 28px rgba(124,58,237,.6);transform:translateY(-1px);}
 .btn-secondary{background:var(--surface);color:var(--text);border:1px solid var(--border);}
 .btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
-.btn-danger{background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;}
-.btn-gold{background:linear-gradient(135deg,#f59e0b,#d97706);color:#1a1a00;}
+.btn-danger{background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;box-shadow:0 4px 16px rgba(220,38,38,.4);}
+.btn-gold{background:linear-gradient(135deg,#f59e0b,#d97706);color:#1a1a00;box-shadow:0 4px 16px rgba(245,158,11,.4);}
 .btn-green{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;}
-.btn-cop{background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#fff;}
+.btn-cop{background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#fff;box-shadow:0 4px 16px rgba(14,165,233,.4);}
 .btn-sm{width:auto;display:inline-block;padding:12px 20px;font-size:1rem;}
 input[type=text]{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;font-family:'Cairo',sans-serif;font-size:1.2rem;color:var(--text);margin:6px 0;outline:none;transition:border-color .2s;}
 input:focus{border-color:var(--accent);}
@@ -40,21 +41,23 @@ input:focus{border-color:var(--accent);}
 .player-card.dead::after{content:'💀';position:absolute;top:4px;left:4px;font-size:1.1rem;}
 .player-card.you{border-color:var(--accent);box-shadow:0 0 14px rgba(124,58,237,.35);}
 .player-card.nearby{border-color:var(--gold);box-shadow:0 0 14px rgba(245,158,11,.4);animation:nearbyPulse 1.5s infinite;}
-.player-card.protected{border-color:var(--cop);}
+.player-card.protected{border-color:var(--cop);box-shadow:0 0 14px rgba(14,165,233,.4);}
 .player-card.protected::before{content:'🛡️';position:absolute;top:4px;right:4px;font-size:1rem;}
 @keyframes nearbyPulse{0%,100%{box-shadow:0 0 14px rgba(245,158,11,.4);}50%{box-shadow:0 0 28px rgba(245,158,11,.7);}}
 .player-avatar{font-size:2.2rem;margin-bottom:6px;}
 .player-name{font-size:1rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .player-tag{font-size:.85rem;color:var(--muted);margin-top:3px;}
-.role-card{text-align:center;padding:36px 28px;border-radius:24px;width:100%;max-width:380px;border:2px solid;}
+/* ROLE CARDS */
+.role-card{text-align:center;padding:36px 28px;border-radius:24px;width:100%;max-width:380px;border:2px solid;position:relative;overflow:hidden;}
 .role-card.killer{background:linear-gradient(135deg,rgba(220,38,38,.15),rgba(153,27,27,.1));border-color:var(--danger);box-shadow:0 0 40px rgba(220,38,38,.25);}
 .role-card.civilian{background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(37,99,235,.1));border-color:#3b82f6;box-shadow:0 0 40px rgba(59,130,246,.2);}
 .role-card.cop{background:linear-gradient(135deg,rgba(14,165,233,.15),rgba(2,132,199,.1));border-color:var(--cop);box-shadow:0 0 40px rgba(14,165,233,.25);}
 .role-icon{font-size:4.5rem;margin-bottom:12px;}
 .role-name{font-size:2.2rem;font-weight:900;margin-bottom:10px;}
 .role-desc{font-size:1.1rem;color:var(--muted);line-height:1.7;}
+/* VOTE */
 .vote-item{display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px;margin:8px 0;cursor:pointer;transition:all .2s;font-size:1.1rem;}
-.vote-item:hover,.vote-item:focus{border-color:var(--danger);background:rgba(220,38,38,.05);outline:none;}
+.vote-item:hover{border-color:var(--danger);background:rgba(220,38,38,.05);}
 .vote-item.voted{border-color:var(--danger);background:rgba(220,38,38,.12);}
 .vote-info{display:flex;align-items:center;gap:14px;}
 .vote-avatar{font-size:2.2rem;}
@@ -68,28 +71,30 @@ input:focus{border-color:var(--accent);}
 #toast.show{transform:translateX(-50%) translateY(0);}
 .phase-banner{text-align:center;padding:10px 22px;border-radius:50px;font-size:1rem;font-weight:700;letter-spacing:1px;margin:10px 0;display:inline-block;}
 .phase-day{background:rgba(245,158,11,.15);color:var(--gold);border:1px solid rgba(245,158,11,.3);}
+.phase-vote{background:rgba(220,38,38,.15);color:var(--danger);border:1px solid rgba(220,38,38,.3);}
 .phase-night{background:rgba(124,58,237,.15);color:#a78bfa;border:1px solid rgba(124,58,237,.3);}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;}
 .overlay.show{display:flex;}
-
+#nearby-bar{position:fixed;top:0;left:0;right:0;z-index:90;background:linear-gradient(135deg,rgba(245,158,11,.95),rgba(217,119,6,.95));color:#000;padding:14px 20px;text-align:center;font-weight:900;font-size:1.15rem;display:none;border-bottom:3px solid var(--gold);}
+#nearby-bar.show{display:block;}
+/* WEAPON / ACTION GRIDS */
 .weapon-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;}
 .weapon-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(220,38,38,.12);border:2px solid rgba(220,38,38,.4);border-radius:18px;padding:22px 14px;cursor:pointer;font-family:'Cairo',sans-serif;font-weight:700;color:var(--text);font-size:1.05rem;transition:all .2s;min-height:100px;}
 .weapon-btn:hover,.weapon-btn:focus{border-color:var(--danger);background:rgba(220,38,38,.22);transform:scale(1.03);outline:none;}
 .weapon-btn:active{transform:scale(.96);}
 .weapon-icon{font-size:2.4rem;}
-.cop-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;}
+/* COP PANELS */
 .cop-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(14,165,233,.12);border:2px solid rgba(14,165,233,.4);border-radius:18px;padding:18px 10px;cursor:pointer;font-family:'Cairo',sans-serif;font-weight:700;color:var(--text);font-size:1rem;transition:all .2s;min-height:88px;}
 .cop-btn:hover,.cop-btn:focus{border-color:var(--cop);background:rgba(14,165,233,.22);transform:scale(1.03);outline:none;}
-.cop-btn.used{opacity:.4;pointer-events:none;border-style:dashed;}
+.cop-btn:active{transform:scale(.96);}
+.cop-btn.used{opacity:.45;pointer-events:none;border-style:dashed;}
 .cop-icon{font-size:2.2rem;}
 .action-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;}
 .action-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:var(--surface);border:2px solid var(--border);border-radius:16px;padding:18px 10px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:1rem;font-weight:700;color:var(--text);transition:all .2s;min-height:90px;}
 .action-btn:hover,.action-btn:focus{border-color:var(--accent);background:rgba(124,58,237,.1);outline:none;transform:scale(1.03);}
+.action-btn:active{transform:scale(.97);}
 .action-btn.active-action{border-color:var(--accent);background:rgba(124,58,237,.2);box-shadow:0 0 14px rgba(124,58,237,.4);}
 .action-icon{font-size:2.2rem;}
-/* Observation report */
-.obs-report{background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.3);border-radius:14px;padding:16px;margin-top:12px;font-size:1rem;line-height:1.8;color:var(--text);}
-.obs-report strong{color:var(--accent);}
 .action-status{text-align:center;font-size:1.05rem;font-weight:700;color:var(--accent);padding:10px;min-height:42px;}
 .result-icon{font-size:5rem;margin-bottom:16px;}
 .result-title{font-size:2.3rem;font-weight:900;margin-bottom:12px;}
@@ -98,28 +103,38 @@ input:focus{border-color:var(--accent);}
 .badge-killer{background:rgba(220,38,38,.2);color:var(--danger);}
 .badge-civilian{background:rgba(59,130,246,.2);color:#60a5fa;}
 .badge-cop{background:rgba(14,165,233,.2);color:var(--cop);}
-.link-box{background:var(--surface);border:1px dashed var(--accent);border-radius:12px;padding:14px 18px;font-size:.95rem;color:var(--accent);word-break:break-all;cursor:pointer;text-align:center;}
+.link-box{background:var(--surface);border:1px dashed var(--accent);border-radius:12px;padding:14px 18px;font-size:.95rem;color:var(--accent);word-break:break-all;cursor:pointer;text-align:center;transition:background .2s;}
+.link-box:hover{background:rgba(124,58,237,.1);}
 input[type=range]{width:100%;accent-color:var(--accent);margin:10px 0;cursor:pointer;}
 .range-label{display:flex;justify-content:space-between;font-size:.9rem;color:var(--muted);}
 .scrollable{overflow-y:auto;max-height:55vh;}
 .w-full{width:100%;max-width:460px;}
 .text-center{text-align:center;}
 .text-muted{color:var(--muted);font-size:1rem;}
-.mt-2{margin-top:8px;}.mt-4{margin-top:16px;}
+.mt-2{margin-top:8px;} .mt-4{margin-top:16px;}
 .room-code{font-size:2.4rem;font-weight:900;letter-spacing:8px;color:var(--gold);text-align:center;padding:10px;}
+/* Role legend */
+.role-legend{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:10px 0;}
+.role-pill{padding:8px 16px;border-radius:50px;font-size:.9rem;font-weight:700;border:1px solid;}
+.rp-killer{background:rgba(220,38,38,.15);color:var(--danger);border-color:rgba(220,38,38,.4);}
+.rp-civilian{background:rgba(59,130,246,.15);color:#60a5fa;border-color:rgba(59,130,246,.4);}
+.rp-cop{background:rgba(14,165,233,.15);color:var(--cop);border-color:rgba(14,165,233,.4);}
+/* Identity reveal card for cop */
+.id-reveal{background:rgba(14,165,233,.08);border:2px solid var(--cop);border-radius:16px;padding:18px;margin:10px 0;text-align:center;}
+.id-reveal .big{font-size:2.4rem;margin-bottom:6px;}
+.id-reveal .name{font-size:1.3rem;font-weight:900;}
+.id-reveal .role-tag{font-size:1rem;margin-top:4px;}
+/* SHOOT target list */
 .shoot-list{display:flex;flex-direction:column;gap:10px;width:100%;}
 .shoot-item{display:flex;align-items:center;justify-content:space-between;background:rgba(14,165,233,.08);border:2px solid rgba(14,165,233,.35);border-radius:14px;padding:14px 18px;cursor:pointer;transition:all .2s;font-size:1.1rem;}
 .shoot-item:hover,.shoot-item:focus{border-color:var(--cop);background:rgba(14,165,233,.18);transform:scale(1.02);outline:none;}
-.id-reveal{background:rgba(14,165,233,.08);border:2px solid var(--cop);border-radius:16px;padding:18px;margin:10px 0;text-align:center;}
-/* Music control */
-#music-btn{position:fixed;bottom:20px;right:20px;z-index:200;background:rgba(124,58,237,.3);border:1px solid var(--accent);border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.3rem;backdrop-filter:blur(8px);}
+.shoot-item:active{transform:scale(.97);}
 </style>
 </head>
 <body>
 
-
+<div id="nearby-bar" role="alert" aria-live="assertive"></div>
 <div id="toast" role="alert" aria-live="assertive"></div>
-<button id="music-btn" onclick="toggleMusic()" aria-label="تشغيل أو إيقاف الموسيقى">🎵</button>
 
 <div class="overlay" id="overlay">
   <div style="font-size:4rem" id="ov-icon">👻</div>
@@ -132,7 +147,12 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:10px 0;cursor:poi
 <div class="screen active" id="screen-home">
   <div style="margin-bottom:24px;">
     <div class="logo">الشبح 👻</div>
-    <div class="logo-sub">لعبة الصوت والخداع</div>
+    <div class="logo-sub">🎙️ لعبة الصوت والخداع</div>
+  </div>
+  <div class="role-legend">
+    <span class="role-pill rp-killer">🔪 قاتل</span>
+    <span class="role-pill rp-cop">🚔 شرطي</span>
+    <span class="role-pill rp-civilian">🕵️ مدني</span>
   </div>
   <div class="card w-full">
     <div class="card-title">👤 اسمك في اللعبة</div>
@@ -143,6 +163,10 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:10px 0;cursor:poi
     <button class="btn btn-secondary" onclick="goJoinRoom()">🔗 انضمام برمز</button>
     <button class="btn btn-secondary" onclick="goRandomRoom()">🎲 غرفة عشوائية</button>
   </div>
+  <div style="margin-top:16px;text-align:center;">
+    <button onclick="toggleTTS()" class="btn btn-secondary btn-sm" id="tts-btn">🔊 قارئ الشاشة: تشغيل</button>
+  </div>
+  <p class="text-muted text-center mt-4">مدعوم للمكفوفين وضعاف البصر ♿</p>
 </div>
 
 <!-- ═══ LOBBY ═══ -->
@@ -177,9 +201,9 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:10px 0;cursor:poi
   <button class="btn btn-secondary w-full" onclick="leaveRoom()" style="margin-top:8px;">← مغادرة</button>
 </div>
 
-<!-- ═══ ROLE ═══ -->
+<!-- ═══ ROLE REVEAL ═══ -->
 <div class="screen" id="screen-role">
-  <div class="text-muted text-center" style="margin-bottom:20px;">دورك في هذه الجولة...</div>
+  <div class="text-muted text-center" style="margin-bottom:20px;font-size:1.1rem;">دورك في هذه الجولة...</div>
   <div class="role-card" id="role-card">
     <div class="role-icon" id="role-icon">🎭</div>
     <div class="role-name" id="role-name">-</div>
@@ -198,41 +222,79 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:10px 0;cursor:poi
     <span id="alive-count">— أحياء</span>
     <span id="my-role-badge"></span>
   </div>
+
+  <!-- NEARBY -->
   <div class="card w-full" id="nearby-card" style="display:none;">
     <div class="card-title" style="color:var(--gold);">📡 بالقرب منك</div>
     <div id="nearby-list"></div>
   </div>
+
   <div class="card-title w-full mt-4">👥 اللاعبون</div>
   <div class="players-grid" id="game-players"></div>
 
-  <!-- KILLER -->
+  <!-- KILLER PANEL -->
   <div id="killer-panel" class="w-full" style="display:none;margin-top:12px;">
     <div class="card">
-      <div class="card-title" style="color:var(--danger);">⚔️ اختر ضحيتك</div>
+      <div class="card-title" style="color:var(--danger);">⚔️ أسلحتك — اختر واقتل</div>
       <div id="kill-targets" class="weapon-grid"></div>
       <div class="action-status" id="kill-status">اختر ضحيتك الآن...</div>
     </div>
   </div>
 
-  <!-- COP -->
+  <!-- COP PANEL -->
   <div id="cop-panel" class="w-full" style="display:none;margin-top:12px;">
     <div class="card">
       <div class="card-title" style="color:var(--cop);">🚔 صلاحيات الشرطي</div>
+
+      <!-- Identity revealed -->
       <div id="cop-identity-reveal" style="display:none;margin-bottom:14px;"></div>
-      <div class="cop-grid">
-        <button class="cop-btn" id="cop-shoot-btn" onclick="showShootPanel()"><span class="cop-icon">🔫</span><span>إطلاق النار</span><span style="font-size:.8rem;color:var(--muted);" id="cop-shoot-lbl">فرد واحد</span></button>
-        <button class="cop-btn" id="cop-invest-btn" onclick="showInvestPanel()"><span class="cop-icon">🔍</span><span>تحقيق</span><span style="font-size:.8rem;color:var(--muted);" id="cop-invest-lbl">اكشف هوية</span></button>
-        <button class="cop-btn" id="cop-protect-btn" onclick="showProtectPanel()"><span class="cop-icon">🛡️</span><span>حماية</span><span style="font-size:.8rem;color:var(--muted);" id="cop-protect-lbl">احمِ لاعباً</span></button>
-        <button class="cop-btn" id="cop-radio-btn" onclick="copRadio()"><span class="cop-icon">📻</span><span>اجتماع</span><span style="font-size:.8rem;color:var(--muted);">طارئ</span></button>
+
+      <div class="weapon-grid">
+        <!-- SHOOT -->
+        <button class="cop-btn" id="cop-shoot-btn" onclick="showShootPanel()" aria-label="إطلاق النار">
+          <span class="cop-icon">🔫</span>
+          <span>إطلاق النار</span>
+          <span style="font-size:.8rem;color:var(--muted);" id="cop-shoot-lbl">مرة واحدة</span>
+        </button>
+        <!-- INVESTIGATE -->
+        <button class="cop-btn" id="cop-invest-btn" onclick="showInvestPanel()" aria-label="تحقيق">
+          <span class="cop-icon">🔍</span>
+          <span>تحقيق</span>
+          <span style="font-size:.8rem;color:var(--muted);" id="cop-invest-lbl">اكشف هوية لاعب</span>
+        </button>
+        <!-- PROTECT -->
+        <button class="cop-btn" id="cop-protect-btn" onclick="showProtectPanel()" aria-label="حماية">
+          <span class="cop-icon">🛡️</span>
+          <span>حماية</span>
+          <span style="font-size:.8rem;color:var(--muted);" id="cop-protect-lbl">احمِ لاعباً الليلة</span>
+        </button>
+        <!-- RADIO -->
+        <button class="cop-btn" id="cop-radio-btn" onclick="copRadio()" aria-label="مناداة">
+          <span class="cop-icon">📻</span>
+          <span>مناداة</span>
+          <span style="font-size:.8rem;color:var(--muted);">اطلب اجتماع</span>
+        </button>
       </div>
-      <div id="cop-shoot-panel" style="display:none;margin-top:14px;"><div class="card-title" style="color:var(--cop);font-size:1rem;">🔫 اختر الهدف:</div><div class="shoot-list" id="shoot-targets"></div></div>
-      <div id="cop-invest-panel" style="display:none;margin-top:14px;"><div class="card-title" style="color:var(--cop);font-size:1rem;">🔍 اختر من تحقق:</div><div class="shoot-list" id="invest-targets"></div></div>
-      <div id="cop-protect-panel" style="display:none;margin-top:14px;"><div class="card-title" style="color:var(--cop);font-size:1rem;">🛡️ اختر من تحمي:</div><div class="shoot-list" id="protect-targets"></div></div>
+
+      <!-- Sub-panels -->
+      <div id="cop-shoot-panel" style="display:none;margin-top:14px;">
+        <div class="card-title" style="color:var(--cop);font-size:1rem;">🔫 اختر من تُطلق النار عليه:</div>
+        <div class="shoot-list" id="shoot-targets"></div>
+      </div>
+      <div id="cop-invest-panel" style="display:none;margin-top:14px;">
+        <div class="card-title" style="color:var(--cop);font-size:1rem;">🔍 اختر من تحقق في هويته:</div>
+        <div class="shoot-list" id="invest-targets"></div>
+      </div>
+      <div id="cop-protect-panel" style="display:none;margin-top:14px;">
+        <div class="card-title" style="color:var(--cop);font-size:1rem;">🛡️ اختر من تحميه الليلة:</div>
+        <div class="shoot-list" id="protect-targets"></div>
+      </div>
+
       <div class="action-status" id="cop-status">استخدم صلاحياتك بحكمة...</div>
     </div>
   </div>
 
-  <!-- CIVILIAN -->
+  <!-- CIVILIAN PANEL -->
   <div id="civilian-panel" class="w-full" style="display:none;margin-top:12px;">
     <div class="card">
       <div class="card-title" style="color:#60a5fa;">🕵️ أفعالك</div>
@@ -242,15 +304,13 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:10px 0;cursor:poi
         <button class="action-btn" onclick="doAction('search','بحث','🔍')"><span class="action-icon">🔍</span><span>بحث</span></button>
         <button class="action-btn" onclick="doAction('walk','مشي','🚶')"><span class="action-icon">🚶</span><span>مشي</span></button>
         <button class="action-btn" onclick="doAction('jump','قفز','🦘')"><span class="action-icon">🦘</span><span>قفز</span></button>
-        <button class="action-btn" onclick="doAction('spy','مراقبة','👁️')"><span class="action-icon">👁️</span><span>مراقبة</span></button>
+        <button class="action-btn" onclick="doAction('spy','تجسس','👁️')"><span class="action-icon">👁️</span><span>تجسس</span></button>
       </div>
-      <div id="obs-report-box"></div>
       <div class="action-status" id="action-status">اضغط على أي فعل...</div>
     </div>
   </div>
 
   <button class="btn btn-secondary w-full" style="margin-top:16px;" onclick="callMeeting()" id="meeting-btn">🚨 طلب اجتماع طارئ</button>
-  <button class="btn btn-cop w-full" style="margin-top:8px;" onclick="goToVoteZone()" id="goto-vote-btn" style="display:none;">🗳️ الذهاب لمنطقة التصويت</button>
 </div>
 
 <!-- ═══ VOTE ═══ -->
@@ -292,117 +352,695 @@ const WEAPONS=[
   {icon:'🪓',name:'فأس',sound:'axe'},
   {icon:'💣',name:'قنبلة',sound:'bomb'},
 ];
-
-// Observation descriptions for search/spy
-const OBS_TEMPLATES={
-  search:[
-    (p,alive)=>`وجدت آثار أقدام بالقرب من ${p?p.name:'شخص مجهول'}. يبدو أنه كان هنا مؤخراً.`,
-    (p,alive)=>`لاحظت أن ${p?p.name:'أحدهم'} يتصرف بطريقة غريبة ويتحاشى النظر إلى الآخرين.`,
-    (p,alive)=>`عثرت على أداة حادة قرب مكان وقوف ${p?p.name:'لاعب مريب'}. قد تكون دليلاً مهماً.`,
-    (p,alive)=>`المنطقة هادئة لكن ${p?p.name:'شخصاً ما'} غادر المكان بسرعة لحظة اقترابك.`,
-    (p,alive)=>`وجدت خدوشاً على الجدار وعلامات صراع. ${alive.length} لاعب لا يزالون أحياء.`,
-  ],
-  spy:[
-    (p,alive)=>`راقبتَ ${p?p.name:'لاعباً'} بهدوء. لاحظت أنه ${Math.random()>.5?'يتجنب التحدث مع الآخرين':'يحاول أن يبدو عادياً أكثر من اللازم'}.`,
-    (p,alive)=>`تجسستَ على ${p?p.name:'شخص'} لفترة. كان ${Math.random()>.5?'يلقي نظرات مريبة على اللاعبين':'يتحرك ببطء وكأنه يراقب الجميع'}.`,
-    (p,alive)=>`رصدتَ ${p?p.name:'هدفاً'} من بعيد. ${Math.random()>.5?'لم تلاحظ شيئاً غريباً... أو ربما هو يخفي شيئاً جيداً.':'يده ترتجف قليلاً. هل هو خائف أم مذنب؟'}`,
-    (p,alive)=>`تابعتَ تحركات ${p?p.name:'اللاعب'} بعناية. لمحته يقترب من ${alive[Math.floor(Math.random()*alive.length)]?.name||'أحد اللاعبين'} ثم يبتعد فجأة.`,
-  ],
+const ACTION_MSGS={
+  run:['أنت تهرب بسرعة!','هربت من المنطقة!','أسرعت هرباً!'],
+  hide:['اختبأت في الظلام!','أنت مختبئ...','لا أحد يراك!'],
+  search:['وجدت أثراً مريباً!','بحثت في المكان...','شيء غريب هنا!'],
+  walk:['تمشي وتراقب.','تجوّلت في المكان.','تتحرك بهدوء.'],
+  jump:['قفزت فوق الحاجز!','قفزة عالية!','تجاوزت المانع!'],
+  spy:['راقبت لاعباً سراً!','شيء مريب!','لاحظت تصرفاً غريباً!'],
 };
 
 // ══════════════════════════════════════════════
 //  STATE
 // ══════════════════════════════════════════════
 let S={
-  myId:'',myName:'',roomCode:'',isHost:false,
-  players:[],myRole:null,phase:'lobby',
-  votes:{},myVote:undefined,numKillers:1,copEnabled:true,
-  meetingsLeft:1,
-  copShotUsed:false,copInvestUsed:false,copProtectUsed:false,copProtectedId:null,
-  pollInterval:null,gameTimer:null,voteTimer:null,nearbyInterval:null,
-  musicOn:true,
+  myId:'', myName:'', roomCode:'', isHost:false,
+  players:[], myRole:null, phase:'lobby',
+  votes:{}, myVote:undefined, numKillers:1, copEnabled:true,
+  meetingsLeft:1, ttsEnabled:true,
+  copShotUsed:false, copInvestUsed:false, copProtectUsed:false,
+  copProtectedId:null,
+  pollInterval:null, gameTimer:null, voteTimer:null, nearbyInterval:null,
 };
+
 let bc=null;
 
 // ══════════════════════════════════════════════
-//  BACKGROUND MUSIC (Web Audio API)
+//  STORAGE SYNC (same-device tabs via BroadcastChannel + localStorage)
+// ══════════════════════════════════════════════
+function syncState(){
+  try{
+    const d={players:S.players,phase:S.phase,votes:S.votes,
+      numKillers:S.numKillers,copEnabled:S.copEnabled,
+      voteReason:S._voteReason,winner:S._winner,ts:Date.now()};
+    localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
+    if(bc) bc.postMessage({type:'sync',roomCode:S.roomCode});
+  }catch(e){}
+}
+function readState(){
+  try{
+    const raw=localStorage.getItem('ghost_'+S.roomCode);
+    if(!raw) return null;
+    const d=JSON.parse(raw);
+    if(Date.now()-d.ts>90000) return null;
+    return d;
+  }catch(e){return null;}
+}
+function applyRemoteState(d){
+  if(!d) return;
+  const prev=S.phase;
+  S.players=d.players||S.players;
+  S.numKillers=d.numKillers||1;
+  S.copEnabled=d.copEnabled!==undefined?d.copEnabled:true;
+  if(d.phase!==prev){
+    S.phase=d.phase;
+    const me=S.players.find(p=>p.id===S.myId);
+    if(me) S.myRole=me.role||S.myRole;
+    if(d.phase==='role') enterRoleScreen();
+    else if(d.phase==='day') enterGameScreen();
+    else if(d.phase==='vote'){S.votes=d.votes||{};S.myVote=undefined;enterVoteScreen(d.voteReason||'التصويت!');}
+    else if(d.phase==='result') enterResultScreen(d.winner);
+  } else {
+    if(d.phase==='lobby'){renderLobbyPlayers();updateLobbyCount();}
+    else if(d.phase==='day'){renderGamePlayers();updateGameStatus();updateNearby();}
+    else if(d.phase==='vote'){S.votes=d.votes||{};renderVoteList();renderVoteResults();}
+  }
+}
+
+// ══════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════
+function genId(){return Math.random().toString(36).substr(2,9);}
+function genCode(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
+function getName(){const n=document.getElementById('input-name').value.trim();if(!n){toast('⚠️ أدخل اسمك!');speak('أدخل اسمك أولاً');return null;}return n;}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-'+id).classList.add('active');}
+function toast(msg,dur=3000){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur);}
+function showOverlay(icon,title,desc,autoDismiss=0){
+  document.getElementById('ov-icon').textContent=icon;
+  document.getElementById('ov-title').textContent=title;
+  document.getElementById('ov-desc').textContent=desc;
+  document.getElementById('overlay').classList.add('show');
+  speak(title+'. '+desc);
+  if(autoDismiss>0) setTimeout(closeOverlay,autoDismiss);
+}
+function closeOverlay(){document.getElementById('overlay').classList.remove('show');}
+function setupBC(code){if(bc)bc.close();bc=new BroadcastChannel('ghost_'+code);bc.onmessage=e=>{if(e.data.type==='sync'&&e.data.roomCode===S.roomCode){const d=readState();applyRemoteState(d);}};}
+function startPoll(){clearInterval(S.pollInterval);S.pollInterval=setInterval(()=>{const d=readState();if(d)applyRemoteState(d);},1500);}
+
+// ══════════════════════════════════════════════
+//  ROOM MANAGEMENT
+// ══════════════════════════════════════════════
+function goCreateRoom(){
+  const name=getName();if(!name)return;
+  S.myName=name;S.myId=genId();S.isHost=true;S.roomCode=genCode();
+  S.players=[{id:S.myId,name,avatar:AVATARS[Math.floor(Math.random()*AVATARS.length)],alive:true,isBot:false,role:null,x:5,y:5}];
+  S.phase='lobby';setupBC(S.roomCode);syncState();showLobby();
+}
+function goJoinRoom(){
+  const name=getName();if(!name)return;
+  const code=prompt('أدخل رمز الغرفة:');if(!code)return;
+  S.myName=name;S.myId=genId();S.isHost=false;S.roomCode=code.trim().toUpperCase();
+  setupBC(S.roomCode);
+  const d=readState();
+  if(!d){toast('❌ الغرفة غير موجودة');speak('الغرفة غير موجودة');return;}
+  S.players=d.players||[];
+  if(!S.players.find(p=>p.id===S.myId))
+    S.players.push({id:S.myId,name,avatar:AVATARS[Math.floor(Math.random()*AVATARS.length)],alive:true,isBot:false,role:null,x:Math.floor(Math.random()*10),y:Math.floor(Math.random()*10)});
+  syncState();showLobby();
+  toast('✅ انضممت للغرفة '+S.roomCode);speak('انضممت للغرفة');
+}
+function goRandomRoom(){
+  const name=getName();if(!name)return;
+  S.myName=name;S.myId=genId();S.isHost=true;S.roomCode=genCode();
+  S.players=[{id:S.myId,name,avatar:AVATARS[Math.floor(Math.random()*AVATARS.length)],alive:true,isBot:false,role:null,x:5,y:5}];
+  for(let i=0;i<4;i++)
+    S.players.push({id:genId(),name:BOT_NAMES[i],avatar:AVATARS[Math.floor(Math.random()*AVATARS.length)],alive:true,isBot:true,role:null,x:Math.floor(Math.random()*10),y:Math.floor(Math.random()*10)});
+  S.phase='lobby';setupBC(S.roomCode);syncState();showLobby();
+  toast('✅ غرفة عشوائية جاهزة');speak('غرفة عشوائية مع لاعبين افتراضيين');
+}
+function showLobby(){
+  S.phase='lobby';showScreen('lobby');
+  document.getElementById('room-code-display').textContent=S.roomCode;
+  document.getElementById('share-link-box').textContent=window.location.href.split('?')[0]+'?room='+S.roomCode;
+  if(S.isHost) document.getElementById('host-controls').style.display='block';
+  renderLobbyPlayers();updateLobbyCount();startPoll();
+  speak('غرفة الانتظار. الرمز: '+S.roomCode.split('').join(' ')+'. '+S.players.length+' لاعبين.');
+}
+function leaveRoom(){clearTimers();if(bc){bc.close();bc=null;}S={...S,players:[],myRole:null,phase:'lobby'};showScreen('home');speak('غادرت الغرفة');}
+function renderLobbyPlayers(){
+  const el=document.getElementById('lobby-players');if(!el)return;
+  el.innerHTML=S.players.map(p=>`<div class="player-card ${p.id===S.myId?'you':''}"><div class="player-avatar">${p.avatar}</div><div class="player-name">${p.name}</div><div class="player-tag">${p.id===S.myId?'أنت':p.isBot?'🤖':'🟢'}</div></div>`).join('');
+}
+function updateLobbyCount(){const el=document.getElementById('lobby-count');if(el)el.textContent=S.players.length+'/15';}
+function copyLink(){const l=window.location.href.split('?')[0]+'?room='+S.roomCode;navigator.clipboard.writeText(l).then(()=>{toast('✅ تم نسخ الرابط!');speak('تم النسخ');}).catch(()=>toast(l));}
+function shareWhatsApp(){const l=window.location.href.split('?')[0]+'?room='+S.roomCode;window.open('https://wa.me/?text='+encodeURIComponent('تعال العب معي لعبة الشبح! 👻\nرمز الغرفة: '+S.roomCode+'\nالرابط: '+l),'_blank');}
+
+// ══════════════════════════════════════════════
+//  GAME START - ROLE ASSIGNMENT
+// ══════════════════════════════════════════════
+function hostStartGame(){
+  if(S.players.length<2){toast('⚠️ تحتاج لاعبين آخرين!');return;}
+  while(S.players.length<3)
+    S.players.push({id:genId(),name:BOT_NAMES[S.players.filter(p=>p.isBot).length%BOT_NAMES.length],avatar:AVATARS[Math.floor(Math.random()*AVATARS.length)],alive:true,isBot:true,role:null,x:Math.floor(Math.random()*10),y:Math.floor(Math.random()*10)});
+  S.numKillers=parseInt(document.getElementById('killers-range').value);
+  S.copEnabled=document.getElementById('cop-enabled').checked;
+  // Shuffle and assign
+  const shuffled=[...S.players].sort(()=>Math.random()-.5);
+  let idx=0;
+  const killerIds=shuffled.slice(idx,idx+S.numKillers).map(p=>p.id);idx+=S.numKillers;
+  let copId=null;
+  if(S.copEnabled&&shuffled.length>idx){copId=shuffled[idx].id;idx++;}
+  S.players=S.players.map(p=>({...p,
+    role:killerIds.includes(p.id)?'killer':p.id===copId?'cop':'civilian',
+    alive:true}));
+  S.phase='role';S.votes={};S.myVote=undefined;S.meetingsLeft=1;
+  S.copShotUsed=false;S.copInvestUsed=false;S.copProtectUsed=false;S.copProtectedId=null;
+  const d=readState()||{};
+  Object.assign(d,{players:S.players,phase:'role',numKillers:S.numKillers,copEnabled:S.copEnabled,votes:{},ts:Date.now()});
+  localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
+  if(bc) bc.postMessage({type:'sync',roomCode:S.roomCode});
+  enterRoleScreen();
+}
+
+// ══════════════════════════════════════════════
+//  ROLE REVEAL
+// ══════════════════════════════════════════════
+function enterRoleScreen(){
+  showScreen('role');
+  const me=S.players.find(p=>p.id===S.myId);if(!me)return;
+  S.myRole=me.role;
+  const card=document.getElementById('role-card');
+  if(S.myRole==='killer'){
+    card.className='role-card killer';
+    document.getElementById('role-icon').textContent='🔪';
+    document.getElementById('role-name').textContent='القاتل';
+    document.getElementById('role-name').style.color='var(--danger)';
+    const allies=S.players.filter(p=>p.role==='killer'&&p.id!==S.myId).map(p=>p.name);
+    document.getElementById('role-desc').textContent='أنت القاتل! قتل المدنيين ليلاً وتجنب الشرطي.'+(allies.length?' حلفاؤك: '+allies.join('، '):'');
+    speak('أنت القاتل! تجنب الشرطي وقتل المدنيين!');playSound('suspense');
+  } else if(S.myRole==='cop'){
+    card.className='role-card cop';
+    document.getElementById('role-icon').textContent='🚔';
+    document.getElementById('role-name').textContent='الشرطي';
+    document.getElementById('role-name').style.color='var(--cop)';
+    document.getElementById('role-desc').textContent='أنت الشرطي! لديك فرد واحد — إذا أصبت القاتل فاز فريقك فوراً. إذا أخطأت، أنت تموت. يمكنك أيضاً التحقيق وحماية لاعب كل ليلة.';
+    speak('أنت الشرطي! لديك فرد واحد لقتل القاتل. استخدمه بحكمة!');playSound('cop_intro');
+  } else {
+    card.className='role-card civilian';
+    document.getElementById('role-icon').textContent='🕵️';
+    document.getElementById('role-name').textContent='مدني';
+    document.getElementById('role-name').style.color='#3b82f6';
+    document.getElementById('role-desc').textContent='أنت مدني! راقب الآخرين وصوّت ضد القاتل. الشرطي سيساعدكم.';
+    speak('أنت مدني. تعاون مع الشرطي لكشف القاتل!');playSound('calm');
+  }
+}
+function ackRole(){
+  const d=readState()||{};
+  d.phase='day';d.ts=Date.now();
+  localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
+  if(bc) bc.postMessage({type:'sync',roomCode:S.roomCode});
+  enterGameScreen();
+}
+
+// ══════════════════════════════════════════════
+//  GAME SCREEN
+// ══════════════════════════════════════════════
+function enterGameScreen(){
+  S.phase='day';showScreen('game');
+  renderGamePlayers();updateGameStatus();setupPanels();
+  startNearbyDetection();startDayTimer();
+  speak('بدأ النهار! ناقشوا بينكم.');
+}
+function startDayTimer(){
+  document.getElementById('phase-label').textContent='🌞 نهار - ناقشوا!';
+  document.getElementById('phase-label').className='phase-banner phase-day';
+  document.getElementById('meeting-btn').style.display=S.meetingsLeft>0?'block':'none';
+  startTimer('game-timer',60,()=>{if(S.isHost) hostTriggerNight();});
+}
+function hostTriggerNight(){
+  if(S.phase==='vote') return;
+  S.phase='night';
+  document.getElementById('phase-label').textContent='🌙 ليل';
+  document.getElementById('phase-label').className='phase-banner phase-night';
+  clearInterval(S.gameTimer);
+  speak('حلّ الليل!');
+  if(S.myRole==='killer'){
+    setupPanels();toast('🔪 اختر ضحيتك!');speak('اختر ضحيتك الآن!');
+    startTimer('game-timer',25,()=>{
+      const alive=S.players.filter(p=>p.alive&&p.role!=='killer');
+      if(alive.length) doKill(alive[Math.floor(Math.random()*alive.length)].id,'knife');
+    });
+  } else if(S.myRole==='cop'){
+    setupPanels();toast('🚔 استخدم صلاحياتك الليلة!');speak('أنت الشرطي. استخدم صلاحياتك!');
+    startTimer('game-timer',25,()=>{
+      // Auto-skip cop actions
+      if(S.isHost) botKillerActs();
+    });
+  } else {
+    showOverlay('🌙','الليل حلّ!','القاتل يتحرك... انتظر');
+    setTimeout(()=>{closeOverlay();if(S.isHost) botKillerActs();},3000);
+  }
+}
+function botKillerActs(){
+  const botKillers=S.players.filter(p=>p.isBot&&p.role==='killer'&&p.alive);
+  if(botKillers.length){
+    const alive=S.players.filter(p=>p.alive&&p.role!=='killer'&&p.id!==S.copProtectedId);
+    if(alive.length) doKill(alive[Math.floor(Math.random()*alive.length)].id,'knife');
+    else triggerVote('لا ضحايا الليلة!');
+  } else {
+    // Human killer must act; just trigger vote if time ran out
+    triggerVote('انتهى الليل!');
+  }
+}
+
+// ══════════════════════════════════════════════
+//  KILL
+// ══════════════════════════════════════════════
+function doKill(targetId,weaponSound){
+  const victim=S.players.find(p=>p.id===targetId);
+  if(!victim||!victim.alive) return;
+  // Check cop shield
+  if(targetId===S.copProtectedId){
+    S.copProtectedId=null;
+    showOverlay('🛡️','الحماية نجحت!','الشرطي أنقذ '+victim.name+' من القتل الليلة!',3000);
+    speak('الشرطي حمى '+victim.name+'!');
+    setTimeout(()=>triggerVote('الشرطي أنقذ لاعباً! من القاتل؟'),3500);
+    return;
+  }
+  victim.alive=false;
+  playSound(weaponSound||'kill');
+  const d=readState()||{};
+  Object.assign(d,{players:S.players,phase:'vote',voteReason:'💀 قُتل '+victim.name+'! من القاتل؟',votes:{},ts:Date.now()});
+  S._voteReason='💀 قُتل '+victim.name+'! من القاتل؟';
+  localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
+  if(bc) bc.postMessage({type:'sync',roomCode:S.roomCode});
+  showOverlay('💀',victim.name+' قُتل!','',2500);
+  speak('قُتل '+victim.name+'!');
+  setTimeout(()=>{closeOverlay();enterVoteScreen('💀 قُتل '+victim.name+'! من القاتل؟');},2600);
+}
+function killWith(targetId,weaponSound){playSound(weaponSound);setTimeout(()=>doKill(targetId,weaponSound),700);}
+function triggerVote(reason){
+  const d=readState()||{};
+  Object.assign(d,{phase:'vote',voteReason:reason,votes:{},ts:Date.now()});
+  localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
+  if(bc) bc.postMessage({type:'sync',roomCode:S.roomCode});
+  enterVoteScreen(reason);
+}
+
+// ══════════════════════════════════════════════
+//  COP ACTIONS
+// ══════════════════════════════════════════════
+function showShootPanel(){
+  if(S.copShotUsed){toast('استخدمت الفرد من قبل!');return;}
+  hideCopSubPanels();
+  const el=document.getElementById('cop-shoot-panel');
+  el.style.display='block';
+  const alive=S.players.filter(p=>p.alive&&p.id!==S.myId);
+  document.getElementById('shoot-targets').innerHTML=alive.map(p=>`
+    <button class="shoot-item" onclick="copShoot('${p.id}')" aria-label="أطلق النار على ${p.name}">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="font-size:2rem;">${p.avatar}</span>
+        <span style="font-weight:700;">${p.name}</span>
+      </div>
+      <span style="font-size:1.4rem;">🔫</span>
+    </button>`).join('');
+  speak('اختر من تُطلق النار عليه. إذا أصبت القاتل فزنا!');
+}
+function copShoot(targetId){
+  const target=S.players.find(p=>p.id===targetId);if(!target||!target.alive)return;
+  S.copShotUsed=true;
+  document.getElementById('cop-shoot-btn').classList.add('used');
+  document.getElementById('cop-shoot-lbl').textContent='تم الاستخدام';
+  hideCopSubPanels();
+  playSound('gun');
+  if(target.role==='killer'){
+    // KILLER HIT → civilians + cop win
+    target.alive=false;
+    showOverlay('🎯','أصبت القاتل!','أحسنت أيها الشرطي! '+target.name+' كان القاتل!');
+    speak('أصبت القاتل! '+target.name+' كان القاتل! فاز المدنيون والشرطي!');
+    playSound('win');
+    const d=readState()||{};
+    Object.assign(d,{players:S.players,phase:'result',winner:'civilians',ts:Date.now()});
+    localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
+    if(bc) bc.postMessage({type:'sync',roomCode:S.roomCode});
+    setTimeout(()=>{closeOverlay();enterResultScreen('civilians');},3500);
+  } else {
+    // MISSED → cop dies
+    const me=S.players.find(p=>p.id===S.myId);
+    if(me) me.alive=false;
+    showOverlay('💔','أخطأت!','الهدف كان بريئاً... لقد مات الشرطي!');
+    speak('أخطأت! '+target.name+' بريء. لقد مات الشرطي!');
+    const d=readState()||{};
+    Object.assign(d,{players:S.players,phase:'vote',voteReason:'🚔 الشرطي أخطأ وقتل نفسه! من القاتل؟',votes:{},ts:Date.now()});
+    localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
+    if(bc) bc.postMessage({type:'sync',roomCode:S.roomCode});
+    setTimeout(()=>{closeOverlay();enterVoteScreen('🚔 الشرطي أخطأ وقتل نفسه! من القاتل؟');},3000);
+  }
+}
+
+function showInvestPanel(){
+  if(S.copInvestUsed){toast('حققت بالفعل هذه الجولة!');return;}
+  hideCopSubPanels();
+  const el=document.getElementById('cop-invest-panel');el.style.display='block';
+  const alive=S.players.filter(p=>p.alive&&p.id!==S.myId);
+  document.getElementById('invest-targets').innerHTML=alive.map(p=>`
+    <button class="shoot-item" onclick="copInvestigate('${p.id}')" aria-label="تحقق من ${p.name}">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="font-size:2rem;">${p.avatar}</span>
+        <span style="font-weight:700;">${p.name}</span>
+      </div>
+      <span style="font-size:1.4rem;">🔍</span>
+    </button>`).join('');
+  speak('اختر من تريد معرفة هويته الحقيقية.');
+}
+function copInvestigate(targetId){
+  const target=S.players.find(p=>p.id===targetId);if(!target)return;
+  S.copInvestUsed=true;
+  document.getElementById('cop-invest-btn').classList.add('used');
+  document.getElementById('cop-invest-lbl').textContent='تم الاستخدام';
+  hideCopSubPanels();
+  const roleLabel=target.role==='killer'?'🔪 قاتل!':target.role==='cop'?'🚔 شرطي مثلك':'🕵️ مدني بريء';
+  const roleColor=target.role==='killer'?'var(--danger)':target.role==='cop'?'var(--cop)':'#60a5fa';
+  const reveal=document.getElementById('cop-identity-reveal');
+  reveal.style.display='block';
+  reveal.innerHTML=`<div class="id-reveal">
+    <div class="big">${target.avatar}</div>
+    <div class="name">${target.name}</div>
+    <div class="role-tag" style="color:${roleColor};font-size:1.1rem;font-weight:900;">${roleLabel}</div>
+  </div>`;
+  document.getElementById('cop-status').textContent='التحقيق: '+target.name+' هو '+roleLabel;
+  playSound('invest');
+  speak('التحقيق: '+target.name+' هو '+roleLabel);
+  toast('🔍 '+target.name+': '+roleLabel);
+}
+
+function showProtectPanel(){
+  if(S.copProtectedId){toast('حميت لاعباً بالفعل الليلة!');return;}
+  hideCopSubPanels();
+  const el=document.getElementById('cop-protect-panel');el.style.display='block';
+  const alive=S.players.filter(p=>p.alive);
+  document.getElementById('protect-targets').innerHTML=alive.map(p=>`
+    <button class="shoot-item" onclick="copProtect('${p.id}')" aria-label="احمِ ${p.name}">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="font-size:2rem;">${p.avatar}</span>
+        <span style="font-weight:700;">${p.name}${p.id===S.myId?' (أنت)':''}</span>
+      </div>
+      <span style="font-size:1.4rem;">🛡️</span>
+    </button>`).join('');
+  speak('اختر من تريد حمايته من القتل الليلة.');
+}
+function copProtect(targetId){
+  const target=S.players.find(p=>p.id===targetId);if(!target)return;
+  S.copProtectedId=targetId;
+  S.copProtectUsed=true;
+  document.getElementById('cop-protect-btn').classList.add('used');
+  document.getElementById('cop-protect-lbl').textContent='تم الاستخدام';
+  hideCopSubPanels();
+  document.getElementById('cop-status').textContent='🛡️ تحمي '+target.name+' الليلة';
+  playSound('shield');
+  speak('أنت تحمي '+target.name+' الليلة من القتل!');
+  toast('🛡️ تحمي '+target.name+' الليلة!');
+  renderGamePlayers();
+}
+
+function copRadio(){
+  if(S.meetingsLeft<=0){toast('لا اجتماعات متبقية!');return;}
+  S.meetingsLeft--;
+  document.getElementById('meeting-btn').style.display='none';
+  clearInterval(S.gameTimer);
+  playSound('siren');
+  triggerVote('🚔 الشرطي طلب اجتماعاً طارئاً!');
+  speak('الشرطي طلب اجتماعاً طارئاً!');
+}
+
+function hideCopSubPanels(){
+  ['cop-shoot-panel','cop-invest-panel','cop-protect-panel'].forEach(id=>document.getElementById(id).style.display='none');
+}
+
+// ══════════════════════════════════════════════
+//  CIVILIAN ACTIONS
+// ══════════════════════════════════════════════
+function doAction(type,label,icon){
+  const msgs=ACTION_MSGS[type];
+  const msg=msgs[Math.floor(Math.random()*msgs.length)];
+  playSound('action');speak(label+'! '+msg);
+  const st=document.getElementById('action-status');if(st)st.textContent=icon+' '+msg;
+  document.querySelectorAll('.action-btn').forEach(b=>b.classList.remove('active-action'));
+  if(event&&event.currentTarget)event.currentTarget.classList.add('active-action');
+  toast(icon+' '+msg);
+}
+
+// ══════════════════════════════════════════════
+//  SETUP PANELS (role-based)
+// ══════════════════════════════════════════════
+function setupPanels(){
+  const kp=document.getElementById('killer-panel');
+  const cp=document.getElementById('cop-panel');
+  const civp=document.getElementById('civilian-panel');
+  kp.style.display='none';cp.style.display='none';civp.style.display='none';
+  if(S.myRole==='killer'&&S.phase==='night'){
+    kp.style.display='block';
+    const targets=S.players.filter(p=>p.alive&&p.role!=='killer');
+    document.getElementById('kill-targets').innerHTML=targets.map(p=>{
+      const w=WEAPONS[Math.floor(Math.random()*WEAPONS.length)];
+      return `<button class="weapon-btn" onclick="killWith('${p.id}','${w.sound}')" aria-label="اقتل ${p.name} بـ${w.name}">
+        <span class="weapon-icon">${w.icon}</span>
+        <span>${p.avatar} ${p.name}</span>
+        <span style="font-size:.85rem;color:var(--muted);">${w.name}</span>
+      </button>`;
+    }).join('');
+  } else if(S.myRole==='cop'){
+    cp.style.display='block';
+  } else if(S.myRole==='civilian'){
+    civp.style.display='block';
+  }
+}
+
+function callMeeting(){
+  if(S.meetingsLeft<=0){toast('لا اجتماعات متبقية!');return;}
+  S.meetingsLeft--;
+  document.getElementById('meeting-btn').style.display='none';
+  clearInterval(S.gameTimer);
+  playSound('siren');
+  triggerVote('🚨 اجتماع طارئ! من القاتل؟');
+  speak('اجتماع طارئ!');
+}
+
+// ══════════════════════════════════════════════
+//  NEARBY
+// ══════════════════════════════════════════════
+function startNearbyDetection(){
+  clearInterval(S.nearbyInterval);
+  S.nearbyInterval=setInterval(()=>{
+    S.players.filter(p=>p.isBot&&p.alive).forEach(p=>{p.x=Math.floor(Math.random()*10);p.y=Math.floor(Math.random()*10);});
+    updateNearby();
+  },4500);
+}
+function updateNearby(){
+  const me=S.players.find(p=>p.id===S.myId);if(!me)return;
+  const near=S.players.filter(p=>p.alive&&p.id!==S.myId&&Math.abs((p.x||0)-(me.x||5))<=2&&Math.abs((p.y||0)-(me.y||5))<=2);
+  const bar=document.getElementById('nearby-bar');
+  const card=document.getElementById('nearby-card');
+  document.querySelectorAll('.player-card.nearby').forEach(el=>el.classList.remove('nearby'));
+  if(near.length>0){
+    const names=near.map(p=>p.name).join('، ');
+    bar.textContent='📡 بالقرب منك: '+names;bar.classList.add('show');
+    near.forEach(p=>speak(p.name+' بالقرب منك'));
+    card.style.display='block';
+    document.getElementById('nearby-list').innerHTML=near.map(p=>`
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
+        <span style="font-size:2rem;">${p.avatar}</span>
+        <span style="font-weight:700;font-size:1.1rem;">${p.name}</span>
+        ${S.myRole==='killer'?'<span style="color:var(--danger);font-size:.9rem;">⚠️ هدف</span>':''}
+        ${S.myRole==='cop'&&p.role?'<span style="font-size:.8rem;color:var(--muted);">مراقَب</span>':''}
+      </div>`).join('');
+    const cards=document.querySelectorAll('#game-players .player-card');
+    S.players.forEach((p,i)=>{if(near.find(n=>n.id===p.id)&&cards[i])cards[i].classList.add('nearby');});
+  } else {
+    bar.classList.remove('show');card.style.display='none';
+  }
+}
+
+// ══════════════════════════════════════════════
+//  RENDER GAME PLAYERS
+// ══════════════════════════════════════════════
+function renderGamePlayers(){
+  const el=document.getElementById('game-players');if(!el)return;
+  el.innerHTML=S.players.map(p=>`
+    <div class="player-card ${!p.alive?'dead':''} ${p.id===S.myId?'you':''} ${p.id===S.copProtectedId?'protected':''}">
+      <div class="player-avatar">${p.avatar}</div>
+      <div class="player-name">${p.name}</div>
+      <div class="player-tag">${p.id===S.myId?'أنت':!p.alive?'مُقتل':p.role==='cop'&&S.myRole==='cop'?'🚔':p.role==='killer'&&S.myRole==='killer'?'🔪':'🟢'}</div>
+    </div>`).join('');
+}
+function updateGameStatus(){
+  const alive=S.players.filter(p=>p.alive).length;
+  document.getElementById('alive-count').textContent=alive+' أحياء';
+  const badge={'killer':'<span class="badge badge-killer">🔪 قاتل</span>','cop':'<span class="badge badge-cop">🚔 شرطي</span>','civilian':'<span class="badge badge-civilian">🕵️ مدني</span>'};
+  document.getElementById('my-role-badge').innerHTML=badge[S.myRole]||'';
+}
+
+// ══════════════════════════════════════════════
+//  VOTE
+// ══════════════════════════════════════════════
+function enterVoteScreen(reason){
+  S.phase='vote';S.votes=S.votes||{};S.myVote=undefined;
+  showScreen('vote');
+  document.getElementById('vote-reason').textContent=reason;
+  playSound('siren');speak('وقت التصويت! '+reason);
+  renderVoteList();
+  startTimer('vote-timer',30,()=>resolveVote());
+  setTimeout(()=>{botsVote();renderVoteResults();},5000+Math.random()*8000);
+}
+function botsVote(){
+  const alive=S.players.filter(p=>p.alive);
+  S.players.filter(p=>p.isBot&&p.alive).forEach(bot=>{
+    const targets=alive.filter(p=>p.id!==bot.id);
+    if(targets.length) S.votes[bot.id]=targets[Math.floor(Math.random()*targets.length)].id;
+  });
+  const d=readState()||{};d.votes=S.votes;d.ts=Date.now();
+  localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
+}
+function renderVoteList(){
+  const alive=S.players.filter(p=>p.alive);
+  const me=S.players.find(p=>p.id===S.myId);
+  const canVote=me&&me.alive;
+  document.getElementById('vote-list').innerHTML=alive.map(p=>`
+    <div class="vote-item ${S.myVote===p.id?'voted':''}"
+         onclick="${canVote&&p.id!==S.myId?'castVote("'+p.id+'")':''}">
+      <div class="vote-info">
+        <div class="vote-avatar">${p.avatar}</div>
+        <div><div style="font-weight:700;font-size:1.1rem;">${p.name}</div><div class="text-muted">${p.id===S.myId?'(أنت)':''}</div></div>
+      </div>
+      <div style="font-size:1.3rem;">${S.myVote===p.id?'✅':p.id!==S.myId?'🗳️':''}</div>
+    </div>`).join('')+`
+    <div class="vote-item" style="border-color:var(--gold);" onclick="${canVote?'castVote(null)':''}">
+      <div class="vote-info"><div class="vote-avatar">⏭️</div><div style="font-weight:700;">تخطِّ</div></div>
+    </div>`;
+}
+function castVote(targetId){
+  if(S.myVote!==undefined){toast('صوّتت بالفعل!');return;}
+  S.myVote=targetId;S.votes[S.myId]=targetId;
+  const d=readState()||{};d.votes=S.votes;d.ts=Date.now();
+  localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
+  if(bc) bc.postMessage({type:'sync',roomCode:S.roomCode});
+  playSound('vote');
+  speak(targetId?'صوّتت ضد '+S.players.find(p=>p.id===targetId)?.name:'تخطيت');
+  renderVoteList();renderVoteResults();
+}
+function renderVoteResults(){
+  const tally={};Object.values(S.votes).forEach(v=>{if(v)tally[v]=(tally[v]||0)+1;});
+  document.getElementById('vote-results').innerHTML=
+    Object.entries(tally).sort((a,b)=>b[1]-a[1]).map(([id,c])=>{
+      const p=S.players.find(x=>x.id===id);
+      return p?`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:1.05rem;"><span>${p.avatar} ${p.name}</span><span style="font-weight:900;color:var(--danger);">${c} 🗳️</span></div>`:'';
+    }).join('')||'<div class="text-muted">لا أصوات بعد...</div>';
+}
+function resolveVote(){
+  const tally={};Object.values(S.votes).forEach(v=>{if(v)tally[v]=(tally[v]||0)+1;});
+  let max=0,ejId=null;
+  Object.entries(tally).forEach(([id,c])=>{if(c>max){max=c;ejId=id;}});
+  if(ejId){
+    const p=S.players.find(x=>x.id===ejId);
+    if(p){
+      p.alive=false;
+      const wasKiller=p.role==='killer';
+      const wasCop=p.role==='cop';
+      playSound(wasKiller?'win':'kill');
+      showOverlay(wasKiller?'🎉':wasCop?'🚔':'😢',
+        wasKiller?'أُمسك القاتل!':wasCop?'طُرد الشرطي!':'مدني بريء طُرد!',
+        p.name+' كان '+(wasKiller?'القاتل!':wasCop?'الشرطي!':'مدنياً بريئاً'));
+      speak(p.name+' كان '+(wasKiller?'القاتل!':wasCop?'الشرطي!':'مدنياً بريئاً'));
+      const d=readState()||{};
+      d.players=S.players;d.ts=Date.now();
+      const ak=S.players.filter(p=>p.alive&&p.role==='killer').length;
+      const ac=S.players.filter(p=>p.alive&&(p.role==='civilian'||p.role==='cop')).length;
+      if(ak===0){d.phase='result';d.winner='civilians';}
+      else if(ak>=ac){d.phase='result';d.winner='killers';}
+      else{d.phase='day';}
+      localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
+      if(bc) bc.postMessage({type:'sync',roomCode:S.roomCode});
+      setTimeout(()=>{closeOverlay();if(d.phase==='result')enterResultScreen(d.winner);else{S.copProtectedId=null;enterGameScreen();}},3000);
+    }
+  } else {
+    toast('تعادل! لا أحد طُرد.');speak('تعادل');
+    const d=readState()||{};d.phase='day';d.ts=Date.now();
+    localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
+    if(bc) bc.postMessage({type:'sync',roomCode:S.roomCode});
+    setTimeout(()=>{S.copProtectedId=null;enterGameScreen();},2000);
+  }
+}
+
+// ══════════════════════════════════════════════
+//  RESULT
+// ══════════════════════════════════════════════
+function enterResultScreen(winner){
+  clearTimers();S.phase='result';showScreen('result');
+  const myWon=(winner==='civilians'&&(S.myRole==='civilian'||S.myRole==='cop'))||(winner==='killers'&&S.myRole==='killer');
+  document.getElementById('result-icon').textContent=myWon?'🏆':'💀';
+  document.getElementById('result-title').textContent=winner==='civilians'?'🎉 المدنيون والشرطي فازوا!':'🔪 القتلة فازوا!';
+  document.getElementById('result-sub').textContent=myWon?'أحسنت! لقد فزت!':'حظ أوفر في الجولة القادمة!';
+  const roleEmoji={killer:'🔪',cop:'🚔',civilian:'🕵️'};
+  const roleLabel={killer:'قاتل',cop:'شرطي',civilian:'مدني'};
+  const roleBadge={killer:'badge-killer',cop:'badge-cop',civilian:'badge-civilian'};
+  document.getElementById('roles-reveal').innerHTML=S.players.map(p=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:1.05rem;">
+      <span>${p.avatar} ${p.name}${p.id===S.myId?' (أنت)':''}</span>
+      <span class="badge ${roleBadge[p.role]||'badge-civilian'}">${roleEmoji[p.role]||'🕵️'} ${roleLabel[p.role]||'مدني'}</span>
+    </div>`).join('');
+  playSound(myWon?'win':'kill');
+  speak(winner==='civilians'?'المدنيون والشرطي فازوا!':'القتلة فازوا!');
+}
+function playAgain(){
+  S.players=S.players.map(p=>({...p,alive:true,role:null}));
+  S.copShotUsed=false;S.copInvestUsed=false;S.copProtectUsed=false;S.copProtectedId=null;
+  S.phase='lobby';S.votes={};S.myVote=undefined;S.meetingsLeft=1;
+  syncState();showLobby();
+}
+function goHome(){clearTimers();if(bc){bc.close();bc=null;}showScreen('home');speak('الرئيسية');}
+
+// ══════════════════════════════════════════════
+//  TIMER
+// ══════════════════════════════════════════════
+function clearTimers(){
+  clearInterval(S.gameTimer);clearInterval(S.voteTimer);
+  clearInterval(S.nearbyInterval);clearInterval(S.pollInterval);
+}
+function startTimer(elId,secs,cb){
+  if(elId==='game-timer')clearInterval(S.gameTimer);else clearInterval(S.voteTimer);
+  let rem=secs;
+  const el=document.getElementById(elId);
+  if(el){el.textContent=rem;el.className='timer';}
+  const iv=setInterval(()=>{
+    rem--;if(el){el.textContent=rem;el.className='timer'+(rem<=10?' urgent':'');}
+    if(rem<=10&&rem>0)playSound('tick');
+    if(rem<=0){clearInterval(iv);if(cb)cb();}
+  },1000);
+  if(elId==='game-timer')S.gameTimer=iv;else S.voteTimer=iv;
+}
+
+// ══════════════════════════════════════════════
+//  TTS
+// ══════════════════════════════════════════════
+function speak(text){
+  if(!S.ttsEnabled)return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);u.lang='ar-SA';u.rate=0.9;
+  window.speechSynthesis.speak(u);
+}
+function toggleTTS(){
+  S.ttsEnabled=!S.ttsEnabled;
+  document.getElementById('tts-btn').textContent=S.ttsEnabled?'🔊 قارئ الشاشة: تشغيل':'🔇 قارئ الشاشة: إيقاف';
+  speak(S.ttsEnabled?'تم التشغيل':'تم الإيقاف');
+}
+
+// ══════════════════════════════════════════════
+//  SOUND ENGINE
 // ══════════════════════════════════════════════
 const AudioCtx2=window.AudioContext||window.webkitAudioContext;
 let actx2;
 function ac(){if(!actx2)actx2=new AudioCtx2();return actx2;}
-
-let musicNodes=[];
-let musicStarted=false;
-
-function startMusic(){
-  if(musicStarted) return;
-  musicStarted=true;
-  playMusicLoop();
-}
-
-function playMusicLoop(){
-  if(!S.musicOn) return;
-  const c=ac();
-  // Ambient mysterious background: slow arpeggios + pad
-  const notes=[130.8,164.8,196,246.9,130.8,164.8,220,261.6];
-  notes.forEach((freq,i)=>{
-    const o=c.createOscillator();
-    const g=c.createGain();
-    const filter=c.createBiquadFilter();
-    filter.type='lowpass';filter.frequency.value=800;
-    o.connect(filter);filter.connect(g);g.connect(c.destination);
-    o.type='sine';o.frequency.value=freq;
-    const t=c.currentTime+i*1.2;
-    g.gain.setValueAtTime(0,t);
-    g.gain.linearRampToValueAtTime(0.04,t+0.3);
-    g.gain.linearRampToValueAtTime(0.04,t+0.9);
-    g.gain.linearRampToValueAtTime(0,t+1.2);
-    o.start(t);o.stop(t+1.3);
-    musicNodes.push(o);
-  });
-  // Low drone pad
-  const drone=c.createOscillator();
-  const dg=c.createGain();
-  const df=c.createBiquadFilter();
-  df.type='lowpass';df.frequency.value=400;
-  drone.connect(df);df.connect(dg);dg.connect(c.destination);
-  drone.type='triangle';drone.frequency.value=65.4;
-  dg.gain.setValueAtTime(0,c.currentTime);
-  dg.gain.linearRampToValueAtTime(0.05,c.currentTime+1);
-  dg.gain.linearRampToValueAtTime(0.05,c.currentTime+8);
-  dg.gain.linearRampToValueAtTime(0,c.currentTime+9.6);
-  drone.start(c.currentTime);drone.stop(c.currentTime+9.7);
-  musicNodes.push(drone);
-  // Loop
-  setTimeout(()=>{ if(S.musicOn) playMusicLoop(); },9700);
-}
-
-function stopMusic(){
-  musicNodes.forEach(n=>{try{n.stop();}catch(e){}});
-  musicNodes=[];
-  musicStarted=false;
-}
-
-function toggleMusic(){
-  S.musicOn=!S.musicOn;
-  document.getElementById('music-btn').textContent=S.musicOn?'🎵':'🔇';
-  if(S.musicOn){startMusic();}else{stopMusic();}
-}
-
-// ══════════════════════════════════════════════
-//  TTS — speak everything automatically
-// ══════════════════════════════════════════════
-function { /* VoiceOver on device handles accessibility */ }
-
-
-
-// ══════════════════════════════════════════════
-//  SOUND FX
-// ══════════════════════════════════════════════
 function playSound(type){
   try{
     const c=ac();
-    if(type==='kill'||type==='axe'){
+    const mkOsc=(type,freq,dur,vol=0.4,shape='sine')=>{
+      const o=c.createOscillator(),g=c.createGain();
+      o.connect(g);g.connect(c.destination);o.type=shape;o.frequency.value=freq;
+      g.gain.setValueAtTime(vol,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+dur);
+      o.start();o.stop(c.currentTime+dur);
+    };
+    if(type==='kill'){
       const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);
       o.type='sawtooth';o.frequency.setValueAtTime(300,c.currentTime);o.frequency.exponentialRampToValueAtTime(40,c.currentTime+0.6);
       g.gain.setValueAtTime(0.5,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.7);
@@ -423,6 +1061,12 @@ function playSound(type){
       o2.type='sine';o2.frequency.value=80;
       g2.gain.setValueAtTime(0.3,c.currentTime+0.1);g2.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.5);
       o2.start(c.currentTime+0.1);o2.stop(c.currentTime+0.6);
+    } else if(type==='axe'){
+      mkOsc('o',200,0.35,0.8,'triangle');
+      const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);
+      o.type='triangle';o.frequency.setValueAtTime(200,c.currentTime);o.frequency.exponentialRampToValueAtTime(30,c.currentTime+0.3);
+      g.gain.setValueAtTime(0.8,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.35);
+      o.start();o.stop(c.currentTime+0.4);
     } else if(type==='bomb'){
       const buf=c.createBuffer(1,c.sampleRate*0.8,c.sampleRate);const dd=buf.getChannelData(0);
       for(let i=0;i<dd.length;i++)dd[i]=(Math.random()*2-1)*Math.exp(-i/(c.sampleRate*0.2));
@@ -438,17 +1082,14 @@ function playSound(type){
         g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.4,t+0.05);g.gain.linearRampToValueAtTime(0.4,t+0.49);g.gain.linearRampToValueAtTime(0,t+0.54);
         o.start(t);o.stop(t+0.55);
       }
-    } else if(type==='win'){
-      [523,659,784,1047].forEach((f,i)=>{
-        const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.value=f;
-        g.gain.setValueAtTime(0.3,c.currentTime+i*0.15);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+i*0.15+0.3);
-        o.start(c.currentTime+i*0.15);o.stop(c.currentTime+i*0.15+0.35);
+    } else if(type==='cop_intro'){
+      // Police radio crackle + beep
+      [440,550,660].forEach((f,i)=>{
+        const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);
+        o.type='square';o.frequency.value=f;
+        g.gain.setValueAtTime(0,c.currentTime+i*0.2);g.gain.linearRampToValueAtTime(0.25,c.currentTime+i*0.2+0.1);g.gain.linearRampToValueAtTime(0,c.currentTime+i*0.2+0.18);
+        o.start(c.currentTime+i*0.2);o.stop(c.currentTime+i*0.2+0.2);
       });
-    } else if(type==='vote'){
-      const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);
-      o.type='sine';o.frequency.setValueAtTime(880,c.currentTime);o.frequency.setValueAtTime(660,c.currentTime+0.1);
-      g.gain.setValueAtTime(0.3,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.3);
-      o.start();o.stop(c.currentTime+0.3);
     } else if(type==='shield'){
       [800,1000,1200].forEach((f,i)=>{
         const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);
@@ -461,9 +1102,17 @@ function playSound(type){
       o.type='sine';o.frequency.setValueAtTime(440,c.currentTime);o.frequency.linearRampToValueAtTime(880,c.currentTime+0.3);
       g.gain.setValueAtTime(0.25,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.4);
       o.start();o.stop(c.currentTime+0.45);
+    } else if(type==='win'){
+      [523,659,784,1047].forEach((f,i)=>{
+        const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.value=f;
+        g.gain.setValueAtTime(0.3,c.currentTime+i*0.15);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+i*0.15+0.3);
+        o.start(c.currentTime+i*0.15);o.stop(c.currentTime+i*0.15+0.35);
+      });
+    } else if(type==='vote'){
+      mkOsc('o',880,0.3,0.3);
     } else if(type==='action'){
-      const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);
-      o.type='sine';o.frequency.setValueAtTime(600,c.currentTime);o.frequency.exponentialRampToValueAtTime(900,c.currentTime+0.1);
+      const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';
+      o.frequency.setValueAtTime(600,c.currentTime);o.frequency.exponentialRampToValueAtTime(900,c.currentTime+0.1);
       g.gain.setValueAtTime(0.2,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.18);
       o.start();o.stop(c.currentTime+0.2);
     } else if(type==='suspense'){
@@ -473,661 +1122,26 @@ function playSound(type){
         o.start(c.currentTime+i*0.4);o.stop(c.currentTime+i*0.4+0.5);
       });
     } else if(type==='calm'){
-      const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);
-      o.type='sine';o.frequency.value=440;
-      g.gain.setValueAtTime(0,c.currentTime);g.gain.linearRampToValueAtTime(0.15,c.currentTime+0.3);g.gain.linearRampToValueAtTime(0,c.currentTime+0.8);
-      o.start();o.stop(c.currentTime+0.9);
+      mkOsc('o',440,0.8,0.15);
     } else if(type==='tick'){
-      const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);
-      o.type='sine';o.frequency.value=1000;
-      g.gain.setValueAtTime(0.1,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.05);
-      o.start();o.stop(c.currentTime+0.06);
-    } else if(type==='cop_intro'){
-      [440,550,660].forEach((f,i)=>{
-        const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);
-        o.type='square';o.frequency.value=f;
-        g.gain.setValueAtTime(0,c.currentTime+i*0.2);g.gain.linearRampToValueAtTime(0.25,c.currentTime+i*0.2+0.1);g.gain.linearRampToValueAtTime(0,c.currentTime+i*0.2+0.18);
-        o.start(c.currentTime+i*0.2);o.stop(c.currentTime+i*0.2+0.2);
-      });
+      mkOsc('o',1000,0.05,0.1);
     }
   }catch(e){}
-}
-
-// ══════════════════════════════════════════════
-//  SYNC (BroadcastChannel + localStorage)
-// ══════════════════════════════════════════════
-function syncState(){
-  try{
-    const d={players:S.players,phase:S.phase,votes:S.votes,
-      numKillers:S.numKillers,copEnabled:S.copEnabled,
-      voteReason:S._voteReason,winner:S._winner,ts:Date.now()};
-    localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
-    if(bc) bc.postMessage({type:'sync',roomCode:S.roomCode});
-  }catch(e){}
-}
-function readState(){
-  try{
-    const raw=localStorage.getItem('ghost_'+S.roomCode);
-    if(!raw)return null;
-    const d=JSON.parse(raw);
-    if(Date.now()-d.ts>90000)return null;
-    return d;
-  }catch(e){return null;}
-}
-function applyRemoteState(d){
-  if(!d)return;
-  const prev=S.phase;
-  S.players=d.players||S.players;
-  S.numKillers=d.numKillers||1;
-  S.copEnabled=d.copEnabled!==undefined?d.copEnabled:true;
-  if(d.phase!==prev){
-    S.phase=d.phase;
-    const me=S.players.find(p=>p.id===S.myId);
-    if(me)S.myRole=me.role||S.myRole;
-    if(d.phase==='role')enterRoleScreen();
-    else if(d.phase==='day')enterGameScreen();
-    else if(d.phase==='vote'){S.votes=d.votes||{};S.myVote=undefined;enterVoteScreen(d.voteReason||'التصويت!');}
-    else if(d.phase==='result')enterResultScreen(d.winner);
-  } else {
-    if(d.phase==='lobby'){renderLobbyPlayers();updateLobbyCount();}
-    else if(d.phase==='day'){renderGamePlayers();updateGameStatus();updateNearby();}
-    else if(d.phase==='vote'){S.votes=d.votes||{};renderVoteList();renderVoteResults();}
-  }
-}
-
-// ══════════════════════════════════════════════
-//  HELPERS
-// ══════════════════════════════════════════════
-function genId(){return Math.random().toString(36).substr(2,9);}
-function genCode(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
-function getName(){const n=document.getElementById('input-name').value.trim();if(!n){toast('⚠️ أدخل اسمك!');return null;}return n;}
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-'+id).classList.add('active');}
-function toast(msg,dur=3000){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur);}
-function showOverlay(icon,title,desc,auto=0){
-  document.getElementById('ov-icon').textContent=icon;
-  document.getElementById('ov-title').textContent=title;
-  document.getElementById('ov-desc').textContent=desc;
-  document.getElementById('overlay').classList.add('show');
-  );
-  if(auto>0)setTimeout(closeOverlay,auto);
-}
-function closeOverlay(){document.getElementById('overlay').classList.remove('show');}
-function setupBC(code){if(bc)bc.close();bc=new BroadcastChannel('ghost_'+code);bc.onmessage=e=>{if(e.data.type==='sync'&&e.data.roomCode===S.roomCode){const d=readState();applyRemoteState(d);}};}
-function startPoll(){clearInterval(S.pollInterval);S.pollInterval=setInterval(()=>{const d=readState();if(d)applyRemoteState(d);},1500);}
-
-// ══════════════════════════════════════════════
-//  ROOM
-// ══════════════════════════════════════════════
-function goCreateRoom(){
-  const name=getName();if(!name)return;
-  S.myName=name;S.myId=genId();S.isHost=true;S.roomCode=genCode();
-  S.players=[{id:S.myId,name,avatar:AVATARS[Math.floor(Math.random()*AVATARS.length)],alive:true,isBot:false,role:null,x:5,y:5}];
-  S.phase='lobby';setupBC(S.roomCode);syncState();showLobby();startMusic();
-}
-function goJoinRoom(){
-  const name=getName();if(!name)return;
-  const code=prompt('أدخل رمز الغرفة:');if(!code)return;
-  S.myName=name;S.myId=genId();S.isHost=false;S.roomCode=code.trim().toUpperCase();
-  setupBC(S.roomCode);
-  const d=readState();
-  if(!d){toast('❌ الغرفة غير موجودة');return;}
-  S.players=d.players||[];
-  if(!S.players.find(p=>p.id===S.myId))
-    S.players.push({id:S.myId,name,avatar:AVATARS[Math.floor(Math.random()*AVATARS.length)],alive:true,isBot:false,role:null,x:Math.floor(Math.random()*10),y:Math.floor(Math.random()*10)});
-  syncState();showLobby();startMusic();
-  }
-function goRandomRoom(){
-  const name=getName();if(!name)return;
-  S.myName=name;S.myId=genId();S.isHost=true;S.roomCode=genCode();
-  S.players=[{id:S.myId,name,avatar:AVATARS[Math.floor(Math.random()*AVATARS.length)],alive:true,isBot:false,role:null,x:5,y:5}];
-  for(let i=0;i<4;i++)
-    S.players.push({id:genId(),name:BOT_NAMES[i],avatar:AVATARS[Math.floor(Math.random()*AVATARS.length)],alive:true,isBot:true,role:null,x:Math.floor(Math.random()*10),y:Math.floor(Math.random()*10)});
-  S.phase='lobby';setupBC(S.roomCode);syncState();showLobby();startMusic();
-  }
-function showLobby(){
-  S.phase='lobby';showScreen('lobby');
-  document.getElementById('room-code-display').textContent=S.roomCode;
-  document.getElementById('share-link-box').textContent=window.location.href.split('?')[0]+'?room='+S.roomCode;
-  if(S.isHost)document.getElementById('host-controls').style.display='block';
-  renderLobbyPlayers();updateLobbyCount();startPoll();
-  .join(' ')+'. '+S.players.length+' لاعبين.');
-}
-function leaveRoom(){clearTimers();if(bc){bc.close();bc=null;}stopMusic();S={...S,players:[],myRole:null,phase:'lobby'};showScreen('home');}
-function renderLobbyPlayers(){
-  const el=document.getElementById('lobby-players');if(!el)return;
-  el.innerHTML=S.players.map(p=>`<div class="player-card ${p.id===S.myId?'you':''}"><div class="player-avatar">${p.avatar}</div><div class="player-name">${p.name}</div><div class="player-tag">${p.id===S.myId?'أنت':p.isBot?'🤖':'🟢'}</div></div>`).join('');
-}
-function updateLobbyCount(){const el=document.getElementById('lobby-count');if(el)el.textContent=S.players.length+'/15';}
-function copyLink(){const l=window.location.href.split('?')[0]+'?room='+S.roomCode;navigator.clipboard.writeText(l).then(()=>{toast('✅ تم نسخ الرابط!');}).catch(()=>toast(l));}
-function shareWhatsApp(){const l=window.location.href.split('?')[0]+'?room='+S.roomCode;window.open('https://wa.me/?text='+encodeURIComponent('تعال العب معي لعبة الشبح! 👻\nرمز الغرفة: '+S.roomCode+'\nالرابط: '+l),'_blank');}
-
-// ══════════════════════════════════════════════
-//  GAME START
-// ══════════════════════════════════════════════
-function hostStartGame(){
-  if(S.players.length<2){toast('⚠️ تحتاج لاعبين آخرين!');return;}
-  while(S.players.length<3)
-    S.players.push({id:genId(),name:BOT_NAMES[S.players.filter(p=>p.isBot).length%BOT_NAMES.length],avatar:AVATARS[Math.floor(Math.random()*AVATARS.length)],alive:true,isBot:true,role:null,x:Math.floor(Math.random()*10),y:Math.floor(Math.random()*10)});
-  S.numKillers=parseInt(document.getElementById('killers-range').value);
-  S.copEnabled=document.getElementById('cop-enabled').checked;
-  const shuffled=[...S.players].sort(()=>Math.random()-.5);
-  let idx=0;
-  const killerIds=shuffled.slice(idx,idx+S.numKillers).map(p=>p.id);idx+=S.numKillers;
-  let copId=null;
-  if(S.copEnabled&&shuffled.length>idx){copId=shuffled[idx].id;idx++;}
-  S.players=S.players.map(p=>({...p,role:killerIds.includes(p.id)?'killer':p.id===copId?'cop':'civilian',alive:true}));
-  S.phase='role';S.votes={};S.myVote=undefined;S.meetingsLeft=1;
-  S.copShotUsed=false;S.copInvestUsed=false;S.copProtectUsed=false;S.copProtectedId=null;
-  const d=readState()||{};
-  Object.assign(d,{players:S.players,phase:'role',numKillers:S.numKillers,copEnabled:S.copEnabled,votes:{},ts:Date.now()});
-  localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
-  if(bc)bc.postMessage({type:'sync',roomCode:S.roomCode});
-  enterRoleScreen();
-}
-
-// ══════════════════════════════════════════════
-//  ROLE REVEAL
-// ══════════════════════════════════════════════
-function enterRoleScreen(){
-  showScreen('role');
-  const me=S.players.find(p=>p.id===S.myId);if(!me)return;
-  S.myRole=me.role;
-  const card=document.getElementById('role-card');
-  if(S.myRole==='killer'){
-    card.className='role-card killer';
-    document.getElementById('role-icon').textContent='🔪';
-    document.getElementById('role-name').textContent='القاتل';
-    document.getElementById('role-name').style.color='var(--danger)';
-    const allies=S.players.filter(p=>p.role==='killer'&&p.id!==S.myId).map(p=>p.name);
-    document.getElementById('role-desc').textContent='أنت القاتل! تصرف بهدوء وتجنب الشرطي.'+(allies.length?' حلفاؤك: '+allies.join('، '):'');
-    :'')+' تصرف بحذر!');
-    playSound('suspense');
-  } else if(S.myRole==='cop'){
-    card.className='role-card cop';
-    document.getElementById('role-icon').textContent='🚔';
-    document.getElementById('role-name').textContent='الشرطي';
-    document.getElementById('role-name').style.color='var(--cop)';
-    document.getElementById('role-desc').textContent='أنت الشرطي! لديك فرد واحد. إذا أصبت القاتل فاز فريقك فوراً. يمكنك التحقيق وحماية لاعب كل ليلة.';
-    playSound('cop_intro');
-  } else {
-    card.className='role-card civilian';
-    document.getElementById('role-icon').textContent='🕵️';
-    document.getElementById('role-name').textContent='مدني';
-    document.getElementById('role-name').style.color='#3b82f6';
-    document.getElementById('role-desc').textContent='أنت مدني! راقب الآخرين وصوّت ضد القاتل لإنقاذ الجميع.';
-    playSound('calm');
-  }
-}
-function ackRole(){
-  const d=readState()||{};d.phase='day';d.ts=Date.now();
-  localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
-  if(bc)bc.postMessage({type:'sync',roomCode:S.roomCode});
-  enterGameScreen();
-}
-
-// ══════════════════════════════════════════════
-//  GAME
-// ══════════════════════════════════════════════
-function enterGameScreen(){
-  S.phase='day';showScreen('game');
-  renderGamePlayers();updateGameStatus();setupPanels();
-  startNearbyDetection();startDayTimer();
-  }
-function startDayTimer(){
-  document.getElementById('phase-label').textContent='🌞 نهار - ناقشوا!';
-  document.getElementById('phase-label').className='phase-banner phase-day';
-  document.getElementById('meeting-btn').style.display=S.meetingsLeft>0?'block':'none';
-  startTimer('game-timer',60,()=>{if(S.isHost)hostTriggerNight();});
-}
-function hostTriggerNight(){
-  if(S.phase==='vote')return;
-  S.phase='night';
-  document.getElementById('phase-label').textContent='🌙 ليل';
-  document.getElementById('phase-label').className='phase-banner phase-night';
-  clearInterval(S.gameTimer);
-  if(S.myRole==='killer'){
-    setupPanels();toast('🔪 اختر ضحيتك!');startTimer('game-timer',25,()=>{
-      const alive=S.players.filter(p=>p.alive&&p.role!=='killer');
-      if(alive.length)doKill(alive[Math.floor(Math.random()*alive.length)].id,'knife');
-    });
-  } else if(S.myRole==='cop'){
-    setupPanels();toast('🚔 استخدم صلاحياتك!');startTimer('game-timer',25,()=>{if(S.isHost)botKillerActs();});
-  } else {
-    showOverlay('🌙','الليل حلّ!','القاتل يتحرك... انتظر');
-    setTimeout(()=>{closeOverlay();if(S.isHost)botKillerActs();},3000);
-  }
-}
-function botKillerActs(){
-  const botKillers=S.players.filter(p=>p.isBot&&p.role==='killer'&&p.alive);
-  if(botKillers.length){
-    const alive=S.players.filter(p=>p.alive&&p.role!=='killer'&&p.id!==S.copProtectedId);
-    if(alive.length)doKill(alive[Math.floor(Math.random()*alive.length)].id,'knife');
-    else triggerVote('لا ضحايا الليلة!');
-  } else triggerVote('انتهى الليل!');
-}
-function doKill(targetId,weaponSound){
-  const victim=S.players.find(p=>p.id===targetId);
-  if(!victim||!victim.alive)return;
-  if(targetId===S.copProtectedId){
-    S.copProtectedId=null;
-    showOverlay('🛡️','الحماية نجحت!','الشرطي أنقذ '+victim.name+' من القتل الليلة!',3000);
-    setTimeout(()=>triggerVote('الشرطي أنقذ لاعباً! من القاتل؟'),3500);
-    return;
-  }
-  victim.alive=false;
-  playSound(weaponSound||'kill');
-  const d=readState()||{};
-  Object.assign(d,{players:S.players,phase:'vote',voteReason:'💀 قُتل '+victim.name+'! من القاتل؟',votes:{},ts:Date.now()});
-  S._voteReason='💀 قُتل '+victim.name+'! من القاتل؟';
-  localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
-  if(bc)bc.postMessage({type:'sync',roomCode:S.roomCode});
-  showOverlay('💀',victim.name+' قُتل!','',2500);
-  setTimeout(()=>{closeOverlay();enterVoteScreen('💀 قُتل '+victim.name+'! من القاتل؟');},2600);
-}
-function killWith(targetId,weaponSound){playSound(weaponSound);setTimeout(()=>doKill(targetId,weaponSound),700);}
-function triggerVote(reason){
-  const d=readState()||{};
-  Object.assign(d,{phase:'vote',voteReason:reason,votes:{},ts:Date.now()});
-  localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
-  if(bc)bc.postMessage({type:'sync',roomCode:S.roomCode});
-  enterVoteScreen(reason);
-}
-
-// ══════════════════════════════════════════════
-//  COP ACTIONS
-// ══════════════════════════════════════════════
-function showShootPanel(){
-  if(S.copShotUsed){toast('استخدمت الفرد من قبل!');return;}
-  hideCopSubPanels();
-  document.getElementById('cop-shoot-panel').style.display='block';
-  const alive=S.players.filter(p=>p.alive&&p.id!==S.myId);
-  document.getElementById('shoot-targets').innerHTML=alive.map(p=>`
-    <button class="shoot-item" onclick="copShoot('${p.id}')" aria-label="أطلق النار على ${p.name}">
-      <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:2rem;">${p.avatar}</span><span style="font-weight:700;">${p.name}</span></div>
-      <span style="font-size:1.4rem;">🔫</span>
-    </button>`).join('');
-  =>`الخيار ${i+1}: ${p.name}`).join('. '));
-}
-function copShoot(targetId){
-  const target=S.players.find(p=>p.id===targetId);if(!target||!target.alive)return;
-  S.copShotUsed=true;
-  document.getElementById('cop-shoot-btn').classList.add('used');
-  document.getElementById('cop-shoot-lbl').textContent='تم الاستخدام';
-  hideCopSubPanels();
-  playSound('gun');
-  if(target.role==='killer'){
-    target.alive=false;
-    const d=readState()||{};
-    Object.assign(d,{players:S.players,phase:'result',winner:'civilians',ts:Date.now()});
-    localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
-    if(bc)bc.postMessage({type:'sync',roomCode:S.roomCode});
-    showOverlay('🎯','أصبت القاتل!',target.name+' كان القاتل! فاز الجميع!');
-    playSound('win');
-    setTimeout(()=>{closeOverlay();enterResultScreen('civilians');},3500);
-  } else {
-    const me=S.players.find(p=>p.id===S.myId);if(me)me.alive=false;
-    const d=readState()||{};
-    Object.assign(d,{players:S.players,phase:'vote',voteReason:'🚔 الشرطي أخطأ وقتل نفسه! من القاتل؟',votes:{},ts:Date.now()});
-    localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
-    if(bc)bc.postMessage({type:'sync',roomCode:S.roomCode});
-    showOverlay('💔','أخطأت!',target.name+' بريء... لقد مات الشرطي!');
-    setTimeout(()=>{closeOverlay();enterVoteScreen('🚔 الشرطي أخطأ وقتل نفسه! من القاتل؟');},3000);
-  }
-}
-function showInvestPanel(){
-  if(S.copInvestUsed){toast('حققت بالفعل هذه الجولة!');return;}
-  hideCopSubPanels();
-  document.getElementById('cop-invest-panel').style.display='block';
-  const alive=S.players.filter(p=>p.alive&&p.id!==S.myId);
-  document.getElementById('invest-targets').innerHTML=alive.map(p=>`
-    <button class="shoot-item" onclick="copInvestigate('${p.id}')" aria-label="تحقق من ${p.name}">
-      <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:2rem;">${p.avatar}</span><span style="font-weight:700;">${p.name}</span></div>
-      <span style="font-size:1.4rem;">🔍</span>
-    </button>`).join('');
-  =>`الخيار ${i+1}: ${p.name}`).join('. '));
-}
-function copInvestigate(targetId){
-  const target=S.players.find(p=>p.id===targetId);if(!target)return;
-  S.copInvestUsed=true;
-  document.getElementById('cop-invest-btn').classList.add('used');
-  document.getElementById('cop-invest-lbl').textContent='تم الاستخدام';
-  hideCopSubPanels();
-  const roleLabel=target.role==='killer'?'🔪 قاتل!':target.role==='cop'?'🚔 شرطي':'🕵️ مدني بريء';
-  const roleColor=target.role==='killer'?'var(--danger)':target.role==='cop'?'var(--cop)':'#60a5fa';
-  const reveal=document.getElementById('cop-identity-reveal');
-  reveal.style.display='block';
-  reveal.innerHTML=`<div class="id-reveal"><div style="font-size:2.4rem;">${target.avatar}</div><div style="font-size:1.3rem;font-weight:900;">${target.name}</div><div style="color:${roleColor};font-size:1.1rem;font-weight:900;">${roleLabel}</div></div>`;
-  document.getElementById('cop-status').textContent='التحقيق: '+target.name+' هو '+roleLabel;
-  playSound('invest');
-  }
-function showProtectPanel(){
-  if(S.copProtectedId){toast('حميت لاعباً بالفعل الليلة!');return;}
-  hideCopSubPanels();
-  document.getElementById('cop-protect-panel').style.display='block';
-  const alive=S.players.filter(p=>p.alive);
-  document.getElementById('protect-targets').innerHTML=alive.map(p=>`
-    <button class="shoot-item" onclick="copProtect('${p.id}')" aria-label="احمِ ${p.name}">
-      <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:2rem;">${p.avatar}</span><span style="font-weight:700;">${p.name}${p.id===S.myId?' (أنت)':''}</span></div>
-      <span style="font-size:1.4rem;">🛡️</span>
-    </button>`).join('');
-  =>`الخيار ${i+1}: ${p.name}`).join('. '));
-}
-function copProtect(targetId){
-  const target=S.players.find(p=>p.id===targetId);if(!target)return;
-  S.copProtectedId=targetId;S.copProtectUsed=true;
-  document.getElementById('cop-protect-btn').classList.add('used');
-  document.getElementById('cop-protect-lbl').textContent='تم الاستخدام';
-  hideCopSubPanels();
-  document.getElementById('cop-status').textContent='🛡️ تحمي '+target.name+' الليلة';
-  playSound('shield');renderGamePlayers();
-}
-function copRadio(){
-  if(S.meetingsLeft<=0){toast('لا اجتماعات متبقية!');return;}
-  S.meetingsLeft--;
-  document.getElementById('meeting-btn').style.display='none';
-  clearInterval(S.gameTimer);playSound('siren');
-  triggerVote('🚔 الشرطي طلب اجتماعاً طارئاً!');
-}
-function hideCopSubPanels(){['cop-shoot-panel','cop-invest-panel','cop-protect-panel'].forEach(id=>document.getElementById(id).style.display='none');}
-
-// ══════════════════════════════════════════════
-//  CIVILIAN ACTIONS — with detailed observation reports
-// ══════════════════════════════════════════════
-function doAction(type,label,icon){
-  playSound('action');
-  document.querySelectorAll('.action-btn').forEach(b=>b.classList.remove('active-action'));
-  if(event&&event.currentTarget)event.currentTarget.classList.add('active-action');
-
-  const alive=S.players.filter(p=>p.alive&&p.id!==S.myId);
-  const randomPlayer=alive.length?alive[Math.floor(Math.random()*alive.length)]:null;
-  const obsBox=document.getElementById('obs-report-box');
-  const statusEl=document.getElementById('action-status');
-
-  if(type==='search'||type==='spy'){
-    const templates=OBS_TEMPLATES[type];
-    const report=templates[Math.floor(Math.random()*templates.length)](randomPlayer,alive);
-    obsBox.innerHTML=`<div class="obs-report">${icon} <strong>${label}:</strong><br>${report}</div>`;
-    statusEl.textContent='';
-    toast(icon+' '+report.substring(0,40)+'...');
-  } else {
-    const simpleObs={
-      run:['أسرعت بعيداً عن المنطقة المريبة.','هربت بسرعة وابتعدت عن الجميع.','تركت المكان بشكل مفاجئ.'],
-      hide:['اختبأت في الزاوية المظلمة وراقبت الجميع.','أنت مختبئ... لا أحد يعلم مكانك.','بقيت ساكناً ولاحظت تحركات غريبة.'],
-      walk:['تجوّلت ببطء ولاحظت '+(randomPlayer?randomPlayer.name+' يتصرف بغرابة':'جواً مريباً في المكان')+'.','مشيت وراقبت الجميع دون أن تلفت الانتباه.'],
-      jump:['قفزت فوق العائق ووجدت نفسك في موقع أفضل للمراقبة.','قفزة سريعة أبعدتك عن الخطر.'],
-    };
-    const msgs=simpleObs[type]||['تصرفت بهدوء.'];
-    const msg=msgs[Math.floor(Math.random()*msgs.length)];
-    obsBox.innerHTML=`<div class="obs-report">${icon} <strong>${label}:</strong><br>${msg}</div>`;
-    statusEl.textContent='';
-    toast(icon+' '+msg.substring(0,40));
-  }
-}
-
-function callMeeting(){
-  if(S.meetingsLeft<=0){toast('لا اجتماعات متبقية!');return;}
-  S.meetingsLeft--;
-  document.getElementById('meeting-btn').style.display='none';
-  clearInterval(S.gameTimer);playSound('siren');
-  triggerVote('🚨 اجتماع طارئ! من القاتل؟');
-  }
-
-// ══════════════════════════════════════════════
-//  PANELS & NEARBY
-// ══════════════════════════════════════════════
-function setupPanels(){
-  ['killer-panel','cop-panel','civilian-panel'].forEach(id=>document.getElementById(id).style.display='none');
-  if(S.myRole==='killer'&&S.phase==='night'){
-    document.getElementById('killer-panel').style.display='block';
-    const targets=S.players.filter(p=>p.alive&&p.role!=='killer');
-    document.getElementById('kill-targets').innerHTML=targets.map(p=>{
-      const w=WEAPONS[Math.floor(Math.random()*WEAPONS.length)];
-      return `<button class="weapon-btn" onclick="killWith('${p.id}','${w.sound}')" aria-label="اقتل ${p.name} بـ${w.name}">
-        <span class="weapon-icon">${w.icon}</span><span>${p.avatar} ${p.name}</span>
-        <span style="font-size:.85rem;color:var(--muted);">${w.name}</span></button>`;
-    }).join('');
-    =>`الخيار ${i+1}: ${p.name}`).join('. '));
-  } else if(S.myRole==='cop'){
-    document.getElementById('cop-panel').style.display='block';
-  } else if(S.myRole==='civilian'){
-    document.getElementById('civilian-panel').style.display='block';
-  }
-}
-function startNearbyDetection(){
-  clearInterval(S.nearbyInterval);
-  S.nearbyInterval=setInterval(()=>{
-    S.players.filter(p=>p.isBot&&p.alive).forEach(p=>{p.x=Math.floor(Math.random()*10);p.y=Math.floor(Math.random()*10);});
-    updateNearby();
-  },4500);
-}
-function updateNearby(){
-  const me=S.players.find(p=>p.id===S.myId);if(!me)return;
-  const near=S.players.filter(p=>p.alive&&p.id!==S.myId&&Math.abs((p.x||0)-(me.x||5))<=2&&Math.abs((p.y||0)-(me.y||5))<=2);
-  const card=document.getElementById('nearby-card');
-  document.querySelectorAll('.player-card.nearby').forEach(el=>el.classList.remove('nearby'));
-  if(near.length>0){
-    // Play footstep sounds — more players = louder / more frequent
-    playFootsteps(near.length);
-    card.style.display='block';
-    document.getElementById('nearby-list').innerHTML=near.map(p=>`
-      <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
-        <span style="font-size:2rem;">${p.avatar}</span>
-        <span style="font-weight:700;font-size:1.1rem;">${p.name}</span>
-        ${S.myRole==='killer'?'<span style="color:var(--danger);font-size:.9rem;">⚠️ هدف</span>':''}
-      </div>`).join('');
-    const cards=document.querySelectorAll('#game-players .player-card');
-    S.players.forEach((p,i)=>{if(near.find(n=>n.id===p.id)&&cards[i])cards[i].classList.add('nearby');});
-  } else {
-    card.style.display='none';
-  }
-}
-
-function renderGamePlayers(){
-  const el=document.getElementById('game-players');if(!el)return;
-  el.innerHTML=S.players.map(p=>`
-    <div class="player-card ${!p.alive?'dead':''} ${p.id===S.myId?'you':''} ${p.id===S.copProtectedId?'protected':''}">
-      <div class="player-avatar">${p.avatar}</div>
-      <div class="player-name">${p.name}</div>
-      <div class="player-tag">${p.id===S.myId?'أنت':!p.alive?'مُقتل':p.role==='cop'&&S.myRole==='cop'?'🚔':p.role==='killer'&&S.myRole==='killer'?'🔪':'🟢'}</div>
-    </div>`).join('');
-}
-function updateGameStatus(){
-  const alive=S.players.filter(p=>p.alive).length;
-  document.getElementById('alive-count').textContent=alive+' أحياء';
-  const badge={killer:'<span class="badge badge-killer">🔪 قاتل</span>',cop:'<span class="badge badge-cop">🚔 شرطي</span>',civilian:'<span class="badge badge-civilian">🕵️ مدني</span>'};
-  document.getElementById('my-role-badge').innerHTML=badge[S.myRole]||'';
-}
-
-// ══════════════════════════════════════════════
-//  VOTE — with voice reading for all players
-// ══════════════════════════════════════════════
-function enterVoteScreen(reason){
-  // Show goto-vote button for all players
-  const gvb=document.getElementById('goto-vote-btn');if(gvb)gvb.style.display='block';
-  S.phase='vote';S.votes=S.votes||{};S.myVote=undefined;
-  showScreen('vote');
-  document.getElementById('vote-reason').textContent=reason;
-  playSound('siren');
-  renderVoteList();
-  // Announce vote with names
-  setTimeout(()=>,1500);
-  startTimer('vote-timer',30,()=>resolveVote());
-  setTimeout(()=>{botsVote();renderVoteResults();},5000+Math.random()*8000);
-}
-function botsVote(){
-  const alive=S.players.filter(p=>p.alive);
-  S.players.filter(p=>p.isBot&&p.alive).forEach(bot=>{
-    const targets=alive.filter(p=>p.id!==bot.id);
-    if(targets.length)S.votes[bot.id]=targets[Math.floor(Math.random()*targets.length)].id;
-  });
-  const d=readState()||{};d.votes=S.votes;d.ts=Date.now();
-  localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
-}
-function renderVoteList(){
-  const alive=S.players.filter(p=>p.alive);
-  const me=S.players.find(p=>p.id===S.myId);
-  const canVote=me&&me.alive;
-  document.getElementById('vote-list').innerHTML=alive.map(p=>`
-    <div class="vote-item ${S.myVote===p.id?'voted':''}" tabindex="${canVote&&p.id!==S.myId?0:-1}"
-         onclick="${canVote&&p.id!==S.myId?'castVote("'+p.id+'")':''}"
-         onkeydown="if(event.key==='Enter'&&'${canVote&&p.id!==S.myId}') castVote('${p.id}')"
-         role="button" aria-label="صوّت ضد ${p.name}">
-      <div class="vote-info">
-        <div class="vote-avatar">${p.avatar}</div>
-        <div><div style="font-weight:700;font-size:1.1rem;">${p.name}</div><div class="text-muted">${p.id===S.myId?'(أنت)':''}</div></div>
-      </div>
-      <div style="font-size:1.3rem;">${S.myVote===p.id?'✅':p.id!==S.myId?'🗳️':''}</div>
-    </div>`).join('')+`
-    <div class="vote-item" tabindex="${canVote?0:-1}" onclick="${canVote?'castVote(null)':''}" 
-         onkeydown="if(event.key==='Enter') castVote(null)" role="button" aria-label="تخطَّ التصويت">
-      <div class="vote-info"><div class="vote-avatar">⏭️</div><div style="font-weight:700;">تخطَّ</div></div>
-    </div>`;
-}
-function castVote(targetId){
-  if(S.myVote!==undefined){toast('صوّتت بالفعل!');return;}
-  S.myVote=targetId;S.votes[S.myId]=targetId;
-  const d=readState()||{};d.votes=S.votes;d.ts=Date.now();
-  localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
-  if(bc)bc.postMessage({type:'sync',roomCode:S.roomCode});
-  playSound('vote');
-  const targetName=targetId?S.players.find(p=>p.id===targetId)?.name:'تخطيت';
-  toast('✅ صوّتت ضد '+targetName);
-  renderVoteList();renderVoteResults();
-}
-function renderVoteResults(){
-  const tally={};Object.values(S.votes).forEach(v=>{if(v)tally[v]=(tally[v]||0)+1;});
-  document.getElementById('vote-results').innerHTML=
-    Object.entries(tally).sort((a,b)=>b[1]-a[1]).map(([id,c])=>{
-      const p=S.players.find(x=>x.id===id);
-      return p?`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:1.05rem;"><span>${p.avatar} ${p.name}</span><span style="font-weight:900;color:var(--danger);">${c} 🗳️</span></div>`:'';
-    }).join('')||'<div class="text-muted">لا أصوات بعد...</div>';
-}
-function resolveVote(){
-  const tally={};Object.values(S.votes).forEach(v=>{if(v)tally[v]=(tally[v]||0)+1;});
-  let max=0,ejId=null;
-  Object.entries(tally).forEach(([id,c])=>{if(c>max){max=c;ejId=id;}});
-  if(ejId){
-    const p=S.players.find(x=>x.id===ejId);
-    if(p){
-      p.alive=false;
-      const wasKiller=p.role==='killer';const wasCop=p.role==='cop';
-      playSound(wasKiller?'win':'kill');
-      showOverlay(wasKiller?'🎉':wasCop?'🚔':'😢',
-        wasKiller?'أُمسك القاتل!':wasCop?'طُرد الشرطي!':'مدني بريء طُرد!',
-        p.name+' كان '+(wasKiller?'القاتل!':wasCop?'الشرطي!':'مدنياً بريئاً'));
-      const d=readState()||{};d.players=S.players;d.ts=Date.now();
-      const ak=S.players.filter(p=>p.alive&&p.role==='killer').length;
-      const ac=S.players.filter(p=>p.alive&&(p.role==='civilian'||p.role==='cop')).length;
-      if(ak===0){d.phase='result';d.winner='civilians';}
-      else if(ak>=ac){d.phase='result';d.winner='killers';}
-      else{d.phase='day';}
-      localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
-      if(bc)bc.postMessage({type:'sync',roomCode:S.roomCode});
-      setTimeout(()=>{closeOverlay();if(d.phase==='result')enterResultScreen(d.winner);else{S.copProtectedId=null;enterGameScreen();}},3000);
-    }
-  } else {
-    toast('تعادل! لا أحد طُرد.');const d=readState()||{};d.phase='day';d.ts=Date.now();
-    localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
-    if(bc)bc.postMessage({type:'sync',roomCode:S.roomCode});
-    setTimeout(()=>{S.copProtectedId=null;enterGameScreen();},2000);
-  }
-}
-
-// ══════════════════════════════════════════════
-//  RESULT
-// ══════════════════════════════════════════════
-function enterResultScreen(winner){
-  clearTimers();S.phase='result';showScreen('result');
-  const myWon=(winner==='civilians'&&(S.myRole==='civilian'||S.myRole==='cop'))||(winner==='killers'&&S.myRole==='killer');
-  document.getElementById('result-icon').textContent=myWon?'🏆':'💀';
-  document.getElementById('result-title').textContent=winner==='civilians'?'🎉 المدنيون والشرطي فازوا!':'🔪 القتلة فازوا!';
-  document.getElementById('result-sub').textContent=myWon?'أحسنت! لقد فزت!':'حظ أوفر في الجولة القادمة!';
-  const re={killer:'🔪',cop:'🚔',civilian:'🕵️'};const rl={killer:'قاتل',cop:'شرطي',civilian:'مدني'};const rb={killer:'badge-killer',cop:'badge-cop',civilian:'badge-civilian'};
-  document.getElementById('roles-reveal').innerHTML=S.players.map(p=>`
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:1.05rem;">
-      <span>${p.avatar} ${p.name}${p.id===S.myId?' (أنت)':''}</span>
-      <span class="badge ${rb[p.role]||'badge-civilian'}">${re[p.role]||'🕵️'} ${rl[p.role]||'مدني'}</span>
-    </div>`).join('');
-  playSound(myWon?'win':'kill');
-  }
-function playAgain(){
-  S.players=S.players.map(p=>({...p,alive:true,role:null}));
-  S.copShotUsed=false;S.copInvestUsed=false;S.copProtectUsed=false;S.copProtectedId=null;
-  S.phase='lobby';S.votes={};S.myVote=undefined;S.meetingsLeft=1;
-  syncState();showLobby();
-}
-function goHome(){clearTimers();if(bc){bc.close();bc=null;}showScreen('home');}
-
-// ══════════════════════════════════════════════
-//  TIMER
-// ══════════════════════════════════════════════
-function clearTimers(){clearInterval(S.gameTimer);clearInterval(S.voteTimer);clearInterval(S.nearbyInterval);clearInterval(S.pollInterval);}
-function startTimer(elId,secs,cb){
-  if(elId==='game-timer')clearInterval(S.gameTimer);else clearInterval(S.voteTimer);
-  let rem=secs;const el=document.getElementById(elId);
-  if(el){el.textContent=rem;el.className='timer';}
-  const iv=setInterval(()=>{
-    rem--;if(el){el.textContent=rem;el.className='timer'+(rem<=10?' urgent':'');}
-    if(rem<=10&&rem>0)playSound('tick');
-    if(rem<=0){clearInterval(iv);if(cb)cb();}
-  },1000);
-  if(elId==='game-timer')S.gameTimer=iv;else S.voteTimer=iv;
-}
-
-
-// ══════════════════════════════════════════════
-//  FOOTSTEP PROXIMITY SOUNDS
-// ══════════════════════════════════════════════
-function playFootsteps(count){
-  try{
-    const c=ac();
-    for(let i=0;i<Math.min(count,3);i++){
-      const t=c.currentTime+i*0.28;
-      // Step 1: low thud
-      const o1=c.createOscillator(),g1=c.createGain();
-      o1.connect(g1);g1.connect(c.destination);
-      o1.type='sine';o1.frequency.setValueAtTime(120,t);o1.frequency.exponentialRampToValueAtTime(40,t+0.08);
-      g1.gain.setValueAtTime(0.15*count,t);g1.gain.exponentialRampToValueAtTime(0.001,t+0.1);
-      o1.start(t);o1.stop(t+0.12);
-      // Step 2: noise scrape
-      const buf=c.createBuffer(1,c.sampleRate*0.06,c.sampleRate);
-      const d=buf.getChannelData(0);
-      for(let j=0;j<d.length;j++)d[j]=(Math.random()*2-1)*(1-j/d.length)*0.3;
-      const src=c.createBufferSource(),g2=c.createGain(),lp=c.createBiquadFilter();
-      lp.type='lowpass';lp.frequency.value=600;
-      src.buffer=buf;src.connect(lp);lp.connect(g2);g2.connect(c.destination);
-      g2.gain.setValueAtTime(0.2,t+0.05);g2.gain.exponentialRampToValueAtTime(0.001,t+0.12);
-      src.start(t+0.05);src.stop(t+0.14);
-    }
-  }catch(e){}
-}
-
-// ══════════════════════════════════════════════
-//  GO TO VOTE ZONE
-// ══════════════════════════════════════════════
-function goToVoteZone(){
-  if(S.phase==='vote'){
-    showScreen('vote');
-    return;
-  }
-  // If vote hasn't started yet, trigger an emergency meeting
-  if(S.meetingsLeft>0){
-    callMeeting();
-  } else {
-    toast('لا يوجد تصويت جارٍ الآن');
-  }
 }
 
 // ══════════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded',()=>{
+  speak('مرحباً بك في لعبة الشبح. أدخل اسمك وابدأ!');
   document.getElementById('input-name').addEventListener('keydown',e=>{if(e.key==='Enter')goCreateRoom();});
   const params=new URLSearchParams(window.location.search);
   const roomParam=params.get('room');
   if(roomParam){
     toast('🔗 رمز الغرفة: '+roomParam+' — أدخل اسمك وانضم!');
-    }
+    speak('رمز الغرفة '+roomParam+'. أدخل اسمك وانضم!');
+    window._pendingRoom=roomParam.toUpperCase();
+  }
 });
 </script>
 </body>
