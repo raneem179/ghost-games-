@@ -3,1146 +3,1489 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>الشبح 👻</title>
+<title>لعبة القاتل 🔪</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
-:root {
-  --bg:#0a0a0f; --surface:#13131a; --card:#1a1a26; --border:#2a2a3d;
-  --accent:#7c3aed; --accent2:#c026d3; --danger:#dc2626;
-  --success:#16a34a; --gold:#f59e0b; --text:#e2e8f0; --muted:#94a3b8;
-  --cop:#0ea5e9;
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
+:root{
+  --bg:#080810;--surface:#10101a;--card:#181825;--border:#252538;
+  --red:#e63946;--blue:#4361ee;--gold:#ffd60a;--green:#06d6a0;
+  --gray:#7a7a9a;--white:#f0f0f8;--font:'Tajawal',sans-serif;
 }
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;font-size:19px;min-height:100vh;overflow-x:hidden;}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(124,58,237,.09) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(14,165,233,.06) 0%,transparent 50%);pointer-events:none;z-index:0;}
-.screen{display:none;position:relative;z-index:1;min-height:100vh;padding:20px;padding-bottom:50px;}
-.screen.active{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:30px;}
-.logo{font-size:3.6rem;font-weight:900;background:linear-gradient(135deg,#7c3aed,#c026d3,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;line-height:1.1;}
-.logo-sub{text-align:center;color:var(--muted);font-size:1rem;margin-top:6px;letter-spacing:3px;font-weight:600;}
-.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;width:100%;max-width:460px;margin:12px 0;}
-.card-title{font-size:1.2rem;font-weight:700;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-.btn{display:block;width:100%;padding:20px 24px;border-radius:14px;border:none;font-family:'Cairo',sans-serif;font-size:1.25rem;font-weight:700;cursor:pointer;transition:all .2s;text-align:center;margin:8px 0;}
-.btn:active{transform:scale(.97);}
-.btn:focus{outline:3px solid var(--accent);outline-offset:3px;}
-.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 20px rgba(124,58,237,.4);}
-.btn-primary:hover{box-shadow:0 6px 28px rgba(124,58,237,.6);transform:translateY(-1px);}
-.btn-secondary{background:var(--surface);color:var(--text);border:1px solid var(--border);}
-.btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
-.btn-danger{background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;box-shadow:0 4px 16px rgba(220,38,38,.4);}
-.btn-gold{background:linear-gradient(135deg,#f59e0b,#d97706);color:#1a1a00;box-shadow:0 4px 16px rgba(245,158,11,.4);}
-.btn-green{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;}
-.btn-cop{background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#fff;box-shadow:0 4px 16px rgba(14,165,233,.4);}
-.btn-sm{width:auto;display:inline-block;padding:12px 20px;font-size:1rem;}
-input[type=text]{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;font-family:'Cairo',sans-serif;font-size:1.2rem;color:var(--text);margin:6px 0;outline:none;transition:border-color .2s;}
-input:focus{border-color:var(--accent);}
-.players-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;width:100%;max-width:460px;margin:10px 0;}
-.player-card{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center;transition:all .3s;position:relative;}
-.player-card.dead{opacity:.35;border-color:#444;}
-.player-card.dead::after{content:'💀';position:absolute;top:4px;left:4px;font-size:1.1rem;}
-.player-card.you{border-color:var(--accent);box-shadow:0 0 14px rgba(124,58,237,.35);}
-.player-card.nearby{border-color:var(--gold);box-shadow:0 0 14px rgba(245,158,11,.4);animation:nearbyPulse 1.5s infinite;}
-.player-card.protected{border-color:var(--cop);box-shadow:0 0 14px rgba(14,165,233,.4);}
-.player-card.protected::before{content:'🛡️';position:absolute;top:4px;right:4px;font-size:1rem;}
-@keyframes nearbyPulse{0%,100%{box-shadow:0 0 14px rgba(245,158,11,.4);}50%{box-shadow:0 0 28px rgba(245,158,11,.7);}}
-.player-avatar{font-size:2.2rem;margin-bottom:6px;}
-.player-name{font-size:1rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.player-tag{font-size:.85rem;color:var(--muted);margin-top:3px;}
-/* ROLE CARDS */
-.role-card{text-align:center;padding:36px 28px;border-radius:24px;width:100%;max-width:380px;border:2px solid;position:relative;overflow:hidden;}
-.role-card.killer{background:linear-gradient(135deg,rgba(220,38,38,.15),rgba(153,27,27,.1));border-color:var(--danger);box-shadow:0 0 40px rgba(220,38,38,.25);}
-.role-card.civilian{background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(37,99,235,.1));border-color:#3b82f6;box-shadow:0 0 40px rgba(59,130,246,.2);}
-.role-card.cop{background:linear-gradient(135deg,rgba(14,165,233,.15),rgba(2,132,199,.1));border-color:var(--cop);box-shadow:0 0 40px rgba(14,165,233,.25);}
-.role-icon{font-size:4.5rem;margin-bottom:12px;}
-.role-name{font-size:2.2rem;font-weight:900;margin-bottom:10px;}
-.role-desc{font-size:1.1rem;color:var(--muted);line-height:1.7;}
-/* VOTE */
-.vote-item{display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px;margin:8px 0;cursor:pointer;transition:all .2s;font-size:1.1rem;}
-.vote-item:hover{border-color:var(--danger);background:rgba(220,38,38,.05);}
-.vote-item.voted{border-color:var(--danger);background:rgba(220,38,38,.12);}
-.vote-info{display:flex;align-items:center;gap:14px;}
-.vote-avatar{font-size:2.2rem;}
-.status-bar{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 20px;width:100%;max-width:460px;margin:10px 0;display:flex;align-items:center;justify-content:space-between;font-size:1.05rem;}
-.status-dot{width:11px;height:11px;border-radius:50%;background:var(--success);box-shadow:0 0 8px var(--success);animation:pulse 2s infinite;display:inline-block;margin-left:8px;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
-.timer{font-size:2.8rem;font-weight:900;color:var(--gold);text-align:center;font-variant-numeric:tabular-nums;}
-.timer.urgent{color:var(--danger);animation:flash .5s infinite;}
-@keyframes flash{0%,100%{opacity:1;}50%{opacity:.3;}}
-#toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--card);border:1px solid var(--accent);border-radius:14px;padding:18px 28px;font-weight:700;font-size:1.15rem;z-index:999;transition:transform .3s ease;max-width:90vw;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.5);}
-#toast.show{transform:translateX(-50%) translateY(0);}
-.phase-banner{text-align:center;padding:10px 22px;border-radius:50px;font-size:1rem;font-weight:700;letter-spacing:1px;margin:10px 0;display:inline-block;}
-.phase-day{background:rgba(245,158,11,.15);color:var(--gold);border:1px solid rgba(245,158,11,.3);}
-.phase-vote{background:rgba(220,38,38,.15);color:var(--danger);border:1px solid rgba(220,38,38,.3);}
-.phase-night{background:rgba(124,58,237,.15);color:#a78bfa;border:1px solid rgba(124,58,237,.3);}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;}
-.overlay.show{display:flex;}
-#nearby-bar{position:fixed;top:0;left:0;right:0;z-index:90;background:linear-gradient(135deg,rgba(245,158,11,.95),rgba(217,119,6,.95));color:#000;padding:14px 20px;text-align:center;font-weight:900;font-size:1.15rem;display:none;border-bottom:3px solid var(--gold);}
-#nearby-bar.show{display:block;}
-/* WEAPON / ACTION GRIDS */
-.weapon-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;}
-.weapon-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(220,38,38,.12);border:2px solid rgba(220,38,38,.4);border-radius:18px;padding:22px 14px;cursor:pointer;font-family:'Cairo',sans-serif;font-weight:700;color:var(--text);font-size:1.05rem;transition:all .2s;min-height:100px;}
-.weapon-btn:hover,.weapon-btn:focus{border-color:var(--danger);background:rgba(220,38,38,.22);transform:scale(1.03);outline:none;}
-.weapon-btn:active{transform:scale(.96);}
-.weapon-icon{font-size:2.4rem;}
-/* COP PANELS */
-.cop-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(14,165,233,.12);border:2px solid rgba(14,165,233,.4);border-radius:18px;padding:18px 10px;cursor:pointer;font-family:'Cairo',sans-serif;font-weight:700;color:var(--text);font-size:1rem;transition:all .2s;min-height:88px;}
-.cop-btn:hover,.cop-btn:focus{border-color:var(--cop);background:rgba(14,165,233,.22);transform:scale(1.03);outline:none;}
-.cop-btn:active{transform:scale(.96);}
-.cop-btn.used{opacity:.45;pointer-events:none;border-style:dashed;}
-.cop-icon{font-size:2.2rem;}
-.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;}
-.action-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:var(--surface);border:2px solid var(--border);border-radius:16px;padding:18px 10px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:1rem;font-weight:700;color:var(--text);transition:all .2s;min-height:90px;}
-.action-btn:hover,.action-btn:focus{border-color:var(--accent);background:rgba(124,58,237,.1);outline:none;transform:scale(1.03);}
-.action-btn:active{transform:scale(.97);}
-.action-btn.active-action{border-color:var(--accent);background:rgba(124,58,237,.2);box-shadow:0 0 14px rgba(124,58,237,.4);}
-.action-icon{font-size:2.2rem;}
-.action-status{text-align:center;font-size:1.05rem;font-weight:700;color:var(--accent);padding:10px;min-height:42px;}
-.result-icon{font-size:5rem;margin-bottom:16px;}
-.result-title{font-size:2.3rem;font-weight:900;margin-bottom:12px;}
-.result-sub{color:var(--muted);font-size:1.1rem;line-height:1.6;}
-.badge{display:inline-block;padding:5px 14px;border-radius:50px;font-size:.95rem;font-weight:700;}
-.badge-killer{background:rgba(220,38,38,.2);color:var(--danger);}
-.badge-civilian{background:rgba(59,130,246,.2);color:#60a5fa;}
-.badge-cop{background:rgba(14,165,233,.2);color:var(--cop);}
-.link-box{background:var(--surface);border:1px dashed var(--accent);border-radius:12px;padding:14px 18px;font-size:.95rem;color:var(--accent);word-break:break-all;cursor:pointer;text-align:center;transition:background .2s;}
-.link-box:hover{background:rgba(124,58,237,.1);}
-input[type=range]{width:100%;accent-color:var(--accent);margin:10px 0;cursor:pointer;}
-.range-label{display:flex;justify-content:space-between;font-size:.9rem;color:var(--muted);}
-.scrollable{overflow-y:auto;max-height:55vh;}
-.w-full{width:100%;max-width:460px;}
-.text-center{text-align:center;}
-.text-muted{color:var(--muted);font-size:1rem;}
-.mt-2{margin-top:8px;} .mt-4{margin-top:16px;}
-.room-code{font-size:2.4rem;font-weight:900;letter-spacing:8px;color:var(--gold);text-align:center;padding:10px;}
-/* Role legend */
-.role-legend{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:10px 0;}
-.role-pill{padding:8px 16px;border-radius:50px;font-size:.9rem;font-weight:700;border:1px solid;}
-.rp-killer{background:rgba(220,38,38,.15);color:var(--danger);border-color:rgba(220,38,38,.4);}
-.rp-civilian{background:rgba(59,130,246,.15);color:#60a5fa;border-color:rgba(59,130,246,.4);}
-.rp-cop{background:rgba(14,165,233,.15);color:var(--cop);border-color:rgba(14,165,233,.4);}
-/* Identity reveal card for cop */
-.id-reveal{background:rgba(14,165,233,.08);border:2px solid var(--cop);border-radius:16px;padding:18px;margin:10px 0;text-align:center;}
-.id-reveal .big{font-size:2.4rem;margin-bottom:6px;}
-.id-reveal .name{font-size:1.3rem;font-weight:900;}
-.id-reveal .role-tag{font-size:1rem;margin-top:4px;}
-/* SHOOT target list */
-.shoot-list{display:flex;flex-direction:column;gap:10px;width:100%;}
-.shoot-item{display:flex;align-items:center;justify-content:space-between;background:rgba(14,165,233,.08);border:2px solid rgba(14,165,233,.35);border-radius:14px;padding:14px 18px;cursor:pointer;transition:all .2s;font-size:1.1rem;}
-.shoot-item:hover,.shoot-item:focus{border-color:var(--cop);background:rgba(14,165,233,.18);transform:scale(1.02);outline:none;}
-.shoot-item:active{transform:scale(.97);}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--font);background:var(--bg);color:var(--white);overflow:hidden;height:100vh;width:100vw;position:fixed}
+
+/* ── SCREENS ── */
+.screen{display:none;position:fixed;inset:0;flex-direction:column;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+.screen.active{display:flex}
+
+/* ── HOME ── */
+.logo-title{font-size:clamp(3rem,12vw,5.5rem);font-weight:900;text-align:center;line-height:1;letter-spacing:-2px}
+.logo-title .r{color:var(--red);text-shadow:0 0 40px rgba(230,57,70,.7)}
+.logo-title .w{color:var(--white)}
+.sub{color:var(--gray);text-align:center;margin:8px 0 36px;font-size:.95rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;width:100%;max-width:400px}
+.inp{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:14px 16px;color:var(--white);font-family:var(--font);font-size:1rem;margin-bottom:14px;outline:none;transition:border .2s}
+.inp:focus{border-color:var(--blue)}
+.inp::placeholder{color:var(--gray)}
+label{display:block;color:var(--gray);font-size:.82rem;margin-bottom:5px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px;border-radius:12px;border:none;font-family:var(--font);font-size:1rem;font-weight:700;cursor:pointer;transition:all .18s;margin-bottom:10px;min-height:52px}
+.btn:active{transform:scale(.97)}
+.btn-red{background:var(--red);color:#fff}
+.btn-red:hover{box-shadow:0 0 20px rgba(230,57,70,.5)}
+.btn-blue{background:var(--blue);color:#fff}
+.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--gray)}
+.btn-ghost:hover{border-color:var(--white);color:var(--white)}
+.btn-gold{background:var(--gold);color:#000}
+.btn-green{background:var(--green);color:#000}
+.sep{height:1px;background:var(--border);margin:14px 0}
+
+/* ── CANVAS GAME ── */
+#gameCanvas{
+  position:fixed;top:0;left:0;
+  width:100vw;height:100vh;
+  touch-action:none;
+  display:none;
+}
+#gameCanvas.active{display:block}
+
+/* ── HUD ── */
+#hud{
+  position:fixed;top:0;left:0;right:0;
+  padding:10px 14px;
+  display:none;
+  flex-direction:column;gap:6px;
+  pointer-events:none;
+  z-index:50;
+}
+#hud.active{display:flex}
+#hud-top{display:flex;justify-content:space-between;align-items:center}
+.hud-badge{
+  background:rgba(8,8,16,.85);
+  border:1px solid var(--border);
+  border-radius:100px;
+  padding:5px 14px;
+  font-size:.82rem;
+  font-weight:700;
+  backdrop-filter:blur(8px);
+}
+.hud-timer{font-size:1.4rem;font-weight:900;color:var(--gold);text-shadow:0 0 20px rgba(255,214,10,.5)}
+.hud-timer.danger{color:var(--red);animation:pulse .5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+#hud-role{color:var(--white)}
+
+/* ── JOYSTICK ── */
+#joystick-zone{
+  position:fixed;bottom:100px;left:20px;
+  width:130px;height:130px;
+  display:none;z-index:60;
+}
+#joystick-zone.active{display:block}
+#joystick-base{
+  width:130px;height:130px;
+  border-radius:50%;
+  background:rgba(255,255,255,.06);
+  border:2px solid rgba(255,255,255,.15);
+  position:relative;
+}
+#joystick-knob{
+  width:52px;height:52px;
+  border-radius:50%;
+  background:rgba(255,255,255,.25);
+  border:2px solid rgba(255,255,255,.4);
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  transition:background .1s;
+}
+
+/* ── ACTION BUTTONS ── */
+#action-btns{
+  position:fixed;bottom:20px;right:16px;
+  display:none;flex-direction:column;gap:8px;
+  z-index:60;
+}
+#action-btns.active{display:flex}
+.act-btn{
+  width:64px;height:64px;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.2);
+  font-size:1.5rem;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font);
+  transition:all .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.act-btn:active{transform:scale(.9)}
+.act-btn-hide{background:rgba(67,97,238,.3);border-color:var(--blue)}
+.act-btn-run{background:rgba(6,214,160,.3);border-color:var(--green)}
+.act-btn-lie{background:rgba(255,214,10,.2);border-color:var(--gold)}
+.act-btn-kill{
+  background:linear-gradient(135deg,#7a0000,var(--red));
+  border-color:var(--red);
+  box-shadow:0 0 20px rgba(230,57,70,.6);
+  animation:pulse-red 1.5s infinite;
+  width:72px;height:72px;
+}
+@keyframes pulse-red{0%,100%{box-shadow:0 0 15px rgba(230,57,70,.4)}50%{box-shadow:0 0 35px rgba(230,57,70,.9)}}
+.act-btn-shoot{
+  background:linear-gradient(135deg,#001870,var(--blue));
+  border-color:var(--blue);
+  box-shadow:0 0 20px rgba(67,97,238,.5);
+  width:72px;height:72px;
+}
+.act-btn-label{font-size:.6rem;font-weight:700;color:var(--gray);text-align:center;margin-top:2px}
+.act-group{display:flex;flex-direction:column;align-items:center}
+
+/* ── PROXIMITY INDICATOR ── */
+#proximity-ring{
+  position:fixed;
+  border-radius:50%;
+  border:3px solid transparent;
+  pointer-events:none;
+  z-index:40;
+  transition:all .1s;
+  display:none;
+}
+
+/* ── MINIMAP ── */
+#minimap{
+  position:fixed;bottom:100px;right:16px;
+  width:90px;height:90px;
+  background:rgba(8,8,16,.8);
+  border:1px solid var(--border);
+  border-radius:10px;
+  display:none;
+  overflow:hidden;
+  z-index:55;
+}
+#minimap.active{display:block}
+#minimapCanvas{width:90px;height:90px}
+
+/* ── OVERLAY PANELS ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;align-items:center;justify-content:center;padding:20px}
+.overlay.active{display:flex}
+.overlay-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px 22px;width:100%;max-width:360px;text-align:center}
+h2{font-size:1.25rem;font-weight:700;margin-bottom:14px;text-align:center}
+
+/* ── ROLE REVEAL ── */
+#role-screen{text-align:center}
+.role-icon-big{font-size:5rem;display:block;margin-bottom:12px}
+.role-title{font-size:2rem;font-weight:900;margin-bottom:8px}
+.role-title.killer{color:var(--red);text-shadow:0 0 30px rgba(230,57,70,.7)}
+.role-title.police{color:var(--blue)}
+.role-title.civ{color:var(--green)}
+.role-desc{color:var(--gray);line-height:1.7;font-size:.95rem;margin-bottom:24px}
+
+/* ── VOTE SCREEN ── */
+.vote-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 14px;background:var(--surface);border-radius:10px;
+  border:1.5px solid var(--border);cursor:pointer;margin-bottom:8px;
+  transition:all .18s;
+}
+.vote-item.selected{border-color:var(--gold);background:rgba(255,214,10,.08)}
+.vote-votes{font-size:.78rem;color:var(--gold);font-weight:700}
+.avatar{
+  width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:.9rem;flex-shrink:0;margin-left:10px;
+}
+
+/* ── RESULT ── */
+.result-icon{font-size:5rem;display:block;margin-bottom:12px}
+.result-title{font-size:2rem;font-weight:900;margin-bottom:8px}
+.score-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--surface);border-radius:8px;margin-bottom:6px}
+.score-pts{font-weight:900;color:var(--gold)}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed;bottom:200px;left:50%;
+  transform:translateX(-50%) translateY(80px);
+  background:rgba(24,24,37,.97);
+  border:1px solid var(--border);
+  color:var(--white);
+  padding:10px 22px;border-radius:100px;
+  font-size:.9rem;font-weight:600;
+  z-index:999;transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  white-space:nowrap;pointer-events:none;
+  max-width:85vw;text-align:center;
+}
+#toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ── STATUS MSG ── */
+.smsg{padding:10px 14px;border-radius:8px;font-size:.88rem;margin-bottom:12px;text-align:center}
+.smsg-info{background:rgba(67,97,238,.15);color:#a0b4ff;border:1px solid rgba(67,97,238,.3)}
+.smsg-warn{background:rgba(230,57,70,.15);color:#ff9da3;border:1px solid rgba(230,57,70,.3)}
+.smsg-ok{background:rgba(6,214,160,.15);color:#6ffde3;border:1px solid rgba(6,214,160,.3)}
+
+.room-code{
+  font-size:2.8rem;font-weight:900;letter-spacing:10px;
+  color:var(--gold);text-shadow:0 0 20px rgba(255,214,10,.4);
+  text-align:center;margin:12px 0;
+}
+.hidden{display:none!important}
+.mt8{margin-top:8px}.mt16{margin-top:16px}
+.txt-sm{font-size:.82rem;color:var(--gray);text-align:center}
+.txt-center{text-align:center}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;animation:blink 1.5s infinite;margin-left:5px}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* ── BOT TAG ── */
+.bot-tag{font-size:.65rem;background:rgba(255,214,10,.2);color:var(--gold);border-radius:4px;padding:1px 5px;margin-right:4px}
 </style>
 </head>
 <body>
 
-<div id="nearby-bar" role="alert" aria-live="assertive"></div>
-<div id="toast" role="alert" aria-live="assertive"></div>
+<!-- TOAST -->
+<div id="toast" role="alert" aria-live="polite"></div>
 
-<div class="overlay" id="overlay">
-  <div style="font-size:4rem" id="ov-icon">👻</div>
-  <div style="font-size:1.9rem;font-weight:900;margin:16px 0;line-height:1.2;" id="ov-title"></div>
-  <div style="color:var(--muted);margin-bottom:24px;font-size:1.1rem;line-height:1.6;" id="ov-desc"></div>
-  <button class="btn btn-primary btn-sm" onclick="closeOverlay()">تمام ✓</button>
-</div>
+<!-- PROXIMITY RING -->
+<div id="proximity-ring"></div>
 
-<!-- ═══ HOME ═══ -->
+<!-- ══════════════════════════════════════════════
+     SCREEN: HOME
+══════════════════════════════════════════════ -->
 <div class="screen active" id="screen-home">
-  <div style="margin-bottom:24px;">
-    <div class="logo">الشبح 👻</div>
-    <div class="logo-sub">🎙️ لعبة الصوت والخداع</div>
+  <div class="logo-title" aria-label="لعبة القاتل">
+    <span class="r">القاتل</span><br>
+    <span class="w" style="font-size:.4em;opacity:.6;letter-spacing:0">KILLER GAME</span>
   </div>
-  <div class="role-legend">
-    <span class="role-pill rp-killer">🔪 قاتل</span>
-    <span class="role-pill rp-cop">🚔 شرطي</span>
-    <span class="role-pill rp-civilian">🕵️ مدني</span>
+  <p class="sub">من سيبقى؟ من سيُكشف؟ 🔪</p>
+
+  <div class="card">
+    <label for="pName">اسمك في اللعبة</label>
+    <input class="inp" id="pName" type="text" placeholder="أدخل اسمك..." maxlength="16" autocomplete="off">
+
+    <button class="btn btn-red" onclick="startSolo()" aria-label="لعبة عشوائية مع بوتات">
+      🎲 غرفة عشوائية (مع بوتات)
+    </button>
+    <button class="btn btn-blue" onclick="goCreate()" aria-label="إنشاء غرفة مع الأصدقاء">
+      🎮 إنشاء غرفة مع الأصدقاء
+    </button>
+    <button class="btn btn-ghost" onclick="showJoin()" aria-label="انضمام لغرفة">
+      🚪 انضم لغرفة
+    </button>
   </div>
-  <div class="card w-full">
-    <div class="card-title">👤 اسمك في اللعبة</div>
-    <input type="text" id="input-name" placeholder="أدخل اسمك..." maxlength="14" aria-label="اسمك">
+
+  <div class="card mt16 hidden" id="join-card">
+    <label for="rCode">كود الغرفة (4 أرقام)</label>
+    <input class="inp" id="rCode" type="text" placeholder="مثال: 4821" maxlength="4" inputmode="numeric">
+    <button class="btn btn-blue" onclick="goJoin()">✅ انضم الآن</button>
+    <button class="btn btn-ghost" onclick="hideJoin()">إلغاء</button>
   </div>
-  <div class="w-full">
-    <button class="btn btn-primary" onclick="goCreateRoom()">🏠 إنشاء غرفة جديدة</button>
-    <button class="btn btn-secondary" onclick="goJoinRoom()">🔗 انضمام برمز</button>
-    <button class="btn btn-secondary" onclick="goRandomRoom()">🎲 غرفة عشوائية</button>
-  </div>
-  <div style="margin-top:16px;text-align:center;">
-    <button onclick="toggleTTS()" class="btn btn-secondary btn-sm" id="tts-btn">🔊 قارئ الشاشة: تشغيل</button>
-  </div>
-  <p class="text-muted text-center mt-4">مدعوم للمكفوفين وضعاف البصر ♿</p>
 </div>
 
-<!-- ═══ LOBBY ═══ -->
+<!-- ══════════════════════════════════════════════
+     SCREEN: LOBBY
+══════════════════════════════════════════════ -->
 <div class="screen" id="screen-lobby">
-  <div class="logo" style="font-size:2rem;margin-bottom:8px;">🏠 غرفة الانتظار</div>
-  <div class="status-bar w-full">
-    <span><span class="status-dot"></span> متصل</span>
-    <span id="lobby-count" style="font-weight:700;">0/15</span>
-  </div>
-  <div class="card w-full">
-    <div class="card-title">🔑 رمز الغرفة</div>
-    <div class="room-code" id="room-code-display">------</div>
-    <div class="card-title" style="margin-top:12px;">🔗 شارك الرابط</div>
-    <div class="link-box" onclick="copyLink()" id="share-link-box">انقر لنسخ الرابط</div>
-    <button class="btn btn-green btn-sm" onclick="shareWhatsApp()" style="margin-top:10px;width:100%;">📱 شارك على واتساب</button>
-  </div>
-  <div class="card-title w-full">👥 اللاعبون</div>
-  <div class="players-grid" id="lobby-players"></div>
-  <div id="host-controls" class="w-full" style="display:none;">
-    <div class="card">
-      <div class="card-title">⚙️ إعدادات اللعبة</div>
-      <label style="display:block;margin-bottom:6px;color:var(--muted);">عدد القتلة</label>
-      <div class="range-label"><span>1</span><span id="killers-val" style="font-weight:900;color:var(--gold);">1</span><span>3</span></div>
-      <input type="range" min="1" max="3" value="1" id="killers-range" oninput="document.getElementById('killers-val').textContent=this.value">
-      <div style="margin-top:14px;display:flex;align-items:center;gap:12px;">
-        <input type="checkbox" id="cop-enabled" checked style="width:22px;height:22px;accent-color:var(--cop);cursor:pointer;">
-        <label for="cop-enabled" style="font-size:1.05rem;font-weight:700;cursor:pointer;">🚔 تفعيل دور الشرطي</label>
-      </div>
+  <div style="width:100%;max-width:400px">
+    <h2>🎮 غرفة الانتظار</h2>
+    <div class="txt-sm mb-4">شارك الكود مع أصدقائك</div>
+    <div class="room-code" id="lobbyCode" aria-live="polite">----</div>
+    <button class="btn btn-ghost" onclick="shareRoom()" style="margin-bottom:14px">📤 شارك عبر واتساب</button>
+    <div class="sep"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <span style="font-weight:700">اللاعبون</span>
+      <span class="txt-sm" id="pCount">0/15</span>
     </div>
-    <button class="btn btn-gold" onclick="hostStartGame()">🚀 ابدأ اللعبة</button>
+    <div id="lobbyList" style="max-height:220px;overflow-y:auto;margin-bottom:14px"></div>
+    <div class="smsg smsg-info" id="lobbyStatus">في انتظار المزيد...</div>
+    <div id="hostCtrl" class="hidden mt8">
+      <label for="huntSel">مدة الصيد</label>
+      <select class="inp" id="huntSel">
+        <option value="60">دقيقة</option>
+        <option value="90">دقيقة ونصف</option>
+        <option value="120" selected>دقيقتان</option>
+      </select>
+      <button class="btn btn-red" id="startBtn" onclick="launchGame()" disabled>🚀 ابدأ اللعبة</button>
+    </div>
+    <div id="guestWait" class="hidden smsg smsg-ok">✅ جاهز! في انتظار المضيف...</div>
   </div>
-  <button class="btn btn-secondary w-full" onclick="leaveRoom()" style="margin-top:8px;">← مغادرة</button>
 </div>
 
-<!-- ═══ ROLE REVEAL ═══ -->
+<!-- ══════════════════════════════════════════════
+     SCREEN: ROLE REVEAL
+══════════════════════════════════════════════ -->
 <div class="screen" id="screen-role">
-  <div class="text-muted text-center" style="margin-bottom:20px;font-size:1.1rem;">دورك في هذه الجولة...</div>
-  <div class="role-card" id="role-card">
-    <div class="role-icon" id="role-icon">🎭</div>
-    <div class="role-name" id="role-name">-</div>
-    <div class="role-desc" id="role-desc">-</div>
+  <div class="card" style="max-width:380px;text-align:center">
+    <div id="roleContent"></div>
+    <button class="btn btn-ghost" onclick="enterGame()" aria-label="حسناً، ادخل اللعبة">👁️ مستعد — ادخل!</button>
   </div>
-  <button class="btn btn-primary w-full" style="max-width:380px;margin-top:24px;" onclick="ackRole()">✅ فهمت، ابدأ!</button>
 </div>
 
-<!-- ═══ GAME ═══ -->
-<div class="screen" id="screen-game">
-  <div style="display:flex;align-items:center;justify-content:space-between;width:100%;max-width:460px;margin-bottom:12px;">
-    <div id="phase-label" class="phase-banner phase-day">🌞 نهار</div>
-    <div class="timer" id="game-timer">60</div>
-  </div>
-  <div class="status-bar w-full">
-    <span id="alive-count">— أحياء</span>
-    <span id="my-role-badge"></span>
-  </div>
-
-  <!-- NEARBY -->
-  <div class="card w-full" id="nearby-card" style="display:none;">
-    <div class="card-title" style="color:var(--gold);">📡 بالقرب منك</div>
-    <div id="nearby-list"></div>
-  </div>
-
-  <div class="card-title w-full mt-4">👥 اللاعبون</div>
-  <div class="players-grid" id="game-players"></div>
-
-  <!-- KILLER PANEL -->
-  <div id="killer-panel" class="w-full" style="display:none;margin-top:12px;">
-    <div class="card">
-      <div class="card-title" style="color:var(--danger);">⚔️ أسلحتك — اختر واقتل</div>
-      <div id="kill-targets" class="weapon-grid"></div>
-      <div class="action-status" id="kill-status">اختر ضحيتك الآن...</div>
-    </div>
-  </div>
-
-  <!-- COP PANEL -->
-  <div id="cop-panel" class="w-full" style="display:none;margin-top:12px;">
-    <div class="card">
-      <div class="card-title" style="color:var(--cop);">🚔 صلاحيات الشرطي</div>
-
-      <!-- Identity revealed -->
-      <div id="cop-identity-reveal" style="display:none;margin-bottom:14px;"></div>
-
-      <div class="weapon-grid">
-        <!-- SHOOT -->
-        <button class="cop-btn" id="cop-shoot-btn" onclick="showShootPanel()" aria-label="إطلاق النار">
-          <span class="cop-icon">🔫</span>
-          <span>إطلاق النار</span>
-          <span style="font-size:.8rem;color:var(--muted);" id="cop-shoot-lbl">مرة واحدة</span>
-        </button>
-        <!-- INVESTIGATE -->
-        <button class="cop-btn" id="cop-invest-btn" onclick="showInvestPanel()" aria-label="تحقيق">
-          <span class="cop-icon">🔍</span>
-          <span>تحقيق</span>
-          <span style="font-size:.8rem;color:var(--muted);" id="cop-invest-lbl">اكشف هوية لاعب</span>
-        </button>
-        <!-- PROTECT -->
-        <button class="cop-btn" id="cop-protect-btn" onclick="showProtectPanel()" aria-label="حماية">
-          <span class="cop-icon">🛡️</span>
-          <span>حماية</span>
-          <span style="font-size:.8rem;color:var(--muted);" id="cop-protect-lbl">احمِ لاعباً الليلة</span>
-        </button>
-        <!-- RADIO -->
-        <button class="cop-btn" id="cop-radio-btn" onclick="copRadio()" aria-label="مناداة">
-          <span class="cop-icon">📻</span>
-          <span>مناداة</span>
-          <span style="font-size:.8rem;color:var(--muted);">اطلب اجتماع</span>
-        </button>
-      </div>
-
-      <!-- Sub-panels -->
-      <div id="cop-shoot-panel" style="display:none;margin-top:14px;">
-        <div class="card-title" style="color:var(--cop);font-size:1rem;">🔫 اختر من تُطلق النار عليه:</div>
-        <div class="shoot-list" id="shoot-targets"></div>
-      </div>
-      <div id="cop-invest-panel" style="display:none;margin-top:14px;">
-        <div class="card-title" style="color:var(--cop);font-size:1rem;">🔍 اختر من تحقق في هويته:</div>
-        <div class="shoot-list" id="invest-targets"></div>
-      </div>
-      <div id="cop-protect-panel" style="display:none;margin-top:14px;">
-        <div class="card-title" style="color:var(--cop);font-size:1rem;">🛡️ اختر من تحميه الليلة:</div>
-        <div class="shoot-list" id="protect-targets"></div>
-      </div>
-
-      <div class="action-status" id="cop-status">استخدم صلاحياتك بحكمة...</div>
-    </div>
-  </div>
-
-  <!-- CIVILIAN PANEL -->
-  <div id="civilian-panel" class="w-full" style="display:none;margin-top:12px;">
-    <div class="card">
-      <div class="card-title" style="color:#60a5fa;">🕵️ أفعالك</div>
-      <div class="action-grid">
-        <button class="action-btn" onclick="doAction('run','هروب','🏃')"><span class="action-icon">🏃</span><span>هروب</span></button>
-        <button class="action-btn" onclick="doAction('hide','اختباء','🫣')"><span class="action-icon">🫣</span><span>اختباء</span></button>
-        <button class="action-btn" onclick="doAction('search','بحث','🔍')"><span class="action-icon">🔍</span><span>بحث</span></button>
-        <button class="action-btn" onclick="doAction('walk','مشي','🚶')"><span class="action-icon">🚶</span><span>مشي</span></button>
-        <button class="action-btn" onclick="doAction('jump','قفز','🦘')"><span class="action-icon">🦘</span><span>قفز</span></button>
-        <button class="action-btn" onclick="doAction('spy','تجسس','👁️')"><span class="action-icon">👁️</span><span>تجسس</span></button>
-      </div>
-      <div class="action-status" id="action-status">اضغط على أي فعل...</div>
-    </div>
-  </div>
-
-  <button class="btn btn-secondary w-full" style="margin-top:16px;" onclick="callMeeting()" id="meeting-btn">🚨 طلب اجتماع طارئ</button>
-</div>
-
-<!-- ═══ VOTE ═══ -->
+<!-- ══════════════════════════════════════════════
+     SCREEN: VOTE
+══════════════════════════════════════════════ -->
 <div class="screen" id="screen-vote">
-  <div class="logo" style="font-size:1.7rem;margin-bottom:4px;">🗳️ وقت التصويت</div>
-  <div id="vote-reason" class="text-muted text-center" style="margin-bottom:14px;font-size:1.1rem;"></div>
-  <div class="timer" id="vote-timer" style="margin-bottom:14px;">30</div>
-  <div class="scrollable w-full" id="vote-list"></div>
-  <div class="card w-full" style="margin-top:12px;">
-    <div style="color:var(--muted);margin-bottom:8px;">الأصوات حتى الآن:</div>
-    <div id="vote-results"></div>
+  <div style="width:100%;max-width:400px">
+    <h2>⚖️ التصويت — من القاتل؟</h2>
+    <div class="hud-timer" id="voteTimerDisp" style="text-align:center;margin-bottom:10px">30</div>
+    <div id="voteList" style="max-height:320px;overflow-y:auto;margin-bottom:14px"></div>
+    <button class="btn btn-gold" id="voteConfirmBtn" onclick="castVote()">✅ أكّد التصويت</button>
+    <div class="smsg smsg-ok hidden" id="voteWait">✅ في انتظار بقية اللاعبين...</div>
   </div>
 </div>
 
-<!-- ═══ RESULT ═══ -->
+<!-- ══════════════════════════════════════════════
+     SCREEN: RESULT
+══════════════════════════════════════════════ -->
 <div class="screen" id="screen-result">
-  <div style="text-align:center;padding:30px 20px;width:100%;">
-    <div class="result-icon" id="result-icon">🏆</div>
-    <div class="result-title" id="result-title">-</div>
-    <div class="result-sub" id="result-sub">-</div>
-    <div class="card w-full" style="margin-top:24px;text-align:right;">
-      <div class="card-title">📋 كشف الأدوار</div>
-      <div id="roles-reveal"></div>
-    </div>
-    <button class="btn btn-primary w-full" style="margin-top:20px;" onclick="playAgain()">🔄 العب مجدداً</button>
-    <button class="btn btn-secondary w-full" onclick="goHome()">🏠 الرئيسية</button>
+  <div style="width:100%;max-width:400px">
+    <div id="resultContent" class="txt-center"></div>
+    <div class="sep"></div>
+    <div id="scoreboard" style="max-height:260px;overflow-y:auto;margin-bottom:14px"></div>
+    <button class="btn btn-red" onclick="playAgain()">🔄 جولة أخرى</button>
+    <button class="btn btn-ghost" onclick="goHome()">🏠 الرئيسية</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     CANVAS + HUD + CONTROLS
+══════════════════════════════════════════════ -->
+<canvas id="gameCanvas" aria-label="ساحة اللعبة"></canvas>
+
+<div id="hud">
+  <div id="hud-top">
+    <span class="hud-badge" id="hud-role"></span>
+    <span class="hud-timer" id="hud-timer">02:00</span>
+    <span class="hud-badge" id="hud-kills"></span>
+  </div>
+</div>
+
+<!-- Joystick -->
+<div id="joystick-zone">
+  <div id="joystick-base">
+    <div id="joystick-knob"></div>
+  </div>
+</div>
+
+<!-- Minimap -->
+<canvas id="minimapCanvas" width="90" height="90"></canvas>
+<div id="minimap"><canvas id="minimapCanvas2" width="90" height="90"></canvas></div>
+
+<!-- Action buttons -->
+<div id="action-btns">
+  <!-- filled by JS based on role -->
+</div>
+
+<!-- ══════════════════════════════════════════════
+     OVERLAYS
+══════════════════════════════════════════════ -->
+<!-- Kill target picker -->
+<div class="overlay" id="ov-kill">
+  <div class="overlay-box">
+    <h2>🔪 اختر ضحيتك</h2>
+    <div id="killPickList"></div>
+    <button class="btn btn-ghost mt8" onclick="closeOv('ov-kill')">إلغاء</button>
+  </div>
+</div>
+<!-- Shoot picker -->
+<div class="overlay" id="ov-shoot">
+  <div class="overlay-box">
+    <h2>🔫 إطلاق النار على...</h2>
+    <p class="txt-sm" style="margin-bottom:14px">انتبه! إذا أخطأت تموت أنت!</p>
+    <div id="shootPickList"></div>
+    <button class="btn btn-ghost mt8" onclick="closeOv('ov-shoot')">إلغاء</button>
   </div>
 </div>
 
 <script>
-// ══════════════════════════════════════════════
-//  CONSTANTS
-// ══════════════════════════════════════════════
-const AVATARS=['🧑','👩','🧔','👧','🧒','🧓','👴','👵','🧑‍🦱','🧑‍🦰','🧑‍🦳','🧑‍🦲','👱','🧑‍🎤','🧑‍💻','🧑‍🎨'];
-const BOT_NAMES=['سعود','نورا','فهد','ريم','خالد','هنوف','عمر','لينا','ماجد','سلمى'];
-const WEAPONS=[
-  {icon:'🔪',name:'سكين',sound:'knife'},
-  {icon:'🔫',name:'مسدس',sound:'gun'},
-  {icon:'🪓',name:'فأس',sound:'axe'},
-  {icon:'💣',name:'قنبلة',sound:'bomb'},
+// ═══════════════════════════════════════════════════════
+//  AUDIO ENGINE
+// ═══════════════════════════════════════════════════════
+const AC = new (window.AudioContext || window.webkitAudioContext)();
+const masterGain = AC.createGain(); masterGain.gain.value=.55; masterGain.connect(AC.destination);
+function unlockAC(){if(AC.state==='suspended')AC.resume();}
+document.addEventListener('touchstart',unlockAC,{once:true});
+document.addEventListener('click',unlockAC,{once:true});
+
+function tone(f,t='sine',d=.2,v=.25,delay=0){
+  try{
+    const o=AC.createOscillator(),g=AC.createGain();
+    o.connect(g);g.connect(masterGain);
+    o.type=t;o.frequency.value=f;
+    const s=AC.currentTime+delay;
+    g.gain.setValueAtTime(v,s);
+    g.gain.exponentialRampToValueAtTime(.001,s+d);
+    o.start(s);o.stop(s+d);
+  }catch(e){}
+}
+function noise(d=.2,v=.2,fc=800){
+  try{
+    const buf=AC.createBuffer(1,AC.sampleRate*d,AC.sampleRate);
+    const data=buf.getChannelData(0);
+    for(let i=0;i<data.length;i++)data[i]=Math.random()*2-1;
+    const src=AC.createBufferSource(),g=AC.createGain(),flt=AC.createBiquadFilter();
+    flt.type='lowpass';flt.frequency.value=fc;
+    src.buffer=buf;src.connect(flt);flt.connect(g);g.connect(masterGain);
+    g.gain.setValueAtTime(v,AC.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+d);
+    src.start();src.stop(AC.currentTime+d);
+  }catch(e){}
+}
+
+// Footstep sound – pitch+volume based on proximity
+let footstepTimer=null;
+function playFootstep(proximity){
+  // proximity 0..1, 1=very close
+  const vol=proximity*.45;
+  const pitch=180+proximity*300;
+  noise(.05,vol,400+proximity*600);
+  tone(pitch,'sine',.04,vol*.5);
+}
+function startFootsteps(proximity){
+  stopFootsteps();
+  const interval=Math.max(120,500-proximity*380); // faster when closer
+  footstepTimer=setInterval(()=>playFootstep(proximity), interval);
+}
+function stopFootsteps(){
+  if(footstepTimer){clearInterval(footstepTimer);footstepTimer=null;}
+}
+
+// ── SFX presets
+const SFX={
+  join:()=>{tone(440,'sine',.1,.2);tone(660,'sine',.15,.2,.12);},
+  kill:()=>{noise(.3,.45);tone(90,'sawtooth',.4,.3);},
+  shoot:()=>{noise(.12,.55,600);tone(220,'square',.18,.25);},
+  click:()=>tone(900,'sine',.04,.1),
+  tick:()=>tone(1200,'square',.04,.08),
+  danger:()=>{tone(880,'square',.1,.3);tone(1100,'square',.12,.3,.16);},
+  win:()=>[523,659,784,1047].forEach((f,i)=>tone(f,'sine',.4,.3,i*.15)),
+  lose:()=>[500,400,300,180].forEach((f,i)=>tone(f,'sawtooth',.3,.3,i*.2)),
+  vote:()=>tone(600,'triangle',.2,.2),
+  step:()=>noise(.04,.12,350), // my own footstep
+};
+
+// BGM
+let bgmOn=false,bgmT;
+function startBGM(){
+  if(bgmOn)return; bgmOn=true;
+  const n=[220,196,175,165,175,196,220,220,196,175,165,196];
+  let i=0;
+  function s(){if(!bgmOn)return;tone(n[i%n.length],'triangle',.28,.055);i++;bgmT=setTimeout(s,320);}
+  s();
+}
+function stopBGM(){bgmOn=false;clearTimeout(bgmT);}
+
+// ═══════════════════════════════════════════════════════
+//  GAME STATE
+// ═══════════════════════════════════════════════════════
+const COLORS=['#e63946','#4361ee','#06d6a0','#ffd60a','#f77f00','#9d4edd','#00b4d8','#e0c3fc','#ff6b6b','#48cae4','#90e0ef','#c77dff','#52b788','#ff9f1c','#2ec4b6'];
+const BOT_NAMES=['خالد','سارة','فهد','نورة','محمد','ريم','عمر','لين','يوسف','هند'];
+
+let myId='player_'+Math.random().toString(36).slice(2,7);
+let myName='';
+let myRole=''; // killer|police|civilian
+let gameMode=''; // 'solo'|'host'|'guest'
+let roomCode='';
+let isSolo=false;
+
+// All entities (me + bots/players)
+let entities={}; // id -> entity object
+let huntDuration=120;
+let huntTimeLeft=120;
+let voteTimeLeft=30;
+let gamePhase=''; // lobby|role|hunt|vote|result
+let selectedVoteId=null;
+let hasVoted=false;
+let myDeadFlag=false;
+let currentAction='idle'; // idle|hide|run|liedown
+
+// Map
+const MAP_W=1600, MAP_H=1200;
+const WALLS=[ // {x,y,w,h}
+  {x:200,y:150,w:200,h:40},{x:600,y:100,w:40,h:250},{x:900,y:200,w:250,h:40},
+  {x:1200,y:150,w:40,h:200},{x:300,y:400,w:350,h:40},{x:800,y:350,w:40,h:200},
+  {x:1100,y:350,w:250,h:40},{x:150,y:600,w:40,h:300},{x:400,y:650,w:300,h:40},
+  {x:750,y:550,w:200,h:40},{x:1050,y:550,w:40,h:250},{x:1300,y:500,w:250,h:40},
+  {x:200,y:900,w:300,h:40},{x:600,y:800,w:40,h:300},{x:900,y:850,w:350,h:40},
+  {x:1200,y:750,w:40,h:250},{x:500,y:1050,w:200,h:40},{x:800,y:1000,w:250,h:40},
 ];
-const ACTION_MSGS={
-  run:['أنت تهرب بسرعة!','هربت من المنطقة!','أسرعت هرباً!'],
-  hide:['اختبأت في الظلام!','أنت مختبئ...','لا أحد يراك!'],
-  search:['وجدت أثراً مريباً!','بحثت في المكان...','شيء غريب هنا!'],
-  walk:['تمشي وتراقب.','تجوّلت في المكان.','تتحرك بهدوء.'],
-  jump:['قفزت فوق الحاجز!','قفزة عالية!','تجاوزت المانع!'],
-  spy:['راقبت لاعباً سراً!','شيء مريب!','لاحظت تصرفاً غريباً!'],
-};
+const HIDEOUTS=[ // hiding spots
+  {x:250,y:170},{x:900,y:250},{x:350,y:680},{x:1150,y:400},{x:680,y:880},{x:1100,y:900},{x:450,y:1060},{x:1350,y:600},
+];
+// Decorative tiles
+const TREES=[
+  {x:100,y:100},{x:1450,y:100},{x:100,y:1050},{x:1450,y:1050},
+  {x:500,y:300},{x:1000,y:750},{x:700,y:1100},{x:1300,y:900},
+];
 
-// ══════════════════════════════════════════════
-//  STATE
-// ══════════════════════════════════════════════
-let S={
-  myId:'', myName:'', roomCode:'', isHost:false,
-  players:[], myRole:null, phase:'lobby',
-  votes:{}, myVote:undefined, numKillers:1, copEnabled:true,
-  meetingsLeft:1, ttsEnabled:true,
-  copShotUsed:false, copInvestUsed:false, copProtectUsed:false,
-  copProtectedId:null,
-  pollInterval:null, gameTimer:null, voteTimer:null, nearbyInterval:null,
-};
+// Camera
+let camX=0,camY=0;
 
-let bc=null;
-
-// ══════════════════════════════════════════════
-//  STORAGE SYNC (same-device tabs via BroadcastChannel + localStorage)
-// ══════════════════════════════════════════════
-function syncState(){
-  try{
-    const d={players:S.players,phase:S.phase,votes:S.votes,
-      numKillers:S.numKillers,copEnabled:S.copEnabled,
-      voteReason:S._voteReason,winner:S._winner,ts:Date.now()};
-    localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
-    if(bc) bc.postMessage({type:'sync',roomCode:S.roomCode});
-  }catch(e){}
+// Canvas
+const canvas=document.getElementById('gameCanvas');
+const ctx=canvas.getContext('2d');
+let cW=0,cH=0;
+function resizeCanvas(){
+  cW=canvas.width=window.innerWidth;
+  cH=canvas.height=window.innerHeight;
 }
-function readState(){
-  try{
-    const raw=localStorage.getItem('ghost_'+S.roomCode);
-    if(!raw) return null;
-    const d=JSON.parse(raw);
-    if(Date.now()-d.ts>90000) return null;
-    return d;
-  }catch(e){return null;}
+window.addEventListener('resize',()=>{resizeCanvas();});
+resizeCanvas();
+
+// ═══════════════════════════════════════════════════════
+//  ENTITY
+// ═══════════════════════════════════════════════════════
+function createEntity(id, name, role, x, y, isBot=false, colorIdx=0){
+  return {
+    id, name, role, x, y, isBot,
+    vx:0, vy:0,
+    color: COLORS[colorIdx % COLORS.length],
+    alive: true,
+    kills: 0, score: 0, votes: 0,
+    action: 'idle',     // idle|hide|run|liedown
+    botTarget: null,    // for bots: target entity id
+    botTimer: 0,
+    botState: 'roam',   // roam|chase|flee|hide
+    hidden: false,      // currently in hideout
+    hideoutIdx: -1,
+  };
 }
-function applyRemoteState(d){
-  if(!d) return;
-  const prev=S.phase;
-  S.players=d.players||S.players;
-  S.numKillers=d.numKillers||1;
-  S.copEnabled=d.copEnabled!==undefined?d.copEnabled:true;
-  if(d.phase!==prev){
-    S.phase=d.phase;
-    const me=S.players.find(p=>p.id===S.myId);
-    if(me) S.myRole=me.role||S.myRole;
-    if(d.phase==='role') enterRoleScreen();
-    else if(d.phase==='day') enterGameScreen();
-    else if(d.phase==='vote'){S.votes=d.votes||{};S.myVote=undefined;enterVoteScreen(d.voteReason||'التصويت!');}
-    else if(d.phase==='result') enterResultScreen(d.winner);
-  } else {
-    if(d.phase==='lobby'){renderLobbyPlayers();updateLobbyCount();}
-    else if(d.phase==='day'){renderGamePlayers();updateGameStatus();updateNearby();}
-    else if(d.phase==='vote'){S.votes=d.votes||{};renderVoteList();renderVoteResults();}
+
+function spawnRandom(id, name, role, isBot, colorIdx){
+  let x,y,tries=0;
+  do{
+    x=100+Math.random()*(MAP_W-200);
+    y=100+Math.random()*(MAP_H-200);
+    tries++;
+  }while(tries<30 && collidesWall(x,y,16));
+  return createEntity(id,name,role,x,y,isBot,colorIdx);
+}
+
+// ═══════════════════════════════════════════════════════
+//  COLLISION
+// ═══════════════════════════════════════════════════════
+function collidesWall(x,y,r){
+  for(const w of WALLS){
+    if(x+r>w.x && x-r<w.x+w.w && y+r>w.y && y-r<w.y+w.h) return true;
   }
+  if(x-r<0||x+r>MAP_W||y-r<0||y+r>MAP_H) return true;
+  return false;
+}
+function moveEntity(e, dx, dy){
+  const R=14;
+  const nx=e.x+dx, ny=e.y+dy;
+  if(!collidesWall(nx,e.y,R)) e.x=nx;
+  if(!collidesWall(e.x,ny,R)) e.y=ny;
 }
 
-// ══════════════════════════════════════════════
-//  HELPERS
-// ══════════════════════════════════════════════
-function genId(){return Math.random().toString(36).substr(2,9);}
-function genCode(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
-function getName(){const n=document.getElementById('input-name').value.trim();if(!n){toast('⚠️ أدخل اسمك!');speak('أدخل اسمك أولاً');return null;}return n;}
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-'+id).classList.add('active');}
-function toast(msg,dur=3000){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur);}
-function showOverlay(icon,title,desc,autoDismiss=0){
-  document.getElementById('ov-icon').textContent=icon;
-  document.getElementById('ov-title').textContent=title;
-  document.getElementById('ov-desc').textContent=desc;
-  document.getElementById('overlay').classList.add('show');
-  speak(title+'. '+desc);
-  if(autoDismiss>0) setTimeout(closeOverlay,autoDismiss);
-}
-function closeOverlay(){document.getElementById('overlay').classList.remove('show');}
-function setupBC(code){if(bc)bc.close();bc=new BroadcastChannel('ghost_'+code);bc.onmessage=e=>{if(e.data.type==='sync'&&e.data.roomCode===S.roomCode){const d=readState();applyRemoteState(d);}};}
-function startPoll(){clearInterval(S.pollInterval);S.pollInterval=setInterval(()=>{const d=readState();if(d)applyRemoteState(d);},1500);}
+// ═══════════════════════════════════════════════════════
+//  JOYSTICK
+// ═══════════════════════════════════════════════════════
+let joyActive=false, joyX=0, joyY=0;
+let joyStartX=0, joyStartY=0;
+const joyZone=document.getElementById('joystick-zone');
+const joyBase=document.getElementById('joystick-base');
+const joyKnob=document.getElementById('joystick-knob');
+const JOY_MAX=40;
 
-// ══════════════════════════════════════════════
-//  ROOM MANAGEMENT
-// ══════════════════════════════════════════════
-function goCreateRoom(){
-  const name=getName();if(!name)return;
-  S.myName=name;S.myId=genId();S.isHost=true;S.roomCode=genCode();
-  S.players=[{id:S.myId,name,avatar:AVATARS[Math.floor(Math.random()*AVATARS.length)],alive:true,isBot:false,role:null,x:5,y:5}];
-  S.phase='lobby';setupBC(S.roomCode);syncState();showLobby();
-}
-function goJoinRoom(){
-  const name=getName();if(!name)return;
-  const code=prompt('أدخل رمز الغرفة:');if(!code)return;
-  S.myName=name;S.myId=genId();S.isHost=false;S.roomCode=code.trim().toUpperCase();
-  setupBC(S.roomCode);
-  const d=readState();
-  if(!d){toast('❌ الغرفة غير موجودة');speak('الغرفة غير موجودة');return;}
-  S.players=d.players||[];
-  if(!S.players.find(p=>p.id===S.myId))
-    S.players.push({id:S.myId,name,avatar:AVATARS[Math.floor(Math.random()*AVATARS.length)],alive:true,isBot:false,role:null,x:Math.floor(Math.random()*10),y:Math.floor(Math.random()*10)});
-  syncState();showLobby();
-  toast('✅ انضممت للغرفة '+S.roomCode);speak('انضممت للغرفة');
-}
-function goRandomRoom(){
-  const name=getName();if(!name)return;
-  S.myName=name;S.myId=genId();S.isHost=true;S.roomCode=genCode();
-  S.players=[{id:S.myId,name,avatar:AVATARS[Math.floor(Math.random()*AVATARS.length)],alive:true,isBot:false,role:null,x:5,y:5}];
-  for(let i=0;i<4;i++)
-    S.players.push({id:genId(),name:BOT_NAMES[i],avatar:AVATARS[Math.floor(Math.random()*AVATARS.length)],alive:true,isBot:true,role:null,x:Math.floor(Math.random()*10),y:Math.floor(Math.random()*10)});
-  S.phase='lobby';setupBC(S.roomCode);syncState();showLobby();
-  toast('✅ غرفة عشوائية جاهزة');speak('غرفة عشوائية مع لاعبين افتراضيين');
-}
-function showLobby(){
-  S.phase='lobby';showScreen('lobby');
-  document.getElementById('room-code-display').textContent=S.roomCode;
-  document.getElementById('share-link-box').textContent=window.location.href.split('?')[0]+'?room='+S.roomCode;
-  if(S.isHost) document.getElementById('host-controls').style.display='block';
-  renderLobbyPlayers();updateLobbyCount();startPoll();
-  speak('غرفة الانتظار. الرمز: '+S.roomCode.split('').join(' ')+'. '+S.players.length+' لاعبين.');
-}
-function leaveRoom(){clearTimers();if(bc){bc.close();bc=null;}S={...S,players:[],myRole:null,phase:'lobby'};showScreen('home');speak('غادرت الغرفة');}
-function renderLobbyPlayers(){
-  const el=document.getElementById('lobby-players');if(!el)return;
-  el.innerHTML=S.players.map(p=>`<div class="player-card ${p.id===S.myId?'you':''}"><div class="player-avatar">${p.avatar}</div><div class="player-name">${p.name}</div><div class="player-tag">${p.id===S.myId?'أنت':p.isBot?'🤖':'🟢'}</div></div>`).join('');
-}
-function updateLobbyCount(){const el=document.getElementById('lobby-count');if(el)el.textContent=S.players.length+'/15';}
-function copyLink(){const l=window.location.href.split('?')[0]+'?room='+S.roomCode;navigator.clipboard.writeText(l).then(()=>{toast('✅ تم نسخ الرابط!');speak('تم النسخ');}).catch(()=>toast(l));}
-function shareWhatsApp(){const l=window.location.href.split('?')[0]+'?room='+S.roomCode;window.open('https://wa.me/?text='+encodeURIComponent('تعال العب معي لعبة الشبح! 👻\nرمز الغرفة: '+S.roomCode+'\nالرابط: '+l),'_blank');}
+joyBase.addEventListener('touchstart',e=>{
+  joyActive=true;
+  const t=e.touches[0];
+  const r=joyBase.getBoundingClientRect();
+  joyStartX=r.left+r.width/2;
+  joyStartY=r.top+r.height/2;
+  e.preventDefault();
+},{passive:false});
+joyBase.addEventListener('touchmove',e=>{
+  if(!joyActive)return;
+  const t=e.touches[0];
+  let dx=t.clientX-joyStartX, dy=t.clientY-joyStartY;
+  const dist=Math.hypot(dx,dy);
+  if(dist>JOY_MAX){dx=dx/dist*JOY_MAX;dy=dy/dist*JOY_MAX;}
+  joyX=dx/JOY_MAX; joyY=dy/JOY_MAX;
+  joyKnob.style.transform=`translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+  e.preventDefault();
+},{passive:false});
+['touchend','touchcancel'].forEach(ev=>joyBase.addEventListener(ev,()=>{
+  joyActive=false;joyX=0;joyY=0;
+  joyKnob.style.transform='translate(-50%,-50%)';
+}));
+// Keyboard fallback
+const keys={};
+window.addEventListener('keydown',e=>keys[e.key]=true);
+window.addEventListener('keyup',e=>keys[e.key]=false);
 
-// ══════════════════════════════════════════════
-//  GAME START - ROLE ASSIGNMENT
-// ══════════════════════════════════════════════
-function hostStartGame(){
-  if(S.players.length<2){toast('⚠️ تحتاج لاعبين آخرين!');return;}
-  while(S.players.length<3)
-    S.players.push({id:genId(),name:BOT_NAMES[S.players.filter(p=>p.isBot).length%BOT_NAMES.length],avatar:AVATARS[Math.floor(Math.random()*AVATARS.length)],alive:true,isBot:true,role:null,x:Math.floor(Math.random()*10),y:Math.floor(Math.random()*10)});
-  S.numKillers=parseInt(document.getElementById('killers-range').value);
-  S.copEnabled=document.getElementById('cop-enabled').checked;
-  // Shuffle and assign
-  const shuffled=[...S.players].sort(()=>Math.random()-.5);
-  let idx=0;
-  const killerIds=shuffled.slice(idx,idx+S.numKillers).map(p=>p.id);idx+=S.numKillers;
-  let copId=null;
-  if(S.copEnabled&&shuffled.length>idx){copId=shuffled[idx].id;idx++;}
-  S.players=S.players.map(p=>({...p,
-    role:killerIds.includes(p.id)?'killer':p.id===copId?'cop':'civilian',
-    alive:true}));
-  S.phase='role';S.votes={};S.myVote=undefined;S.meetingsLeft=1;
-  S.copShotUsed=false;S.copInvestUsed=false;S.copProtectUsed=false;S.copProtectedId=null;
-  const d=readState()||{};
-  Object.assign(d,{players:S.players,phase:'role',numKillers:S.numKillers,copEnabled:S.copEnabled,votes:{},ts:Date.now()});
-  localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
-  if(bc) bc.postMessage({type:'sync',roomCode:S.roomCode});
-  enterRoleScreen();
+function getInputDir(){
+  let dx=joyX, dy=joyY;
+  if(keys['ArrowLeft']||keys['a']||keys['A']) dx=-1;
+  if(keys['ArrowRight']||keys['d']||keys['D']) dx=1;
+  if(keys['ArrowUp']||keys['w']||keys['W']) dy=-1;
+  if(keys['ArrowDown']||keys['s']||keys['S']) dy=1;
+  if(dx!==0&&dy!==0){const n=Math.hypot(dx,dy);dx/=n;dy/=n;}
+  return {dx,dy};
 }
 
-// ══════════════════════════════════════════════
-//  ROLE REVEAL
-// ══════════════════════════════════════════════
-function enterRoleScreen(){
-  showScreen('role');
-  const me=S.players.find(p=>p.id===S.myId);if(!me)return;
-  S.myRole=me.role;
-  const card=document.getElementById('role-card');
-  if(S.myRole==='killer'){
-    card.className='role-card killer';
-    document.getElementById('role-icon').textContent='🔪';
-    document.getElementById('role-name').textContent='القاتل';
-    document.getElementById('role-name').style.color='var(--danger)';
-    const allies=S.players.filter(p=>p.role==='killer'&&p.id!==S.myId).map(p=>p.name);
-    document.getElementById('role-desc').textContent='أنت القاتل! قتل المدنيين ليلاً وتجنب الشرطي.'+(allies.length?' حلفاؤك: '+allies.join('، '):'');
-    speak('أنت القاتل! تجنب الشرطي وقتل المدنيين!');playSound('suspense');
-  } else if(S.myRole==='cop'){
-    card.className='role-card cop';
-    document.getElementById('role-icon').textContent='🚔';
-    document.getElementById('role-name').textContent='الشرطي';
-    document.getElementById('role-name').style.color='var(--cop)';
-    document.getElementById('role-desc').textContent='أنت الشرطي! لديك فرد واحد — إذا أصبت القاتل فاز فريقك فوراً. إذا أخطأت، أنت تموت. يمكنك أيضاً التحقيق وحماية لاعب كل ليلة.';
-    speak('أنت الشرطي! لديك فرد واحد لقتل القاتل. استخدمه بحكمة!');playSound('cop_intro');
-  } else {
-    card.className='role-card civilian';
-    document.getElementById('role-icon').textContent='🕵️';
-    document.getElementById('role-name').textContent='مدني';
-    document.getElementById('role-name').style.color='#3b82f6';
-    document.getElementById('role-desc').textContent='أنت مدني! راقب الآخرين وصوّت ضد القاتل. الشرطي سيساعدكم.';
-    speak('أنت مدني. تعاون مع الشرطي لكشف القاتل!');playSound('calm');
-  }
-}
-function ackRole(){
-  const d=readState()||{};
-  d.phase='day';d.ts=Date.now();
-  localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
-  if(bc) bc.postMessage({type:'sync',roomCode:S.roomCode});
-  enterGameScreen();
-}
+// ═══════════════════════════════════════════════════════
+//  BOT AI
+// ═══════════════════════════════════════════════════════
+const BOT_SPEED=1.2;
+function updateBot(bot, dt){
+  if(!bot.alive) return;
+  const me=entities[myId];
+  if(!me||!me.alive) return;
 
-// ══════════════════════════════════════════════
-//  GAME SCREEN
-// ══════════════════════════════════════════════
-function enterGameScreen(){
-  S.phase='day';showScreen('game');
-  renderGamePlayers();updateGameStatus();setupPanels();
-  startNearbyDetection();startDayTimer();
-  speak('بدأ النهار! ناقشوا بينكم.');
-}
-function startDayTimer(){
-  document.getElementById('phase-label').textContent='🌞 نهار - ناقشوا!';
-  document.getElementById('phase-label').className='phase-banner phase-day';
-  document.getElementById('meeting-btn').style.display=S.meetingsLeft>0?'block':'none';
-  startTimer('game-timer',60,()=>{if(S.isHost) hostTriggerNight();});
-}
-function hostTriggerNight(){
-  if(S.phase==='vote') return;
-  S.phase='night';
-  document.getElementById('phase-label').textContent='🌙 ليل';
-  document.getElementById('phase-label').className='phase-banner phase-night';
-  clearInterval(S.gameTimer);
-  speak('حلّ الليل!');
-  if(S.myRole==='killer'){
-    setupPanels();toast('🔪 اختر ضحيتك!');speak('اختر ضحيتك الآن!');
-    startTimer('game-timer',25,()=>{
-      const alive=S.players.filter(p=>p.alive&&p.role!=='killer');
-      if(alive.length) doKill(alive[Math.floor(Math.random()*alive.length)].id,'knife');
-    });
-  } else if(S.myRole==='cop'){
-    setupPanels();toast('🚔 استخدم صلاحياتك الليلة!');speak('أنت الشرطي. استخدم صلاحياتك!');
-    startTimer('game-timer',25,()=>{
-      // Auto-skip cop actions
-      if(S.isHost) botKillerActs();
-    });
-  } else {
-    showOverlay('🌙','الليل حلّ!','القاتل يتحرك... انتظر');
-    setTimeout(()=>{closeOverlay();if(S.isHost) botKillerActs();},3000);
-  }
-}
-function botKillerActs(){
-  const botKillers=S.players.filter(p=>p.isBot&&p.role==='killer'&&p.alive);
-  if(botKillers.length){
-    const alive=S.players.filter(p=>p.alive&&p.role!=='killer'&&p.id!==S.copProtectedId);
-    if(alive.length) doKill(alive[Math.floor(Math.random()*alive.length)].id,'knife');
-    else triggerVote('لا ضحايا الليلة!');
-  } else {
-    // Human killer must act; just trigger vote if time ran out
-    triggerVote('انتهى الليل!');
-  }
-}
+  bot.botTimer-=dt;
 
-// ══════════════════════════════════════════════
-//  KILL
-// ══════════════════════════════════════════════
-function doKill(targetId,weaponSound){
-  const victim=S.players.find(p=>p.id===targetId);
-  if(!victim||!victim.alive) return;
-  // Check cop shield
-  if(targetId===S.copProtectedId){
-    S.copProtectedId=null;
-    showOverlay('🛡️','الحماية نجحت!','الشرطي أنقذ '+victim.name+' من القتل الليلة!',3000);
-    speak('الشرطي حمى '+victim.name+'!');
-    setTimeout(()=>triggerVote('الشرطي أنقذ لاعباً! من القاتل؟'),3500);
-    return;
-  }
-  victim.alive=false;
-  playSound(weaponSound||'kill');
-  const d=readState()||{};
-  Object.assign(d,{players:S.players,phase:'vote',voteReason:'💀 قُتل '+victim.name+'! من القاتل؟',votes:{},ts:Date.now()});
-  S._voteReason='💀 قُتل '+victim.name+'! من القاتل؟';
-  localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
-  if(bc) bc.postMessage({type:'sync',roomCode:S.roomCode});
-  showOverlay('💀',victim.name+' قُتل!','',2500);
-  speak('قُتل '+victim.name+'!');
-  setTimeout(()=>{closeOverlay();enterVoteScreen('💀 قُتل '+victim.name+'! من القاتل؟');},2600);
-}
-function killWith(targetId,weaponSound){playSound(weaponSound);setTimeout(()=>doKill(targetId,weaponSound),700);}
-function triggerVote(reason){
-  const d=readState()||{};
-  Object.assign(d,{phase:'vote',voteReason:reason,votes:{},ts:Date.now()});
-  localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
-  if(bc) bc.postMessage({type:'sync',roomCode:S.roomCode});
-  enterVoteScreen(reason);
-}
-
-// ══════════════════════════════════════════════
-//  COP ACTIONS
-// ══════════════════════════════════════════════
-function showShootPanel(){
-  if(S.copShotUsed){toast('استخدمت الفرد من قبل!');return;}
-  hideCopSubPanels();
-  const el=document.getElementById('cop-shoot-panel');
-  el.style.display='block';
-  const alive=S.players.filter(p=>p.alive&&p.id!==S.myId);
-  document.getElementById('shoot-targets').innerHTML=alive.map(p=>`
-    <button class="shoot-item" onclick="copShoot('${p.id}')" aria-label="أطلق النار على ${p.name}">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <span style="font-size:2rem;">${p.avatar}</span>
-        <span style="font-weight:700;">${p.name}</span>
-      </div>
-      <span style="font-size:1.4rem;">🔫</span>
-    </button>`).join('');
-  speak('اختر من تُطلق النار عليه. إذا أصبت القاتل فزنا!');
-}
-function copShoot(targetId){
-  const target=S.players.find(p=>p.id===targetId);if(!target||!target.alive)return;
-  S.copShotUsed=true;
-  document.getElementById('cop-shoot-btn').classList.add('used');
-  document.getElementById('cop-shoot-lbl').textContent='تم الاستخدام';
-  hideCopSubPanels();
-  playSound('gun');
-  if(target.role==='killer'){
-    // KILLER HIT → civilians + cop win
-    target.alive=false;
-    showOverlay('🎯','أصبت القاتل!','أحسنت أيها الشرطي! '+target.name+' كان القاتل!');
-    speak('أصبت القاتل! '+target.name+' كان القاتل! فاز المدنيون والشرطي!');
-    playSound('win');
-    const d=readState()||{};
-    Object.assign(d,{players:S.players,phase:'result',winner:'civilians',ts:Date.now()});
-    localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
-    if(bc) bc.postMessage({type:'sync',roomCode:S.roomCode});
-    setTimeout(()=>{closeOverlay();enterResultScreen('civilians');},3500);
-  } else {
-    // MISSED → cop dies
-    const me=S.players.find(p=>p.id===S.myId);
-    if(me) me.alive=false;
-    showOverlay('💔','أخطأت!','الهدف كان بريئاً... لقد مات الشرطي!');
-    speak('أخطأت! '+target.name+' بريء. لقد مات الشرطي!');
-    const d=readState()||{};
-    Object.assign(d,{players:S.players,phase:'vote',voteReason:'🚔 الشرطي أخطأ وقتل نفسه! من القاتل؟',votes:{},ts:Date.now()});
-    localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
-    if(bc) bc.postMessage({type:'sync',roomCode:S.roomCode});
-    setTimeout(()=>{closeOverlay();enterVoteScreen('🚔 الشرطي أخطأ وقتل نفسه! من القاتل؟');},3000);
-  }
-}
-
-function showInvestPanel(){
-  if(S.copInvestUsed){toast('حققت بالفعل هذه الجولة!');return;}
-  hideCopSubPanels();
-  const el=document.getElementById('cop-invest-panel');el.style.display='block';
-  const alive=S.players.filter(p=>p.alive&&p.id!==S.myId);
-  document.getElementById('invest-targets').innerHTML=alive.map(p=>`
-    <button class="shoot-item" onclick="copInvestigate('${p.id}')" aria-label="تحقق من ${p.name}">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <span style="font-size:2rem;">${p.avatar}</span>
-        <span style="font-weight:700;">${p.name}</span>
-      </div>
-      <span style="font-size:1.4rem;">🔍</span>
-    </button>`).join('');
-  speak('اختر من تريد معرفة هويته الحقيقية.');
-}
-function copInvestigate(targetId){
-  const target=S.players.find(p=>p.id===targetId);if(!target)return;
-  S.copInvestUsed=true;
-  document.getElementById('cop-invest-btn').classList.add('used');
-  document.getElementById('cop-invest-lbl').textContent='تم الاستخدام';
-  hideCopSubPanels();
-  const roleLabel=target.role==='killer'?'🔪 قاتل!':target.role==='cop'?'🚔 شرطي مثلك':'🕵️ مدني بريء';
-  const roleColor=target.role==='killer'?'var(--danger)':target.role==='cop'?'var(--cop)':'#60a5fa';
-  const reveal=document.getElementById('cop-identity-reveal');
-  reveal.style.display='block';
-  reveal.innerHTML=`<div class="id-reveal">
-    <div class="big">${target.avatar}</div>
-    <div class="name">${target.name}</div>
-    <div class="role-tag" style="color:${roleColor};font-size:1.1rem;font-weight:900;">${roleLabel}</div>
-  </div>`;
-  document.getElementById('cop-status').textContent='التحقيق: '+target.name+' هو '+roleLabel;
-  playSound('invest');
-  speak('التحقيق: '+target.name+' هو '+roleLabel);
-  toast('🔍 '+target.name+': '+roleLabel);
-}
-
-function showProtectPanel(){
-  if(S.copProtectedId){toast('حميت لاعباً بالفعل الليلة!');return;}
-  hideCopSubPanels();
-  const el=document.getElementById('cop-protect-panel');el.style.display='block';
-  const alive=S.players.filter(p=>p.alive);
-  document.getElementById('protect-targets').innerHTML=alive.map(p=>`
-    <button class="shoot-item" onclick="copProtect('${p.id}')" aria-label="احمِ ${p.name}">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <span style="font-size:2rem;">${p.avatar}</span>
-        <span style="font-weight:700;">${p.name}${p.id===S.myId?' (أنت)':''}</span>
-      </div>
-      <span style="font-size:1.4rem;">🛡️</span>
-    </button>`).join('');
-  speak('اختر من تريد حمايته من القتل الليلة.');
-}
-function copProtect(targetId){
-  const target=S.players.find(p=>p.id===targetId);if(!target)return;
-  S.copProtectedId=targetId;
-  S.copProtectUsed=true;
-  document.getElementById('cop-protect-btn').classList.add('used');
-  document.getElementById('cop-protect-lbl').textContent='تم الاستخدام';
-  hideCopSubPanels();
-  document.getElementById('cop-status').textContent='🛡️ تحمي '+target.name+' الليلة';
-  playSound('shield');
-  speak('أنت تحمي '+target.name+' الليلة من القتل!');
-  toast('🛡️ تحمي '+target.name+' الليلة!');
-  renderGamePlayers();
-}
-
-function copRadio(){
-  if(S.meetingsLeft<=0){toast('لا اجتماعات متبقية!');return;}
-  S.meetingsLeft--;
-  document.getElementById('meeting-btn').style.display='none';
-  clearInterval(S.gameTimer);
-  playSound('siren');
-  triggerVote('🚔 الشرطي طلب اجتماعاً طارئاً!');
-  speak('الشرطي طلب اجتماعاً طارئاً!');
-}
-
-function hideCopSubPanels(){
-  ['cop-shoot-panel','cop-invest-panel','cop-protect-panel'].forEach(id=>document.getElementById(id).style.display='none');
-}
-
-// ══════════════════════════════════════════════
-//  CIVILIAN ACTIONS
-// ══════════════════════════════════════════════
-function doAction(type,label,icon){
-  const msgs=ACTION_MSGS[type];
-  const msg=msgs[Math.floor(Math.random()*msgs.length)];
-  playSound('action');speak(label+'! '+msg);
-  const st=document.getElementById('action-status');if(st)st.textContent=icon+' '+msg;
-  document.querySelectorAll('.action-btn').forEach(b=>b.classList.remove('active-action'));
-  if(event&&event.currentTarget)event.currentTarget.classList.add('active-action');
-  toast(icon+' '+msg);
-}
-
-// ══════════════════════════════════════════════
-//  SETUP PANELS (role-based)
-// ══════════════════════════════════════════════
-function setupPanels(){
-  const kp=document.getElementById('killer-panel');
-  const cp=document.getElementById('cop-panel');
-  const civp=document.getElementById('civilian-panel');
-  kp.style.display='none';cp.style.display='none';civp.style.display='none';
-  if(S.myRole==='killer'&&S.phase==='night'){
-    kp.style.display='block';
-    const targets=S.players.filter(p=>p.alive&&p.role!=='killer');
-    document.getElementById('kill-targets').innerHTML=targets.map(p=>{
-      const w=WEAPONS[Math.floor(Math.random()*WEAPONS.length)];
-      return `<button class="weapon-btn" onclick="killWith('${p.id}','${w.sound}')" aria-label="اقتل ${p.name} بـ${w.name}">
-        <span class="weapon-icon">${w.icon}</span>
-        <span>${p.avatar} ${p.name}</span>
-        <span style="font-size:.85rem;color:var(--muted);">${w.name}</span>
-      </button>`;
-    }).join('');
-  } else if(S.myRole==='cop'){
-    cp.style.display='block';
-  } else if(S.myRole==='civilian'){
-    civp.style.display='block';
-  }
-}
-
-function callMeeting(){
-  if(S.meetingsLeft<=0){toast('لا اجتماعات متبقية!');return;}
-  S.meetingsLeft--;
-  document.getElementById('meeting-btn').style.display='none';
-  clearInterval(S.gameTimer);
-  playSound('siren');
-  triggerVote('🚨 اجتماع طارئ! من القاتل؟');
-  speak('اجتماع طارئ!');
-}
-
-// ══════════════════════════════════════════════
-//  NEARBY
-// ══════════════════════════════════════════════
-function startNearbyDetection(){
-  clearInterval(S.nearbyInterval);
-  S.nearbyInterval=setInterval(()=>{
-    S.players.filter(p=>p.isBot&&p.alive).forEach(p=>{p.x=Math.floor(Math.random()*10);p.y=Math.floor(Math.random()*10);});
-    updateNearby();
-  },4500);
-}
-function updateNearby(){
-  const me=S.players.find(p=>p.id===S.myId);if(!me)return;
-  const near=S.players.filter(p=>p.alive&&p.id!==S.myId&&Math.abs((p.x||0)-(me.x||5))<=2&&Math.abs((p.y||0)-(me.y||5))<=2);
-  const bar=document.getElementById('nearby-bar');
-  const card=document.getElementById('nearby-card');
-  document.querySelectorAll('.player-card.nearby').forEach(el=>el.classList.remove('nearby'));
-  if(near.length>0){
-    const names=near.map(p=>p.name).join('، ');
-    bar.textContent='📡 بالقرب منك: '+names;bar.classList.add('show');
-    near.forEach(p=>speak(p.name+' بالقرب منك'));
-    card.style.display='block';
-    document.getElementById('nearby-list').innerHTML=near.map(p=>`
-      <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
-        <span style="font-size:2rem;">${p.avatar}</span>
-        <span style="font-weight:700;font-size:1.1rem;">${p.name}</span>
-        ${S.myRole==='killer'?'<span style="color:var(--danger);font-size:.9rem;">⚠️ هدف</span>':''}
-        ${S.myRole==='cop'&&p.role?'<span style="font-size:.8rem;color:var(--muted);">مراقَب</span>':''}
-      </div>`).join('');
-    const cards=document.querySelectorAll('#game-players .player-card');
-    S.players.forEach((p,i)=>{if(near.find(n=>n.id===p.id)&&cards[i])cards[i].classList.add('nearby');});
-  } else {
-    bar.classList.remove('show');card.style.display='none';
-  }
-}
-
-// ══════════════════════════════════════════════
-//  RENDER GAME PLAYERS
-// ══════════════════════════════════════════════
-function renderGamePlayers(){
-  const el=document.getElementById('game-players');if(!el)return;
-  el.innerHTML=S.players.map(p=>`
-    <div class="player-card ${!p.alive?'dead':''} ${p.id===S.myId?'you':''} ${p.id===S.copProtectedId?'protected':''}">
-      <div class="player-avatar">${p.avatar}</div>
-      <div class="player-name">${p.name}</div>
-      <div class="player-tag">${p.id===S.myId?'أنت':!p.alive?'مُقتل':p.role==='cop'&&S.myRole==='cop'?'🚔':p.role==='killer'&&S.myRole==='killer'?'🔪':'🟢'}</div>
-    </div>`).join('');
-}
-function updateGameStatus(){
-  const alive=S.players.filter(p=>p.alive).length;
-  document.getElementById('alive-count').textContent=alive+' أحياء';
-  const badge={'killer':'<span class="badge badge-killer">🔪 قاتل</span>','cop':'<span class="badge badge-cop">🚔 شرطي</span>','civilian':'<span class="badge badge-civilian">🕵️ مدني</span>'};
-  document.getElementById('my-role-badge').innerHTML=badge[S.myRole]||'';
-}
-
-// ══════════════════════════════════════════════
-//  VOTE
-// ══════════════════════════════════════════════
-function enterVoteScreen(reason){
-  S.phase='vote';S.votes=S.votes||{};S.myVote=undefined;
-  showScreen('vote');
-  document.getElementById('vote-reason').textContent=reason;
-  playSound('siren');speak('وقت التصويت! '+reason);
-  renderVoteList();
-  startTimer('vote-timer',30,()=>resolveVote());
-  setTimeout(()=>{botsVote();renderVoteResults();},5000+Math.random()*8000);
-}
-function botsVote(){
-  const alive=S.players.filter(p=>p.alive);
-  S.players.filter(p=>p.isBot&&p.alive).forEach(bot=>{
-    const targets=alive.filter(p=>p.id!==bot.id);
-    if(targets.length) S.votes[bot.id]=targets[Math.floor(Math.random()*targets.length)].id;
-  });
-  const d=readState()||{};d.votes=S.votes;d.ts=Date.now();
-  localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
-}
-function renderVoteList(){
-  const alive=S.players.filter(p=>p.alive);
-  const me=S.players.find(p=>p.id===S.myId);
-  const canVote=me&&me.alive;
-  document.getElementById('vote-list').innerHTML=alive.map(p=>`
-    <div class="vote-item ${S.myVote===p.id?'voted':''}"
-         onclick="${canVote&&p.id!==S.myId?'castVote("'+p.id+'")':''}">
-      <div class="vote-info">
-        <div class="vote-avatar">${p.avatar}</div>
-        <div><div style="font-weight:700;font-size:1.1rem;">${p.name}</div><div class="text-muted">${p.id===S.myId?'(أنت)':''}</div></div>
-      </div>
-      <div style="font-size:1.3rem;">${S.myVote===p.id?'✅':p.id!==S.myId?'🗳️':''}</div>
-    </div>`).join('')+`
-    <div class="vote-item" style="border-color:var(--gold);" onclick="${canVote?'castVote(null)':''}">
-      <div class="vote-info"><div class="vote-avatar">⏭️</div><div style="font-weight:700;">تخطِّ</div></div>
-    </div>`;
-}
-function castVote(targetId){
-  if(S.myVote!==undefined){toast('صوّتت بالفعل!');return;}
-  S.myVote=targetId;S.votes[S.myId]=targetId;
-  const d=readState()||{};d.votes=S.votes;d.ts=Date.now();
-  localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
-  if(bc) bc.postMessage({type:'sync',roomCode:S.roomCode});
-  playSound('vote');
-  speak(targetId?'صوّتت ضد '+S.players.find(p=>p.id===targetId)?.name:'تخطيت');
-  renderVoteList();renderVoteResults();
-}
-function renderVoteResults(){
-  const tally={};Object.values(S.votes).forEach(v=>{if(v)tally[v]=(tally[v]||0)+1;});
-  document.getElementById('vote-results').innerHTML=
-    Object.entries(tally).sort((a,b)=>b[1]-a[1]).map(([id,c])=>{
-      const p=S.players.find(x=>x.id===id);
-      return p?`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:1.05rem;"><span>${p.avatar} ${p.name}</span><span style="font-weight:900;color:var(--danger);">${c} 🗳️</span></div>`:'';
-    }).join('')||'<div class="text-muted">لا أصوات بعد...</div>';
-}
-function resolveVote(){
-  const tally={};Object.values(S.votes).forEach(v=>{if(v)tally[v]=(tally[v]||0)+1;});
-  let max=0,ejId=null;
-  Object.entries(tally).forEach(([id,c])=>{if(c>max){max=c;ejId=id;}});
-  if(ejId){
-    const p=S.players.find(x=>x.id===ejId);
-    if(p){
-      p.alive=false;
-      const wasKiller=p.role==='killer';
-      const wasCop=p.role==='cop';
-      playSound(wasKiller?'win':'kill');
-      showOverlay(wasKiller?'🎉':wasCop?'🚔':'😢',
-        wasKiller?'أُمسك القاتل!':wasCop?'طُرد الشرطي!':'مدني بريء طُرد!',
-        p.name+' كان '+(wasKiller?'القاتل!':wasCop?'الشرطي!':'مدنياً بريئاً'));
-      speak(p.name+' كان '+(wasKiller?'القاتل!':wasCop?'الشرطي!':'مدنياً بريئاً'));
-      const d=readState()||{};
-      d.players=S.players;d.ts=Date.now();
-      const ak=S.players.filter(p=>p.alive&&p.role==='killer').length;
-      const ac=S.players.filter(p=>p.alive&&(p.role==='civilian'||p.role==='cop')).length;
-      if(ak===0){d.phase='result';d.winner='civilians';}
-      else if(ak>=ac){d.phase='result';d.winner='killers';}
-      else{d.phase='day';}
-      localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
-      if(bc) bc.postMessage({type:'sync',roomCode:S.roomCode});
-      setTimeout(()=>{closeOverlay();if(d.phase==='result')enterResultScreen(d.winner);else{S.copProtectedId=null;enterGameScreen();}},3000);
+  if(bot.role==='killer'){
+    // Killer bot: hunt players
+    // Find nearest alive non-killer
+    let nearest=null, nearDist=Infinity;
+    for(const [id,e] of Object.entries(entities)){
+      if(id===bot.id||!e.alive||e.role==='killer') continue;
+      const d=Math.hypot(e.x-bot.x, e.y-bot.y);
+      if(d<nearDist){nearDist=d;nearest=e;}
     }
-  } else {
-    toast('تعادل! لا أحد طُرد.');speak('تعادل');
-    const d=readState()||{};d.phase='day';d.ts=Date.now();
-    localStorage.setItem('ghost_'+S.roomCode,JSON.stringify(d));
-    if(bc) bc.postMessage({type:'sync',roomCode:S.roomCode});
-    setTimeout(()=>{S.copProtectedId=null;enterGameScreen();},2000);
-  }
-}
-
-// ══════════════════════════════════════════════
-//  RESULT
-// ══════════════════════════════════════════════
-function enterResultScreen(winner){
-  clearTimers();S.phase='result';showScreen('result');
-  const myWon=(winner==='civilians'&&(S.myRole==='civilian'||S.myRole==='cop'))||(winner==='killers'&&S.myRole==='killer');
-  document.getElementById('result-icon').textContent=myWon?'🏆':'💀';
-  document.getElementById('result-title').textContent=winner==='civilians'?'🎉 المدنيون والشرطي فازوا!':'🔪 القتلة فازوا!';
-  document.getElementById('result-sub').textContent=myWon?'أحسنت! لقد فزت!':'حظ أوفر في الجولة القادمة!';
-  const roleEmoji={killer:'🔪',cop:'🚔',civilian:'🕵️'};
-  const roleLabel={killer:'قاتل',cop:'شرطي',civilian:'مدني'};
-  const roleBadge={killer:'badge-killer',cop:'badge-cop',civilian:'badge-civilian'};
-  document.getElementById('roles-reveal').innerHTML=S.players.map(p=>`
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:1.05rem;">
-      <span>${p.avatar} ${p.name}${p.id===S.myId?' (أنت)':''}</span>
-      <span class="badge ${roleBadge[p.role]||'badge-civilian'}">${roleEmoji[p.role]||'🕵️'} ${roleLabel[p.role]||'مدني'}</span>
-    </div>`).join('');
-  playSound(myWon?'win':'kill');
-  speak(winner==='civilians'?'المدنيون والشرطي فازوا!':'القتلة فازوا!');
-}
-function playAgain(){
-  S.players=S.players.map(p=>({...p,alive:true,role:null}));
-  S.copShotUsed=false;S.copInvestUsed=false;S.copProtectUsed=false;S.copProtectedId=null;
-  S.phase='lobby';S.votes={};S.myVote=undefined;S.meetingsLeft=1;
-  syncState();showLobby();
-}
-function goHome(){clearTimers();if(bc){bc.close();bc=null;}showScreen('home');speak('الرئيسية');}
-
-// ══════════════════════════════════════════════
-//  TIMER
-// ══════════════════════════════════════════════
-function clearTimers(){
-  clearInterval(S.gameTimer);clearInterval(S.voteTimer);
-  clearInterval(S.nearbyInterval);clearInterval(S.pollInterval);
-}
-function startTimer(elId,secs,cb){
-  if(elId==='game-timer')clearInterval(S.gameTimer);else clearInterval(S.voteTimer);
-  let rem=secs;
-  const el=document.getElementById(elId);
-  if(el){el.textContent=rem;el.className='timer';}
-  const iv=setInterval(()=>{
-    rem--;if(el){el.textContent=rem;el.className='timer'+(rem<=10?' urgent':'');}
-    if(rem<=10&&rem>0)playSound('tick');
-    if(rem<=0){clearInterval(iv);if(cb)cb();}
-  },1000);
-  if(elId==='game-timer')S.gameTimer=iv;else S.voteTimer=iv;
-}
-
-// ══════════════════════════════════════════════
-//  TTS
-// ══════════════════════════════════════════════
-function speak(text){
-  if(!S.ttsEnabled)return;
-  window.speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(text);u.lang='ar-SA';u.rate=0.9;
-  window.speechSynthesis.speak(u);
-}
-function toggleTTS(){
-  S.ttsEnabled=!S.ttsEnabled;
-  document.getElementById('tts-btn').textContent=S.ttsEnabled?'🔊 قارئ الشاشة: تشغيل':'🔇 قارئ الشاشة: إيقاف';
-  speak(S.ttsEnabled?'تم التشغيل':'تم الإيقاف');
-}
-
-// ══════════════════════════════════════════════
-//  SOUND ENGINE
-// ══════════════════════════════════════════════
-const AudioCtx2=window.AudioContext||window.webkitAudioContext;
-let actx2;
-function ac(){if(!actx2)actx2=new AudioCtx2();return actx2;}
-function playSound(type){
-  try{
-    const c=ac();
-    const mkOsc=(type,freq,dur,vol=0.4,shape='sine')=>{
-      const o=c.createOscillator(),g=c.createGain();
-      o.connect(g);g.connect(c.destination);o.type=shape;o.frequency.value=freq;
-      g.gain.setValueAtTime(vol,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+dur);
-      o.start();o.stop(c.currentTime+dur);
-    };
-    if(type==='kill'){
-      const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);
-      o.type='sawtooth';o.frequency.setValueAtTime(300,c.currentTime);o.frequency.exponentialRampToValueAtTime(40,c.currentTime+0.6);
-      g.gain.setValueAtTime(0.5,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.7);
-      o.start();o.stop(c.currentTime+0.7);
-    } else if(type==='knife'){
-      const buf=c.createBuffer(1,c.sampleRate*0.15,c.sampleRate);const d=buf.getChannelData(0);
-      for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);
-      const src=c.createBufferSource(),g=c.createGain(),f=c.createBiquadFilter();
-      f.type='highpass';f.frequency.value=3000;src.buffer=buf;src.connect(f);f.connect(g);g.connect(c.destination);
-      g.gain.setValueAtTime(1.2,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.15);
-      src.start();src.stop(c.currentTime+0.15);
-    } else if(type==='gun'){
-      const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);
-      o.type='square';o.frequency.setValueAtTime(150,c.currentTime);o.frequency.exponentialRampToValueAtTime(20,c.currentTime+0.12);
-      g.gain.setValueAtTime(1.0,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.15);
-      o.start();o.stop(c.currentTime+0.2);
-      const o2=c.createOscillator(),g2=c.createGain();o2.connect(g2);g2.connect(c.destination);
-      o2.type='sine';o2.frequency.value=80;
-      g2.gain.setValueAtTime(0.3,c.currentTime+0.1);g2.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.5);
-      o2.start(c.currentTime+0.1);o2.stop(c.currentTime+0.6);
-    } else if(type==='axe'){
-      mkOsc('o',200,0.35,0.8,'triangle');
-      const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);
-      o.type='triangle';o.frequency.setValueAtTime(200,c.currentTime);o.frequency.exponentialRampToValueAtTime(30,c.currentTime+0.3);
-      g.gain.setValueAtTime(0.8,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.35);
-      o.start();o.stop(c.currentTime+0.4);
-    } else if(type==='bomb'){
-      const buf=c.createBuffer(1,c.sampleRate*0.8,c.sampleRate);const dd=buf.getChannelData(0);
-      for(let i=0;i<dd.length;i++)dd[i]=(Math.random()*2-1)*Math.exp(-i/(c.sampleRate*0.2));
-      const src=c.createBufferSource(),lp=c.createBiquadFilter(),g=c.createGain();
-      lp.type='lowpass';lp.frequency.value=400;src.buffer=buf;src.connect(lp);lp.connect(g);g.connect(c.destination);
-      g.gain.setValueAtTime(1.5,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.8);
-      src.start();src.stop(c.currentTime+0.9);
-    } else if(type==='siren'){
-      for(let i=0;i<3;i++){
-        const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sawtooth';
-        const t=c.currentTime+i*0.55;
-        o.frequency.setValueAtTime(300,t);o.frequency.linearRampToValueAtTime(900,t+0.27);o.frequency.linearRampToValueAtTime(300,t+0.54);
-        g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.4,t+0.05);g.gain.linearRampToValueAtTime(0.4,t+0.49);g.gain.linearRampToValueAtTime(0,t+0.54);
-        o.start(t);o.stop(t+0.55);
+    if(nearest){
+      // Move toward
+      const dx=nearest.x-bot.x, dy=nearest.y-bot.y;
+      const dist=Math.hypot(dx,dy);
+      if(dist>0){
+        moveEntity(bot, dx/dist*BOT_SPEED*1.4, dy/dist*BOT_SPEED*1.4);
       }
-    } else if(type==='cop_intro'){
-      // Police radio crackle + beep
-      [440,550,660].forEach((f,i)=>{
-        const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);
-        o.type='square';o.frequency.value=f;
-        g.gain.setValueAtTime(0,c.currentTime+i*0.2);g.gain.linearRampToValueAtTime(0.25,c.currentTime+i*0.2+0.1);g.gain.linearRampToValueAtTime(0,c.currentTime+i*0.2+0.18);
-        o.start(c.currentTime+i*0.2);o.stop(c.currentTime+i*0.2+0.2);
-      });
-    } else if(type==='shield'){
-      [800,1000,1200].forEach((f,i)=>{
-        const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);
-        o.type='sine';o.frequency.value=f;
-        g.gain.setValueAtTime(0.25,c.currentTime+i*0.1);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+i*0.1+0.2);
-        o.start(c.currentTime+i*0.1);o.stop(c.currentTime+i*0.1+0.25);
-      });
-    } else if(type==='invest'){
-      const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);
-      o.type='sine';o.frequency.setValueAtTime(440,c.currentTime);o.frequency.linearRampToValueAtTime(880,c.currentTime+0.3);
-      g.gain.setValueAtTime(0.25,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.4);
-      o.start();o.stop(c.currentTime+0.45);
-    } else if(type==='win'){
-      [523,659,784,1047].forEach((f,i)=>{
-        const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.value=f;
-        g.gain.setValueAtTime(0.3,c.currentTime+i*0.15);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+i*0.15+0.3);
-        o.start(c.currentTime+i*0.15);o.stop(c.currentTime+i*0.15+0.35);
-      });
-    } else if(type==='vote'){
-      mkOsc('o',880,0.3,0.3);
-    } else if(type==='action'){
-      const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';
-      o.frequency.setValueAtTime(600,c.currentTime);o.frequency.exponentialRampToValueAtTime(900,c.currentTime+0.1);
-      g.gain.setValueAtTime(0.2,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.18);
-      o.start();o.stop(c.currentTime+0.2);
-    } else if(type==='suspense'){
-      [200,220,240].forEach((f,i)=>{
-        const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='triangle';o.frequency.value=f;
-        g.gain.setValueAtTime(0,c.currentTime+i*0.4);g.gain.linearRampToValueAtTime(0.25,c.currentTime+i*0.4+0.2);g.gain.linearRampToValueAtTime(0,c.currentTime+i*0.4+0.4);
-        o.start(c.currentTime+i*0.4);o.stop(c.currentTime+i*0.4+0.5);
-      });
-    } else if(type==='calm'){
-      mkOsc('o',440,0.8,0.15);
-    } else if(type==='tick'){
-      mkOsc('o',1000,0.05,0.1);
+      // Kill if close enough
+      if(dist<28 && bot.botTimer<=0){
+        bot.botTimer=2000;
+        killEntity(bot.id, nearest.id);
+      }
     }
+  } else if(bot.role==='police'){
+    // Police bot: look for killer
+    let killer=Object.values(entities).find(e=>e.role==='killer'&&e.alive);
+    if(killer){
+      const d=Math.hypot(killer.x-bot.x, killer.y-bot.y);
+      if(d<250 && bot.botTimer<=0){
+        bot.botTimer=4000;
+        // Shoot (always correct since bots know roles)
+        if(killer.alive){
+          killer.alive=false;
+          toast('الشرطي البوت قتل القاتل!');
+          SFX.shoot();
+          checkWinCondition();
+        }
+      } else if(d>150){
+        moveEntity(bot, (killer.x-bot.x)/d*BOT_SPEED, (killer.y-bot.y)/d*BOT_SPEED);
+      }
+    } else {
+      roamBot(bot, dt);
+    }
+  } else {
+    // Civilian bot: flee from killer, hide
+    let killer=Object.values(entities).find(e=>e.role==='killer'&&e.alive);
+    if(killer){
+      const d=Math.hypot(killer.x-bot.x, killer.y-bot.y);
+      if(d<200){
+        // Flee
+        const dx=bot.x-killer.x, dy=bot.y-killer.y;
+        const dist=Math.hypot(dx,dy)||1;
+        moveEntity(bot, dx/dist*BOT_SPEED*1.2, dy/dist*BOT_SPEED*1.2);
+        bot.action='run';
+        return;
+      }
+    }
+    // Try to hide at hideout
+    if(bot.botTimer<=0){
+      const h=HIDEOUTS[Math.floor(Math.random()*HIDEOUTS.length)];
+      bot.botTarget={x:h.x,y:h.y};
+      bot.botTimer=3000+Math.random()*3000;
+    }
+    if(bot.botTarget){
+      const dx=bot.botTarget.x-bot.x, dy=bot.botTarget.y-bot.y;
+      const dist=Math.hypot(dx,dy);
+      if(dist>8){
+        moveEntity(bot, dx/dist*BOT_SPEED*.9, dy/dist*BOT_SPEED*.9);
+        bot.action='idle';
+      } else {
+        bot.action='hide';
+        bot.botTarget=null;
+      }
+    }
+  }
+}
+
+function roamBot(bot){
+  if(!bot.botTarget||Math.hypot(bot.botTarget.x-bot.x,bot.botTarget.y-bot.y)<10){
+    bot.botTarget={x:100+Math.random()*(MAP_W-200), y:100+Math.random()*(MAP_H-200)};
+  }
+  const dx=bot.botTarget.x-bot.x, dy=bot.botTarget.y-bot.y;
+  const dist=Math.hypot(dx,dy)||1;
+  moveEntity(bot, dx/dist*BOT_SPEED, dy/dist*BOT_SPEED);
+}
+
+// ═══════════════════════════════════════════════════════
+//  KILL / WIN
+// ═══════════════════════════════════════════════════════
+function killEntity(killerId, victimId){
+  const killer=entities[killerId];
+  const victim=entities[victimId];
+  if(!killer||!victim||!victim.alive) return;
+  victim.alive=false;
+  killer.kills=(killer.kills||0)+1;
+  SFX.kill();
+  toast('💀 ' + victim.name + ' قُتل!');
+  if(victimId===myId){ myDeadFlag=true; onMyDeath(); }
+  checkWinCondition();
+}
+
+function checkWinCondition(){
+  if(gamePhase!=='hunt') return;
+  const aliveList=Object.values(entities).filter(e=>e.alive);
+  const killerAlive=aliveList.some(e=>e.role==='killer');
+  const civAlive=aliveList.some(e=>e.role!=='killer');
+  if(!killerAlive){ endHunt('civilians'); return; }
+  if(!civAlive){ endHunt('killer'); return; }
+}
+
+function onMyDeath(){
+  toast('💀 لقد مُتّ! يمكنك مشاهدة بقية اللعبة');
+  speak('أنت مت!');
+  // Disable action buttons
+  document.querySelectorAll('.act-btn').forEach(b=>b.disabled=true);
+}
+
+// ═══════════════════════════════════════════════════════
+//  PROXIMITY AUDIO
+// ═══════════════════════════════════════════════════════
+let lastProxId=null, lastProxLevel=0;
+const PROX_MAX=250; // pixels in world coords
+
+function updateProximityAudio(){
+  const me=entities[myId];
+  if(!me||!me.alive) return;
+  
+  let closestDist=Infinity, closestId=null;
+  for(const [id,e] of Object.entries(entities)){
+    if(id===myId||!e.alive) continue;
+    // Special: civilians should hear killer more intensely
+    const dist=Math.hypot(e.x-me.x, e.y-me.y);
+    if(dist<closestDist){closestDist=dist;closestId=id;}
+  }
+  
+  if(closestId && closestDist<PROX_MAX){
+    const proximity=1-(closestDist/PROX_MAX); // 0..1
+    const entity=entities[closestId];
+    
+    // Only play if moved (bot moves every frame)
+    if(Math.abs(proximity-lastProxLevel)>.05 || closestId!==lastProxId){
+      startFootsteps(proximity);
+      // Show visual ring
+      showProxRing(proximity, entity.color, me);
+    }
+    lastProxId=closestId; lastProxLevel=proximity;
+    
+    // Extra danger alert if killer nearby
+    if(entity.role==='killer' && proximity>.7 && myRole!=='killer'){
+      // Heartbeat
+    }
+  } else {
+    stopFootsteps();
+    lastProxId=null; lastProxLevel=0;
+    document.getElementById('proximity-ring').style.display='none';
+  }
+}
+
+let proxRingFrame=0;
+function showProxRing(proximity, color, me){
+  const ring=document.getElementById('proximity-ring');
+  // Convert world pos to screen
+  const screenX=me.x-camX;
+  const screenY=me.y-camY;
+  const size=80+proximity*80;
+  ring.style.display='block';
+  ring.style.width=size+'px';
+  ring.style.height=size+'px';
+  ring.style.left=(screenX-size/2)+'px';
+  ring.style.top=(screenY-size/2)+'px';
+  ring.style.borderColor=color;
+  ring.style.opacity=0.2+proximity*0.5;
+  ring.style.borderWidth=(1+proximity*3)+'px';
+}
+
+// ═══════════════════════════════════════════════════════
+//  RENDERING
+// ═══════════════════════════════════════════════════════
+function render(){
+  ctx.clearRect(0,0,cW,cH);
+  
+  // Background – dark green grass
+  ctx.fillStyle='#0d1a0d';
+  ctx.fillRect(0,0,cW,cH);
+  
+  // Grid dots
+  ctx.fillStyle='rgba(255,255,255,.04)';
+  const gs=80;
+  const offX=(-camX%gs+gs)%gs, offY=(-camY%gs+gs)%gs;
+  for(let x=offX;x<cW;x+=gs) for(let y=offY;y<cH;y+=gs){
+    ctx.beginPath();ctx.arc(x,y,1.5,0,Math.PI*2);ctx.fill();
+  }
+  
+  // Trees
+  for(const t of TREES){
+    const sx=t.x-camX, sy=t.y-camY;
+    if(sx<-60||sx>cW+60||sy<-60||sy>cH+60) continue;
+    ctx.fillStyle='#1a3a1a';
+    ctx.beginPath();ctx.arc(sx,sy,22,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#2d5a2d';
+    ctx.beginPath();ctx.arc(sx-3,sy-5,16,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#4a3728';
+    ctx.fillRect(sx-4,sy+18,8,12);
+  }
+  
+  // Walls
+  for(const w of WALLS){
+    const sx=w.x-camX, sy=w.y-camY;
+    if(sx+w.w<0||sx>cW||sy+w.h<0||sy>cH) continue;
+    // Shadow
+    ctx.fillStyle='rgba(0,0,0,.4)';
+    ctx.fillRect(sx+4,sy+4,w.w,w.h);
+    // Wall
+    const grad=ctx.createLinearGradient(sx,sy,sx,sy+w.h);
+    grad.addColorStop(0,'#2a2a3d');grad.addColorStop(1,'#1a1a2a');
+    ctx.fillStyle=grad;
+    ctx.fillRect(sx,sy,w.w,w.h);
+    // Top edge highlight
+    ctx.fillStyle='rgba(255,255,255,.07)';
+    ctx.fillRect(sx,sy,w.w,3);
+  }
+  
+  // Hideout spots
+  for(const h of HIDEOUTS){
+    const sx=h.x-camX, sy=h.y-camY;
+    if(sx<-40||sx>cW+40) continue;
+    ctx.strokeStyle='rgba(255,214,10,.25)';
+    ctx.lineWidth=2; ctx.setLineDash([5,5]);
+    ctx.beginPath();ctx.arc(sx,sy,20,0,Math.PI*2);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(255,214,10,.1)';
+    ctx.beginPath();ctx.arc(sx,sy,20,0,Math.PI*2);ctx.fill();
+  }
+  
+  // Entities
+  for(const [id,e] of Object.entries(entities)){
+    if(!e.alive) continue;
+    const sx=e.x-camX, sy=e.y-camY;
+    if(sx<-50||sx>cW+50||sy<-50||sy>cH+50) continue;
+    
+    const isMe=id===myId;
+    const R=isMe?16:13;
+    
+    // Shadow
+    ctx.fillStyle='rgba(0,0,0,.35)';
+    ctx.beginPath();ctx.ellipse(sx+3,sy+R+3,R*.8,R*.3,0,0,Math.PI*2);ctx.fill();
+    
+    // Hidden effect
+    if(e.action==='hide'&&!isMe){
+      ctx.globalAlpha=0.3;
+    }
+    
+    // Body
+    const grad=ctx.createRadialGradient(sx-R*.3,sy-R*.3,R*.1,sx,sy,R);
+    grad.addColorStop(0,lighten(e.color,.3));
+    grad.addColorStop(1,e.color);
+    ctx.fillStyle=grad;
+    ctx.beginPath();ctx.arc(sx,sy,R,0,Math.PI*2);ctx.fill();
+    
+    // Lying down effect
+    if(e.action==='liedown'){
+      ctx.fillStyle='rgba(0,0,0,.4)';
+      ctx.beginPath();ctx.ellipse(sx,sy+4,R*1.5,R*.5,0,0,Math.PI*2);ctx.fill();
+    }
+    
+    // Role icon (only visible to self or spectators)
+    if(isMe || myDeadFlag){
+      const icons={killer:'🔪',police:'👮',civilian:'🙂'};
+      ctx.font='12px serif';ctx.textAlign='center';
+      ctx.fillText(icons[e.role]||'',sx,sy-R-4);
+    }
+    
+    // Name
+    ctx.globalAlpha=1;
+    ctx.fillStyle='rgba(0,0,0,.6)';
+    ctx.roundRect?ctx.roundRect(sx-30,sy+R+2,60,16,4):ctx.fillRect(sx-30,sy+R+2,60,16);
+    ctx.fill();
+    ctx.fillStyle=isMe?'#ffd60a':e.color;
+    ctx.font=`bold ${isMe?11:10}px 'Tajawal', sans-serif`;
+    ctx.textAlign='center';
+    ctx.fillText((e.isBot?'🤖':'')+e.name.slice(0,8),sx,sy+R+13);
+    
+    // "Me" indicator
+    if(isMe){
+      ctx.strokeStyle='rgba(255,255,255,.8)';
+      ctx.lineWidth=2.5;
+      ctx.beginPath();ctx.arc(sx,sy,R+4,0,Math.PI*2);ctx.stroke();
+      // Arrow above
+      ctx.fillStyle='#fff';
+      ctx.beginPath();
+      ctx.moveTo(sx,sy-R-16);
+      ctx.lineTo(sx-6,sy-R-8);
+      ctx.lineTo(sx+6,sy-R-8);
+      ctx.closePath();ctx.fill();
+    }
+    
+    // Run aura
+    if(e.action==='run'){
+      ctx.strokeStyle=isMe?'rgba(255,255,255,.3)':'rgba(255,255,255,.15)';
+      ctx.lineWidth=1;
+      ctx.beginPath();ctx.arc(sx,sy,R+8+(Date.now()%500)/50,0,Math.PI*2);ctx.stroke();
+    }
+  }
+  
+  // Dead entities (ghosts)
+  for(const [id,e] of Object.entries(entities)){
+    if(e.alive) continue;
+    const sx=e.x-camX, sy=e.y-camY;
+    if(sx<-50||sx>cW+50) continue;
+    ctx.globalAlpha=.25;
+    ctx.fillStyle='#888';
+    ctx.beginPath();ctx.arc(sx,sy,10,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#aaa';
+    ctx.font='10px sans-serif';ctx.textAlign='center';
+    ctx.fillText('💀',sx,sy+4);
+    ctx.globalAlpha=1;
+  }
+}
+
+function lighten(hex, amt){
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return `rgb(${Math.min(255,r+amt*255)},${Math.min(255,g+amt*255)},${Math.min(255,b+amt*255)})`;
+}
+
+// Minimap
+const minimapC=document.getElementById('minimapCanvas2');
+const minimapCtx=minimapC.getContext('2d');
+function renderMinimap(){
+  minimapCtx.clearRect(0,0,90,90);
+  minimapCtx.fillStyle='#0d1a0d';
+  minimapCtx.fillRect(0,0,90,90);
+  const sx=90/MAP_W, sy=90/MAP_H;
+  // Walls
+  minimapCtx.fillStyle='#2a2a3d';
+  for(const w of WALLS) minimapCtx.fillRect(w.x*sx,w.y*sy,w.w*sx,Math.max(2,w.h*sy));
+  // Entities
+  for(const [id,e] of Object.entries(entities)){
+    if(!e.alive) continue;
+    minimapCtx.fillStyle=id===myId?'#fff':e.color;
+    minimapCtx.beginPath();
+    minimapCtx.arc(e.x*sx,e.y*sy, id===myId?3:2, 0, Math.PI*2);
+    minimapCtx.fill();
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  GAME LOOP
+// ═══════════════════════════════════════════════════════
+let lastTime=0, myStepTimer=0;
+function gameLoop(ts){
+  if(gamePhase!=='hunt') return;
+  const dt=ts-lastTime; lastTime=ts;
+  
+  const me=entities[myId];
+  
+  // Move me
+  if(me && me.alive){
+    const {dx,dy}=getInputDir();
+    const speed=currentAction==='run'?2.8:currentAction==='hide'||currentAction==='liedown'?0.5:1.8;
+    if(dx!==0||dy!==0){
+      moveEntity(me, dx*speed, dy*speed);
+      myStepTimer+=dt;
+      if(myStepTimer>300){myStepTimer=0;SFX.step();}
+    }
+  }
+  
+  // Update bots
+  for(const [id,e] of Object.entries(entities)){
+    if(e.isBot && e.alive) updateBot(e, dt);
+  }
+  
+  // Camera follow me
+  if(me){
+    const targetCX=me.x-cW/2, targetCY=me.y-cH/2;
+    camX+=(targetCX-camX)*.12;
+    camY+=(targetCY-camY)*.12;
+    camX=Math.max(0,Math.min(MAP_W-cW,camX));
+    camY=Math.max(0,Math.min(MAP_H-cH,camY));
+  }
+  
+  // Proximity audio
+  updateProximityAudio();
+  
+  // Render
+  render();
+  renderMinimap();
+  
+  requestAnimationFrame(gameLoop);
+}
+
+// ═══════════════════════════════════════════════════════
+//  HOME SCREEN ACTIONS
+// ═══════════════════════════════════════════════════════
+function getName(){ return (document.getElementById('pName').value.trim()||'لاعب مجهول').slice(0,16); }
+function showJoin(){ SFX.click(); document.getElementById('join-card').classList.remove('hidden'); }
+function hideJoin(){ SFX.click(); document.getElementById('join-card').classList.add('hidden'); }
+
+function startSolo(){
+  SFX.click();
+  myName=getName();
+  isSolo=true; gameMode='solo';
+  // 9 bots + me = 10 players
+  const totalBots=9;
+  const roles=['killer','police'];
+  // Randomly assign my role
+  const rnd=Math.random();
+  myRole=rnd<.15?'killer':rnd<.25?'police':'civilian';
+  
+  // Assign bot roles
+  const botRoles=['killer','police'];
+  // Ensure at least 1 killer and 1 police among bots if I'm not those
+  const shuffledBotRoles=[];
+  if(myRole!=='killer') shuffledBotRoles.push('killer');
+  if(myRole!=='police') shuffledBotRoles.push('police');
+  while(shuffledBotRoles.length<totalBots) shuffledBotRoles.push('civilian');
+  shuffledBotRoles.sort(()=>Math.random()-.5);
+  
+  entities={};
+  entities[myId]=spawnRandom(myId,myName,myRole,false,0);
+  for(let i=0;i<totalBots;i++){
+    const bid='bot_'+i;
+    const bname=BOT_NAMES[i]||'بوت'+(i+1);
+    entities[bid]=spawnRandom(bid,bname,shuffledBotRoles[i],true,i+1);
+  }
+  
+  huntDuration=120; huntTimeLeft=120;
+  showRoleReveal();
+}
+
+function goCreate(){
+  SFX.click();
+  myName=getName();
+  gameMode='host'; isSolo=false;
+  roomCode=String(Math.floor(1000+Math.random()*9000));
+  // Show lobby with just me
+  entities={};
+  entities[myId]={id:myId,name:myName,role:'',alive:true,kills:0,score:0,votes:0,isBot:false,color:COLORS[0]};
+  showLobby(true);
+  // (PeerJS would go here for real MP — for demo, show lobby UI)
+  toast('في اللعبة الحقيقية، يدخل أصدقاؤك عبر الكود! (هذا وضع الديمو)');
+}
+function goJoin(){
+  SFX.click();
+  myName=getName();
+  const code=document.getElementById('rCode').value.trim();
+  if(!/^\d{4}$/.test(code)){toast('أدخل كود 4 أرقام');return;}
+  roomCode=code;
+  gameMode='guest'; isSolo=false;
+  toast('ميزة الغرف الحقيقية تحتاج استضافة HTTPS + PeerJS');
+  showLobby(false);
+}
+
+// ═══════════════════════════════════════════════════════
+//  LOBBY
+// ═══════════════════════════════════════════════════════
+function showLobby(isHost){
+  showScreen('lobby');
+  document.getElementById('lobbyCode').textContent=roomCode||'----';
+  document.getElementById('hostCtrl').classList.toggle('hidden',!isHost);
+  document.getElementById('guestWait').classList.toggle('hidden',isHost);
+  renderLobbyList();
+}
+function renderLobbyList(){
+  const el=document.getElementById('lobbyList');
+  const list=Object.values(entities);
+  document.getElementById('pCount').textContent=list.length+'/15';
+  el.innerHTML=list.map((e,i)=>`
+    <div class="vote-item" style="cursor:default;margin-bottom:6px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="avatar" style="background:${e.color}">${e.name[0]}</div>
+        <span>${e.isBot?'<span class="bot-tag">بوت</span>':''}${e.name}${e.id===myId?' (أنت)':''}</span>
+      </div>
+      ${i===0?'<span style="color:var(--gold)">👑</span>':''}
+    </div>
+  `).join('');
+  const count=list.length;
+  const ready=count>=5;
+  document.getElementById('lobbyStatus').textContent=ready?'✅ جاهزون للبدء!':'في انتظار '+(5-count)+' لاعبين...';
+  document.getElementById('lobbyStatus').className='smsg '+(ready?'smsg-ok':'smsg-info');
+  const sb=document.getElementById('startBtn');
+  if(sb){sb.disabled=!ready;sb.style.opacity=ready?'1':'0.5';}
+}
+function shareRoom(){
+  SFX.click();
+  const url=location.href.split('?')[0]+'?room='+roomCode;
+  const msg='🔪 انضم لغرفة لعبة القاتل!\n\nكود الغرفة: '+roomCode+'\nأو افتح:\n'+url;
+  if(navigator.share) navigator.share({title:'لعبة القاتل',text:msg}).catch(()=>{});
+  else window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+function launchGame(){
+  SFX.click();
+  huntDuration=parseInt(document.getElementById('huntSel').value);
+  huntTimeLeft=huntDuration;
+  // Assign roles
+  const ids=Object.keys(entities);
+  ids.sort(()=>Math.random()-.5);
+  entities[ids[0]].role='killer';
+  entities[ids[1]].role='police';
+  for(let i=2;i<ids.length;i++) entities[ids[i]].role='civilian';
+  myRole=entities[myId].role;
+  showRoleReveal();
+}
+
+// ═══════════════════════════════════════════════════════
+//  ROLE REVEAL
+// ═══════════════════════════════════════════════════════
+const ROLE_DATA={
+  killer:{icon:'🔪',label:'القاتل',cls:'killer',desc:'اقتل أكبر عدد قبل انتهاء الوقت! تجنب الشرطي.'},
+  police:{icon:'👮',label:'الشرطي',cls:'police',desc:'أطلق النار على القاتل فقط! إذا أخطأت تموت!'},
+  civilian:{icon:'🏃',label:'مدني',cls:'civ',desc:'اختبئ وابق حياً حتى نهاية الوقت!'},
+};
+function showRoleReveal(){
+  showScreen('role');
+  const r=ROLE_DATA[myRole]||ROLE_DATA.civilian;
+  document.getElementById('roleContent').innerHTML=`
+    <span class="role-icon-big" aria-hidden="true">${r.icon}</span>
+    <div class="role-title ${r.cls}">${r.label}</div>
+    <p class="role-desc">${r.desc}</p>
+  `;
+  speak('دورك هو: '+r.label+'. '+r.desc);
+  SFX.danger();
+}
+function enterGame(){
+  SFX.click();
+  startGameCanvas();
+}
+
+// ═══════════════════════════════════════════════════════
+//  START CANVAS GAME
+// ═══════════════════════════════════════════════════════
+function startGameCanvas(){
+  gamePhase='hunt';
+  myDeadFlag=false;
+  currentAction='idle';
+  
+  // Show canvas
+  canvas.classList.add('active');
+  document.getElementById('hud').classList.add('active');
+  document.getElementById('joystick-zone').classList.add('active');
+  document.getElementById('action-btns').classList.add('active');
+  document.getElementById('minimap').classList.add('active');
+  
+  buildActionBtns();
+  updateHUD();
+  startBGM();
+  startHuntTimer();
+  
+  lastTime=performance.now();
+  requestAnimationFrame(gameLoop);
+  speak(myRole==='killer'?'اللعبة بدأت! أنت القاتل، اصطد الجميع!':myRole==='police'?'اللعبة بدأت! أنت الشرطي!':'اللعبة بدأت! اختبئ!');
+}
+
+function buildActionBtns(){
+  const c=document.getElementById('action-btns');
+  const base=`
+    <div class="act-group"><button class="act-btn act-btn-hide" onclick="setAction('hide')" aria-label="اختباء">🫣</button><div class="act-btn-label">اختباء</div></div>
+    <div class="act-group"><button class="act-btn act-btn-run" onclick="setAction('run')" aria-label="هروب">🏃</button><div class="act-btn-label">هروب</div></div>
+    <div class="act-group"><button class="act-btn act-btn-lie" onclick="setAction('liedown')" aria-label="استلقاء">🛌</button><div class="act-btn-label">استلقاء</div></div>
+  `;
+  const killerBtn=myRole==='killer'?`<div class="act-group"><button class="act-btn act-btn-kill" onclick="openKillPicker()" aria-label="قتل">🔪</button><div class="act-btn-label">قتل</div></div>`:'';
+  const policeBtn=myRole==='police'?`<div class="act-group"><button class="act-btn act-btn-shoot" onclick="openShootPicker()" aria-label="إطلاق نار">🔫</button><div class="act-btn-label">إطلاق</div></div>`:'';
+  c.innerHTML=base+killerBtn+policeBtn;
+}
+
+function setAction(a){
+  SFX.click();
+  currentAction=a;
+  const me=entities[myId]; if(me) me.action=a;
+  const labels={hide:'مختبئ 🫣',run:'هارب 🏃',liedown:'مستلقٍ 🛌'};
+  toast(labels[a]||'');
+  speak(labels[a]||'');
+}
+
+// ═══════════════════════════════════════════════════════
+//  KILL / SHOOT PICKERS
+// ═══════════════════════════════════════════════════════
+function openKillPicker(){
+  SFX.click();
+  const me=entities[myId]; if(!me||!me.alive) return;
+  const list=document.getElementById('killPickList');
+  const nearby=Object.entries(entities)
+    .filter(([id,e])=>id!==myId&&e.alive&&Math.hypot(e.x-me.x,e.y-me.y)<200)
+    .sort((a,b)=>Math.hypot(b[1].x-me.x,b[1].y-me.y)-Math.hypot(a[1].x-me.x,a[1].y-me.y));
+  
+  if(nearby.length===0){toast('لا يوجد أحد قريب منك!'); return;}
+  list.innerHTML=nearby.map(([id,e])=>`
+    <button class="btn btn-red" onclick="doKill('${id}');closeOv('ov-kill')" aria-label="قتل ${e.name}" style="margin-bottom:8px">
+      🔪 ${e.name} (${Math.round(Math.hypot(e.x-me.x,e.y-me.y))} متر)
+    </button>
+  `).join('');
+  openOv('ov-kill');
+}
+
+function doKill(targetId){
+  killEntity(myId, targetId);
+}
+
+function openShootPicker(){
+  SFX.click();
+  const me=entities[myId]; if(!me||!me.alive) return;
+  const list=document.getElementById('shootPickList');
+  const targets=Object.entries(entities).filter(([id,e])=>id!==myId&&e.alive);
+  if(targets.length===0){toast('لا يوجد أحد!');return;}
+  list.innerHTML=targets.map(([id,e])=>`
+    <button class="btn btn-shoot" onclick="doShoot('${id}');closeOv('ov-shoot')" aria-label="إطلاق النار على ${e.name}" style="margin-bottom:8px;background:var(--blue);color:#fff">
+      🔫 ${e.name}
+    </button>
+  `).join('');
+  openOv('ov-shoot');
+}
+
+function doShoot(targetId){
+  const target=entities[targetId]; if(!target) return;
+  SFX.shoot();
+  const correct=target.role==='killer';
+  if(correct){
+    target.alive=false;
+    toast('✅ أصبت القاتل! المدنيون يفوزون!');
+    speak('أصبت القاتل!');
+    setTimeout(()=>endHunt('civilians'),1200);
+  } else {
+    // Police dies
+    const me=entities[myId]; if(me) me.alive=false;
+    myDeadFlag=true;
+    toast('❌ أخطأت! أطلقت النار على بريء. أنت مت!');
+    speak('أخطأت! أنت مت!');
+    onMyDeath();
+    checkWinCondition();
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  HUD + TIMER
+// ═══════════════════════════════════════════════════════
+function updateHUD(){
+  const me=entities[myId];
+  const roleLabels={killer:'🔪 قاتل',police:'👮 شرطي',civilian:'🏃 مدني'};
+  document.getElementById('hud-role').textContent=roleLabels[myRole]||'';
+  document.getElementById('hud-kills').textContent=me?('قتلات: '+me.kills):'';
+}
+
+let huntInterval;
+function startHuntTimer(){
+  clearInterval(huntInterval);
+  huntInterval=setInterval(()=>{
+    huntTimeLeft--;
+    const m=String(Math.floor(huntTimeLeft/60)).padStart(2,'0');
+    const s=String(huntTimeLeft%60).padStart(2,'0');
+    const el=document.getElementById('hud-timer');
+    el.textContent=m+':'+s;
+    el.classList.toggle('danger',huntTimeLeft<=15);
+    if(huntTimeLeft<=10) SFX.tick();
+    updateHUD();
+    if(huntTimeLeft<=0){
+      clearInterval(huntInterval);
+      endHunt('time');
+    }
+  },1000);
+}
+
+function endHunt(reason){
+  clearInterval(huntInterval);
+  gamePhase='vote';
+  stopBGM();
+  stopFootsteps();
+  // Reset votes
+  Object.values(entities).forEach(e=>e.votes=0);
+  setTimeout(showVoteScreen, 500);
+}
+
+// ═══════════════════════════════════════════════════════
+//  VOTING
+// ═══════════════════════════════════════════════════════
+let voteInterval;
+function showVoteScreen(){
+  // Hide canvas
+  canvas.classList.remove('active');
+  document.getElementById('hud').classList.remove('active');
+  document.getElementById('joystick-zone').classList.remove('active');
+  document.getElementById('action-btns').classList.remove('active');
+  document.getElementById('minimap').classList.remove('active');
+  document.getElementById('proximity-ring').style.display='none';
+  
+  selectedVoteId=null; hasVoted=false;
+  showScreen('vote');
+  renderVoteList();
+  startVoteTimer();
+  speak('مرحلة التصويت! من تعتقد أنه القاتل؟');
+}
+
+function renderVoteList(){
+  const el=document.getElementById('voteList');
+  el.innerHTML=Object.entries(entities)
+    .filter(([id,e])=>id!==myId&&e.alive)
+    .map(([id,e],i)=>`
+      <div class="vote-item ${selectedVoteId===id?'selected':''}" onclick="selectVote('${id}')" role="button" tabindex="0" aria-label="التصويت ضد ${e.name} - ${e.votes} أصوات">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="avatar" style="background:${e.color}">${e.isBot?'🤖':e.name[0]}</div>
+          <span>${e.name}</span>
+        </div>
+        <span class="vote-votes">${e.votes} ✋</span>
+      </div>
+    `).join('');
+}
+
+function selectVote(id){
+  if(hasVoted||myDeadFlag) return;
+  SFX.vote();
+  selectedVoteId=id;
+  renderVoteList();
+  toast('اخترت: '+entities[id]?.name);
+}
+
+function castVote(){
+  if(!selectedVoteId){toast('اختر لاعباً أولاً');return;}
+  if(hasVoted) return;
+  hasVoted=true;
+  SFX.vote();
+  if(entities[selectedVoteId]) entities[selectedVoteId].votes++;
+  document.getElementById('voteConfirmBtn').classList.add('hidden');
+  document.getElementById('voteWait').classList.remove('hidden');
+  
+  // Bots also vote (random, but killer might vote against civilian)
+  if(isSolo){
+    Object.entries(entities).filter(([id,e])=>e.isBot&&e.alive).forEach(([bid,bot])=>{
+      // Killer bot votes against a random non-killer
+      let candidates=Object.keys(entities).filter(id=>id!==bid&&entities[id].alive);
+      if(bot.role==='killer') candidates=candidates.filter(id=>entities[id].role!=='killer');
+      if(candidates.length>0){
+        const pick=candidates[Math.floor(Math.random()*candidates.length)];
+        if(entities[pick]) entities[pick].votes++;
+      }
+    });
+    renderVoteList();
+  }
+}
+
+function startVoteTimer(){
+  clearInterval(voteInterval);
+  voteTimeLeft=30;
+  voteInterval=setInterval(()=>{
+    voteTimeLeft--;
+    const el=document.getElementById('voteTimerDisp');
+    el.textContent=voteTimeLeft;
+    el.classList.toggle('danger',voteTimeLeft<=5);
+    if(voteTimeLeft<=5) SFX.tick();
+    if(voteTimeLeft<=0){clearInterval(voteInterval);resolveVotes();}
+  },1000);
+}
+
+function resolveVotes(){
+  // Most voted
+  let maxV=0,mostId=null;
+  Object.entries(entities).filter(([id,e])=>id!==myId||true).forEach(([id,e])=>{
+    if((e.votes||0)>maxV){maxV=e.votes;mostId=id;}
+  });
+  const killerPid=Object.entries(entities).find(([id,e])=>e.role==='killer')?.[0];
+  showResult(mostId===killerPid?'civilians':'killer');
+}
+
+// ═══════════════════════════════════════════════════════
+//  RESULT
+// ═══════════════════════════════════════════════════════
+function showResult(winner){
+  gamePhase='result';
+  stopBGM(); stopFootsteps();
+  canvas.classList.remove('active');
+  ['hud','joystick-zone','action-btns','minimap'].forEach(id=>{
+    document.getElementById(id).classList.remove('active');
+  });
+  
+  const civWin=winner==='civilians';
+  const iWin=(civWin&&myRole!=='killer')||(!civWin&&myRole==='killer');
+  iWin?SFX.win():SFX.lose();
+  
+  const killerEntry=Object.entries(entities).find(([id,e])=>e.role==='killer');
+  const killerName=killerEntry?killerEntry[1].name:'؟';
+  const killerKills=killerEntry?killerEntry[1].kills:0;
+  
+  // Calc scores
+  Object.entries(entities).forEach(([id,e])=>{
+    if(e.role==='killer') e.score=(e.kills||0)*10+(civWin?0:30);
+    else if(e.alive&&civWin) e.score=(e.score||0)+20;
+    else if(e.role==='police'&&civWin) e.score=(e.score||0)+30;
+  });
+  
+  document.getElementById('resultContent').innerHTML=`
+    <span class="result-icon">${civWin?'🎉':'💀'}</span>
+    <div class="result-title" style="color:${civWin?'var(--green)':'var(--red)'}">${civWin?'فاز المدنيون!':'فاز القاتل!'}</div>
+    <p style="color:var(--gray);margin-bottom:6px">القاتل كان: <strong style="color:var(--red)">${killerName}</strong></p>
+    <p style="color:var(--gray);margin-bottom:16px">عدد القتلى: <strong style="color:var(--gold)">${killerKills}</strong></p>
+    <div style="font-size:1.3rem;font-weight:900;color:${iWin?'var(--gold)':'var(--gray)'}">${iWin?'🏆 أنت فزت!':'😔 خسرت هذه المرة'}</div>
+  `;
+  
+  const sb=document.getElementById('scoreboard');
+  const sorted=Object.entries(entities).sort((a,b)=>(b[1].score||0)-(a[1].score||0));
+  const icons={killer:'🔪',police:'👮',civilian:'🏃'};
+  sb.innerHTML=sorted.map(([id,e],i)=>`
+    <div class="score-row">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span>${['🥇','🥈','🥉'][i]||''}</span>
+        <div class="avatar" style="background:${e.color};width:28px;height:28px;font-size:.75rem">${e.name[0]}</div>
+        <span>${e.name}${id===myId?' (أنت)':''} ${icons[e.role]||''}</span>
+      </div>
+      <span class="score-pts">${e.score||0}نقطة</span>
+    </div>
+  `).join('');
+  
+  showScreen('result');
+  speak(civWin?'فاز المدنيون!':'فاز القاتل!');
+}
+
+// ═══════════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+}
+function openOv(id){document.getElementById(id).classList.add('active');}
+function closeOv(id){document.getElementById(id).classList.remove('active');}
+
+function speak(text){
+  try{
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='ar-SA';u.rate=1.1;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
   }catch(e){}
 }
 
-// ══════════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded',()=>{
-  speak('مرحباً بك في لعبة الشبح. أدخل اسمك وابدأ!');
-  document.getElementById('input-name').addEventListener('keydown',e=>{if(e.key==='Enter')goCreateRoom();});
-  const params=new URLSearchParams(window.location.search);
-  const roomParam=params.get('room');
-  if(roomParam){
-    toast('🔗 رمز الغرفة: '+roomParam+' — أدخل اسمك وانضم!');
-    speak('رمز الغرفة '+roomParam+'. أدخل اسمك وانضم!');
-    window._pendingRoom=roomParam.toUpperCase();
+let toastT;
+function toast(msg,d=3000){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),d);
+}
+
+function playAgain(){
+  SFX.click();
+  isSolo?startSolo():(gameMode==='host'?showLobby(true):goHome());
+}
+function goHome(){SFX.click();location.reload();}
+
+// ═══════════════════════════════════════════════════════
+//  AUTO-JOIN FROM URL
+// ═══════════════════════════════════════════════════════
+(function(){
+  const p=new URLSearchParams(location.search);
+  const code=p.get('room');
+  if(code&&/^\d{4}$/.test(code)){
+    document.getElementById('rCode').value=code;
+    document.getElementById('join-card').classList.remove('hidden');
+    toast('كود الغرفة: '+code+' — أدخل اسمك وانضم!');
+    speak('مرحباً! أدخل اسمك ثم اضغط انضم الآن للدخول للغرفة');
   }
-});
+})();
 </script>
 </body>
 </html>
