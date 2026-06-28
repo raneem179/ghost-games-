@@ -2,1488 +2,1588 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>لعبة القاتل 🔪</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>القلعة - لعبة الغموض</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.2/peerjs.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
 :root{
-  --bg:#080810;--surface:#10101a;--card:#181825;--border:#252538;
-  --red:#e63946;--blue:#4361ee;--gold:#ffd60a;--green:#06d6a0;
-  --gray:#7a7a9a;--white:#f0f0f8;--font:'Tajawal',sans-serif;
+  --bg:#0a0a0f;--surface:#12121a;--surface2:#1a1a28;
+  --gold:#c9a84c;--gold2:#f0d080;--red:#c0392b;
+  --blue:#2980b9;--green:#27ae60;--purple:#8e44ad;
+  --text:#e8e0d0;--muted:#888;--border:#2a2a3a;
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:var(--font);background:var(--bg);color:var(--white);overflow:hidden;height:100vh;width:100vw;position:fixed}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+.screen{display:none;min-height:100vh;}
+.screen.active{display:flex;flex-direction:column;}
 
-/* ── SCREENS ── */
-.screen{display:none;position:fixed;inset:0;flex-direction:column;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
-.screen.active{display:flex}
+/* ── MENU ── */
+#menuScreen{
+  align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at center,#1a0a2e 0%,#0a0a0f 70%);
+  position:relative;overflow:hidden;
+}
+.stars{position:absolute;inset:0;pointer-events:none;}
+.star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;animation:twinkle 3s infinite;}
+@keyframes twinkle{0%,100%{opacity:.3}50%{opacity:1}}
+.castle-bg{position:absolute;bottom:0;left:50%;transform:translateX(-50%);font-size:200px;opacity:.05;user-select:none;line-height:1;}
+.menu-content{text-align:center;z-index:10;padding:20px;width:100%;max-width:400px;}
+.game-title{
+  font-size:clamp(52px,12vw,100px);font-weight:900;color:var(--gold);
+  text-shadow:0 0 40px rgba(201,168,76,.5);letter-spacing:4px;margin-bottom:6px;
+  animation:glow 3s ease-in-out infinite;
+}
+@keyframes glow{0%,100%{text-shadow:0 0 40px rgba(201,168,76,.4)}50%{text-shadow:0 0 70px rgba(201,168,76,.9),0 0 120px rgba(201,168,76,.3)}}
+.game-subtitle{color:var(--muted);font-size:16px;margin-bottom:40px;letter-spacing:2px;}
+.menu-btn{
+  display:block;width:100%;margin:12px auto;padding:18px 24px;
+  background:linear-gradient(135deg,var(--surface2),var(--surface));
+  border:1px solid var(--gold);border-radius:10px;color:var(--gold);
+  font-size:17px;font-family:'Tajawal',sans-serif;cursor:pointer;
+  transition:all .3s;letter-spacing:1px;
+}
+.menu-btn:hover{background:var(--gold);color:var(--bg);transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,168,76,.3);}
+.menu-btn.blue{border-color:var(--blue);color:var(--blue);}
+.menu-btn.blue:hover{background:var(--blue);color:#fff;}
+.menu-btn.green{border-color:var(--green);color:var(--green);}
+.menu-btn.green:hover{background:var(--green);color:#fff;}
 
-/* ── HOME ── */
-.logo-title{font-size:clamp(3rem,12vw,5.5rem);font-weight:900;text-align:center;line-height:1;letter-spacing:-2px}
-.logo-title .r{color:var(--red);text-shadow:0 0 40px rgba(230,57,70,.7)}
-.logo-title .w{color:var(--white)}
-.sub{color:var(--gray);text-align:center;margin:8px 0 36px;font-size:.95rem}
-.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;width:100%;max-width:400px}
-.inp{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:14px 16px;color:var(--white);font-family:var(--font);font-size:1rem;margin-bottom:14px;outline:none;transition:border .2s}
-.inp:focus{border-color:var(--blue)}
-.inp::placeholder{color:var(--gray)}
-label{display:block;color:var(--gray);font-size:.82rem;margin-bottom:5px}
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px;border-radius:12px;border:none;font-family:var(--font);font-size:1rem;font-weight:700;cursor:pointer;transition:all .18s;margin-bottom:10px;min-height:52px}
-.btn:active{transform:scale(.97)}
-.btn-red{background:var(--red);color:#fff}
-.btn-red:hover{box-shadow:0 0 20px rgba(230,57,70,.5)}
-.btn-blue{background:var(--blue);color:#fff}
-.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--gray)}
-.btn-ghost:hover{border-color:var(--white);color:var(--white)}
-.btn-gold{background:var(--gold);color:#000}
-.btn-green{background:var(--green);color:#000}
-.sep{height:1px;background:var(--border);margin:14px 0}
+/* ── NAME MODAL ── */
+.name-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.85);
+  display:none;align-items:center;justify-content:center;z-index:200;padding:20px;
+}
+.name-overlay.active{display:flex;}
+.name-card{
+  background:var(--surface);border:1px solid var(--gold);border-radius:16px;
+  padding:32px;width:100%;max-width:360px;text-align:center;
+  animation:popIn .3s ease;
+}
+@keyframes popIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.name-card h2{font-size:24px;color:var(--gold);margin-bottom:6px;}
+.name-card p{color:var(--muted);font-size:13px;margin-bottom:20px;}
+.name-input{
+  width:100%;padding:14px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:16px;
+  margin-bottom:14px;text-align:center;transition:border-color .2s;
+}
+.name-input:focus{outline:none;border-color:var(--gold);}
+.avatar-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;}
+.av-btn{
+  font-size:26px;padding:6px;border-radius:8px;border:2px solid transparent;
+  cursor:pointer;background:var(--surface2);transition:all .2s;
+}
+.av-btn.selected{border-color:var(--gold);background:rgba(201,168,76,.15);}
+.av-btn:hover{border-color:var(--muted);}
 
-/* ── CANVAS GAME ── */
-#gameCanvas{
-  position:fixed;top:0;left:0;
-  width:100vw;height:100vh;
-  touch-action:none;
-  display:none;
+/* ── LOBBY ── */
+#lobbyScreen{background:var(--bg);padding:0;}
+.lobby-top{
+  padding:16px;background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;flex-direction:column;gap:8px;
 }
-#gameCanvas.active{display:block}
-
-/* ── HUD ── */
-#hud{
-  position:fixed;top:0;left:0;right:0;
-  padding:10px 14px;
-  display:none;
-  flex-direction:column;gap:6px;
-  pointer-events:none;
-  z-index:50;
+.lobby-title{font-size:22px;font-weight:900;color:var(--gold);text-align:center;}
+.room-info{
+  background:var(--surface2);border:1px solid var(--border);border-radius:8px;
+  padding:12px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;
 }
-#hud.active{display:flex}
-#hud-top{display:flex;justify-content:space-between;align-items:center}
-.hud-badge{
-  background:rgba(8,8,16,.85);
-  border:1px solid var(--border);
-  border-radius:100px;
-  padding:5px 14px;
-  font-size:.82rem;
-  font-weight:700;
-  backdrop-filter:blur(8px);
+.room-code-big{
+  font-size:28px;font-weight:900;color:var(--gold2);letter-spacing:6px;flex:1;
+  text-align:center;
 }
-.hud-timer{font-size:1.4rem;font-weight:900;color:var(--gold);text-shadow:0 0 20px rgba(255,214,10,.5)}
-.hud-timer.danger{color:var(--red);animation:pulse .5s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-#hud-role{color:var(--white)}
-
-/* ── JOYSTICK ── */
-#joystick-zone{
-  position:fixed;bottom:100px;left:20px;
-  width:130px;height:130px;
-  display:none;z-index:60;
+.copy-btn{
+  background:transparent;border:1px solid var(--border);color:var(--muted);
+  padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;
+  font-family:'Tajawal',sans-serif;transition:all .2s;white-space:nowrap;
 }
-#joystick-zone.active{display:block}
-#joystick-base{
-  width:130px;height:130px;
-  border-radius:50%;
-  background:rgba(255,255,255,.06);
-  border:2px solid rgba(255,255,255,.15);
-  position:relative;
+.copy-btn:hover{border-color:var(--gold);color:var(--gold);}
+.share-row{
+  background:rgba(41,128,185,.1);border:1px solid rgba(41,128,185,.3);
+  border-radius:8px;padding:10px 14px;font-size:12px;color:var(--muted);
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
 }
-#joystick-knob{
-  width:52px;height:52px;
-  border-radius:50%;
-  background:rgba(255,255,255,.25);
-  border:2px solid rgba(255,255,255,.4);
-  position:absolute;
-  top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  transition:background .1s;
-}
-
-/* ── ACTION BUTTONS ── */
-#action-btns{
-  position:fixed;bottom:20px;right:16px;
-  display:none;flex-direction:column;gap:8px;
-  z-index:60;
-}
-#action-btns.active{display:flex}
-.act-btn{
-  width:64px;height:64px;
-  border-radius:50%;
-  border:2px solid rgba(255,255,255,.2);
-  font-size:1.5rem;
-  cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--font);
-  transition:all .15s;
-  -webkit-tap-highlight-color:transparent;
-}
-.act-btn:active{transform:scale(.9)}
-.act-btn-hide{background:rgba(67,97,238,.3);border-color:var(--blue)}
-.act-btn-run{background:rgba(6,214,160,.3);border-color:var(--green)}
-.act-btn-lie{background:rgba(255,214,10,.2);border-color:var(--gold)}
-.act-btn-kill{
-  background:linear-gradient(135deg,#7a0000,var(--red));
-  border-color:var(--red);
-  box-shadow:0 0 20px rgba(230,57,70,.6);
-  animation:pulse-red 1.5s infinite;
-  width:72px;height:72px;
-}
-@keyframes pulse-red{0%,100%{box-shadow:0 0 15px rgba(230,57,70,.4)}50%{box-shadow:0 0 35px rgba(230,57,70,.9)}}
-.act-btn-shoot{
-  background:linear-gradient(135deg,#001870,var(--blue));
-  border-color:var(--blue);
-  box-shadow:0 0 20px rgba(67,97,238,.5);
-  width:72px;height:72px;
-}
-.act-btn-label{font-size:.6rem;font-weight:700;color:var(--gray);text-align:center;margin-top:2px}
-.act-group{display:flex;flex-direction:column;align-items:center}
-
-/* ── PROXIMITY INDICATOR ── */
-#proximity-ring{
-  position:fixed;
-  border-radius:50%;
-  border:3px solid transparent;
-  pointer-events:none;
-  z-index:40;
-  transition:all .1s;
-  display:none;
-}
-
-/* ── MINIMAP ── */
-#minimap{
-  position:fixed;bottom:100px;right:16px;
-  width:90px;height:90px;
-  background:rgba(8,8,16,.8);
-  border:1px solid var(--border);
-  border-radius:10px;
-  display:none;
-  overflow:hidden;
-  z-index:55;
-}
-#minimap.active{display:block}
-#minimapCanvas{width:90px;height:90px}
-
-/* ── OVERLAY PANELS ── */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;align-items:center;justify-content:center;padding:20px}
-.overlay.active{display:flex}
-.overlay-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px 22px;width:100%;max-width:360px;text-align:center}
-h2{font-size:1.25rem;font-weight:700;margin-bottom:14px;text-align:center}
-
-/* ── ROLE REVEAL ── */
-#role-screen{text-align:center}
-.role-icon-big{font-size:5rem;display:block;margin-bottom:12px}
-.role-title{font-size:2rem;font-weight:900;margin-bottom:8px}
-.role-title.killer{color:var(--red);text-shadow:0 0 30px rgba(230,57,70,.7)}
-.role-title.police{color:var(--blue)}
-.role-title.civ{color:var(--green)}
-.role-desc{color:var(--gray);line-height:1.7;font-size:.95rem;margin-bottom:24px}
-
-/* ── VOTE SCREEN ── */
-.vote-item{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:12px 14px;background:var(--surface);border-radius:10px;
-  border:1.5px solid var(--border);cursor:pointer;margin-bottom:8px;
-  transition:all .18s;
-}
-.vote-item.selected{border-color:var(--gold);background:rgba(255,214,10,.08)}
-.vote-votes{font-size:.78rem;color:var(--gold);font-weight:700}
-.avatar{
-  width:34px;height:34px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-weight:700;font-size:.9rem;flex-shrink:0;margin-left:10px;
-}
-
-/* ── RESULT ── */
-.result-icon{font-size:5rem;display:block;margin-bottom:12px}
-.result-title{font-size:2rem;font-weight:900;margin-bottom:8px}
-.score-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--surface);border-radius:8px;margin-bottom:6px}
-.score-pts{font-weight:900;color:var(--gold)}
-
-/* ── TOAST ── */
-#toast{
-  position:fixed;bottom:200px;left:50%;
-  transform:translateX(-50%) translateY(80px);
-  background:rgba(24,24,37,.97);
-  border:1px solid var(--border);
-  color:var(--white);
-  padding:10px 22px;border-radius:100px;
-  font-size:.9rem;font-weight:600;
-  z-index:999;transition:transform .3s cubic-bezier(.34,1.56,.64,1);
-  white-space:nowrap;pointer-events:none;
-  max-width:85vw;text-align:center;
-}
-#toast.show{transform:translateX(-50%) translateY(0)}
-
-/* ── STATUS MSG ── */
-.smsg{padding:10px 14px;border-radius:8px;font-size:.88rem;margin-bottom:12px;text-align:center}
-.smsg-info{background:rgba(67,97,238,.15);color:#a0b4ff;border:1px solid rgba(67,97,238,.3)}
-.smsg-warn{background:rgba(230,57,70,.15);color:#ff9da3;border:1px solid rgba(230,57,70,.3)}
-.smsg-ok{background:rgba(6,214,160,.15);color:#6ffde3;border:1px solid rgba(6,214,160,.3)}
-
-.room-code{
-  font-size:2.8rem;font-weight:900;letter-spacing:10px;
-  color:var(--gold);text-shadow:0 0 20px rgba(255,214,10,.4);
-  text-align:center;margin:12px 0;
-}
-.hidden{display:none!important}
-.mt8{margin-top:8px}.mt16{margin-top:16px}
-.txt-sm{font-size:.82rem;color:var(--gray);text-align:center}
-.txt-center{text-align:center}
-.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;animation:blink 1.5s infinite;margin-left:5px}
+.share-url{color:var(--blue);word-break:break-all;flex:1;font-size:11px;}
+.conn-row{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--muted);}
+.dot.online{background:var(--green);box-shadow:0 0 6px var(--green);}
+.dot.connecting{background:var(--gold);animation:blink 1s infinite;}
+.dot.error{background:var(--red);}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 
-/* ── BOT TAG ── */
-.bot-tag{font-size:.65rem;background:rgba(255,214,10,.2);color:var(--gold);border-radius:4px;padding:1px 5px;margin-right:4px}
+.timer-row{
+  display:flex;align-items:center;gap:10px;
+  background:var(--surface2);border:1px solid var(--border);border-radius:8px;
+  padding:10px 14px;
+}
+.timer-row label{color:var(--muted);font-size:13px;}
+.timer-sel{
+  background:var(--bg);border:1px solid var(--border);color:var(--text);
+  padding:6px 10px;border-radius:6px;font-family:'Tajawal',sans-serif;font-size:13px;cursor:pointer;
+}
+
+.players-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));
+  gap:10px;padding:14px;
+}
+.p-slot{
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:12px 8px;text-align:center;min-height:90px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  transition:all .3s;
+}
+.p-slot.filled{border-color:rgba(201,168,76,.4);background:var(--surface2);}
+.p-slot.me{border-color:var(--blue);box-shadow:0 0 10px rgba(41,128,185,.2);}
+.p-slot.bot{border-color:rgba(142,68,173,.4);}
+.p-slot.online-player{border-color:rgba(39,174,96,.5);}
+.p-slot .av{font-size:28px;}
+.p-slot .pname{font-size:13px;font-weight:700;color:var(--text);}
+.p-slot .ptag{font-size:10px;color:var(--muted);}
+.empty-slot{color:var(--border);font-size:12px;}
+
+.lobby-actions{padding:0 14px 14px;display:flex;gap:8px;flex-wrap:wrap;}
+.btn{padding:12px 18px;border-radius:8px;font-size:14px;font-family:'Tajawal',sans-serif;cursor:pointer;border:none;transition:all .2s;font-weight:700;}
+.btn-gold{background:var(--gold);color:var(--bg);}
+.btn-gold:hover{background:var(--gold2);}
+.btn-gold:disabled{opacity:.4;cursor:not-allowed;}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);}
+.btn-ghost:hover{border-color:var(--muted);color:var(--text);}
+.btn-red{background:var(--red);color:#fff;}
+.btn-sm{padding:8px 14px;font-size:13px;}
+.player-count-note{text-align:center;color:var(--muted);font-size:12px;padding:0 14px 10px;}
+
+/* ── GAME SCREEN ── */
+#gameScreen{background:#0d1117;position:relative;}
+.game-hud{
+  position:absolute;top:10px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:12px;
+  background:rgba(0,0,0,.75);padding:8px 18px;border-radius:30px;
+  border:1px solid var(--border);z-index:20;backdrop-filter:blur(4px);
+}
+.hud-timer{font-size:22px;font-weight:900;color:var(--gold);min-width:55px;text-align:center;}
+.hud-timer.urgent{color:var(--red);animation:blink .5s infinite;}
+.role-badge{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;}
+.rb-cop{background:var(--blue);color:#fff;}
+.rb-killer{background:var(--red);color:#fff;}
+.rb-civilian{background:var(--surface2);color:var(--muted);border:1px solid var(--border);}
+.hud-alive{font-size:12px;color:var(--muted);}
+
+.game-map{
+  position:relative;width:100%;height:58vh;
+  background:linear-gradient(180deg,#100820 0%,#0d1020 60%,#0a1510 100%);
+  overflow:hidden;
+}
+.castle-floor{position:absolute;bottom:0;width:100%;height:38%;background:linear-gradient(180deg,#181525,#0d1010);border-top:2px solid #2a2535;}
+.rooms-visual{
+  position:absolute;top:8%;left:50%;transform:translateX(-50%);
+  width:92%;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;height:54%;
+}
+.room-block{
+  background:rgba(26,18,40,.65);border:1px solid #2a2535;border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,.15);font-size:10px;
+}
+.map-player{position:absolute;display:flex;flex-direction:column;align-items:center;transition:left .6s ease,top .6s ease;z-index:10;}
+.player-bubble{
+  width:38px;height:38px;border-radius:50%;border:2px solid var(--gold);
+  display:flex;align-items:center;justify-content:center;font-size:17px;
+  background:var(--surface2);position:relative;transition:all .3s;
+}
+.map-player.me .player-bubble{border-color:var(--blue);box-shadow:0 0 12px rgba(41,128,185,.5);}
+.map-player.dead .player-bubble{opacity:.3;filter:grayscale(1);border-color:#444;}
+.map-player.hiding .player-bubble{opacity:.35;border-style:dashed;}
+.player-label{font-size:9px;color:#ddd;margin-top:2px;background:rgba(0,0,0,.7);padding:1px 5px;border-radius:3px;white-space:nowrap;}
+.step-dot{position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:7px;height:7px;border-radius:50%;background:rgba(201,168,76,.6);animation:pulse .5s infinite;}
+@keyframes pulse{0%,100%{transform:translateX(-50%) scale(1);opacity:.6}50%{transform:translateX(-50%) scale(1.6);opacity:.2}}
+.blood{position:absolute;font-size:22px;animation:splat .9s ease forwards;pointer-events:none;z-index:15;}
+@keyframes splat{0%{transform:scale(0);opacity:1}50%{transform:scale(1.6);opacity:.8}100%{transform:scale(1);opacity:0}}
+
+.event-log{max-height:72px;overflow-y:auto;padding:5px 14px;background:rgba(0,0,0,.5);font-size:11px;color:var(--muted);}
+.ev{padding:2px 0;border-bottom:1px solid rgba(255,255,255,.04);animation:fadeIn .3s ease;}
+.ev.kill{color:var(--red)}.ev.alert{color:var(--gold)}.ev.info{color:var(--blue)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1}}
+
+.game-controls{padding:10px 12px;background:var(--surface);border-top:1px solid var(--border);}
+.ctrl-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:8px;}
+.act-btn{
+  padding:9px 4px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:8px;color:var(--text);font-size:10px;font-family:'Tajawal',sans-serif;
+  cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:3px;
+}
+.act-btn .ic{font-size:19px;}
+.act-btn:hover{border-color:var(--gold);color:var(--gold);}
+.act-btn.active{background:var(--gold);color:var(--bg);border-color:var(--gold);}
+.act-btn:disabled{opacity:.3;cursor:not-allowed;}
+.special-row{display:flex;gap:7px;}
+.sp-btn{
+  flex:1;padding:11px 6px;border-radius:8px;font-family:'Tajawal',sans-serif;
+  font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all .2s;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+}
+.sp-meeting{background:linear-gradient(135deg,#8e44ad,#6c3483);color:#fff;}
+.sp-investigate{background:linear-gradient(135deg,var(--blue),#1a6a9a);color:#fff;}
+.sp-shoot{background:linear-gradient(135deg,var(--red),#7b241c);color:#fff;}
+.sp-kill{background:linear-gradient(135deg,#c0392b,#6b1a1a);color:#fff;}
+.sp-btn:hover{filter:brightness(1.2);}
+.sp-btn:disabled{opacity:.35;cursor:not-allowed;}
+.status-bar{display:flex;align-items:center;justify-content:space-between;padding:5px 14px;background:rgba(0,0,0,.5);border-top:1px solid var(--border);font-size:11px;color:var(--muted);}
+
+/* ── OVERLAYS ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:100;padding:16px;}
+.overlay.active{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;max-width:400px;width:100%;text-align:center;animation:popIn .3s ease;max-height:90vh;overflow-y:auto;}
+.modal-title{font-size:22px;font-weight:900;color:var(--gold);margin-bottom:6px;}
+.modal-sub{color:var(--muted);font-size:13px;margin-bottom:16px;}
+
+.vote-list{display:flex;flex-direction:column;gap:8px;margin:12px 0;max-height:280px;overflow-y:auto;}
+.vote-item{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);padding:10px 14px;border-radius:8px;border:1px solid var(--border);transition:all .2s;}
+.vote-item.voted{border-color:var(--gold);background:rgba(201,168,76,.08);}
+.vote-item.dead-p{opacity:.4;}
+.v-info{display:flex;align-items:center;gap:8px;}
+.v-name{font-weight:700;font-size:13px;}
+.v-count{font-size:11px;color:var(--muted);}
+.v-bar{height:3px;background:var(--border);border-radius:2px;margin-top:3px;overflow:hidden;}
+.v-fill{height:100%;background:var(--gold);transition:width .5s;}
+.vote-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:5px 12px;border-radius:6px;font-family:'Tajawal',sans-serif;cursor:pointer;font-size:12px;transition:all .2s;}
+.vote-btn:hover{background:var(--gold);color:var(--bg);border-color:var(--gold);}
+.vote-btn:disabled{opacity:.3;cursor:not-allowed;}
+.vote-timer-big{font-size:30px;font-weight:900;color:var(--red);margin:8px 0;}
+
+.target-list{display:flex;flex-direction:column;gap:7px;max-height:280px;overflow-y:auto;margin:10px 0;}
+.tgt{display:flex;align-items:center;gap:10px;background:var(--surface2);padding:10px 14px;border-radius:8px;border:1px solid var(--border);cursor:pointer;transition:all .2s;}
+.tgt:hover{border-color:var(--red);background:rgba(192,57,43,.1);}
+
+#resultScreen{background:var(--bg);align-items:center;justify-content:center;}
+.result-content{padding:40px 20px;text-align:center;}
+.result-emoji{font-size:80px;margin-bottom:16px;}
+.result-title{font-size:34px;font-weight:900;margin-bottom:10px;}
+.result-sub{color:var(--muted);font-size:15px;margin-bottom:28px;}
+
+/* ── ACCESSIBILITY ── */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+.a11y-btn{position:fixed;bottom:10px;left:10px;background:var(--surface);border:1px solid var(--border);color:var(--muted);padding:7px 10px;border-radius:8px;font-size:18px;cursor:pointer;z-index:300;}
+.a11y-panel{position:fixed;bottom:52px;left:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;z-index:300;display:none;min-width:170px;}
+.a11y-panel.open{display:block;}
+.a11y-title{font-weight:700;color:var(--gold);font-size:13px;margin-bottom:8px;}
+.toggle-row{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:13px;color:var(--muted);}
+.sw{width:38px;height:21px;background:var(--border);border-radius:11px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;}
+.sw::after{content:'';position:absolute;top:3px;right:3px;width:15px;height:15px;border-radius:50%;background:#fff;transition:transform .2s;}
+.sw.on{background:var(--gold);}
+.sw.on::after{transform:translateX(-17px);}
+
+/* notify */
+.notif{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--surface);border:1px solid var(--gold);color:var(--text);padding:10px 18px;border-radius:8px;font-size:13px;z-index:400;transition:transform .3s;text-align:center;min-width:180px;max-width:290px;}
+.notif.show{transform:translateX(-50%) translateY(0);}
+.notif.err{border-color:var(--red);}
+
+/* role reveal */
+.role-reveal-modal{animation:popIn .35s ease;}
 </style>
 </head>
 <body>
 
-<!-- TOAST -->
-<div id="toast" role="alert" aria-live="polite"></div>
+<div aria-live="polite" aria-atomic="true" id="srEl" class="sr-only"></div>
+<div id="notif" class="notif"></div>
 
-<!-- PROXIMITY RING -->
-<div id="proximity-ring"></div>
+<button class="a11y-btn" onclick="toggleA11yPanel()" aria-label="إمكانية الوصول">♿</button>
+<div id="a11yPanel" class="a11y-panel">
+  <div class="a11y-title">⚙️ الإعدادات</div>
+  <div class="toggle-row"><div id="swSR" class="sw on" onclick="toggleSR()"></div>قارئ الشاشة</div>
+  <div class="toggle-row"><div id="swSFX" class="sw on" onclick="toggleSFX()"></div>المؤثرات الصوتية</div>
+  <div class="toggle-row"><div id="swMusic" class="sw on" onclick="toggleMusic()"></div>الموسيقى</div>
+</div>
 
-<!-- ══════════════════════════════════════════════
-     SCREEN: HOME
-══════════════════════════════════════════════ -->
-<div class="screen active" id="screen-home">
-  <div class="logo-title" aria-label="لعبة القاتل">
-    <span class="r">القاتل</span><br>
-    <span class="w" style="font-size:.4em;opacity:.6;letter-spacing:0">KILLER GAME</span>
-  </div>
-  <p class="sub">من سيبقى؟ من سيُكشف؟ 🔪</p>
-
-  <div class="card">
-    <label for="pName">اسمك في اللعبة</label>
-    <input class="inp" id="pName" type="text" placeholder="أدخل اسمك..." maxlength="16" autocomplete="off">
-
-    <button class="btn btn-red" onclick="startSolo()" aria-label="لعبة عشوائية مع بوتات">
-      🎲 غرفة عشوائية (مع بوتات)
-    </button>
-    <button class="btn btn-blue" onclick="goCreate()" aria-label="إنشاء غرفة مع الأصدقاء">
-      🎮 إنشاء غرفة مع الأصدقاء
-    </button>
-    <button class="btn btn-ghost" onclick="showJoin()" aria-label="انضمام لغرفة">
-      🚪 انضم لغرفة
-    </button>
-  </div>
-
-  <div class="card mt16 hidden" id="join-card">
-    <label for="rCode">كود الغرفة (4 أرقام)</label>
-    <input class="inp" id="rCode" type="text" placeholder="مثال: 4821" maxlength="4" inputmode="numeric">
-    <button class="btn btn-blue" onclick="goJoin()">✅ انضم الآن</button>
-    <button class="btn btn-ghost" onclick="hideJoin()">إلغاء</button>
+<!-- ══════════ MENU SCREEN ══════════ -->
+<div id="menuScreen" class="screen active">
+  <div class="stars" id="starsEl"></div>
+  <div class="castle-bg">🏰</div>
+  <div class="menu-content">
+    <div class="game-title">القلعة</div>
+    <div class="game-subtitle">لعبة الغموض والبقاء</div>
+    <button class="menu-btn" onclick="openNameModal('create')">🏰 إنشاء غرفة أونلاين</button>
+    <button class="menu-btn blue" onclick="openNameModal('random')">🎲 غرفة عشوائية مع اللاعبين</button>
+    <button class="menu-btn green" onclick="openNameModal('join')">🔗 انضم برمز الغرفة</button>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     SCREEN: LOBBY
-══════════════════════════════════════════════ -->
-<div class="screen" id="screen-lobby">
-  <div style="width:100%;max-width:400px">
-    <h2>🎮 غرفة الانتظار</h2>
-    <div class="txt-sm mb-4">شارك الكود مع أصدقائك</div>
-    <div class="room-code" id="lobbyCode" aria-live="polite">----</div>
-    <button class="btn btn-ghost" onclick="shareRoom()" style="margin-bottom:14px">📤 شارك عبر واتساب</button>
-    <div class="sep"></div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-      <span style="font-weight:700">اللاعبون</span>
-      <span class="txt-sm" id="pCount">0/15</span>
+<!-- ══════════ NAME MODAL ══════════ -->
+<div id="nameOverlay" class="name-overlay">
+  <div class="name-card">
+    <h2 id="nameModalTitle">أدخل اسمك</h2>
+    <p id="nameModalSub">اختر اسمك وصورتك للعب</p>
+    <div class="avatar-row" id="avatarRow"></div>
+    <input type="text" id="nameInput" class="name-input" placeholder="اسمك في اللعبة" maxlength="12" autocomplete="off">
+    <div id="joinCodeWrap" style="display:none;margin-bottom:12px;">
+      <input type="text" id="joinCodeInput" class="name-input" placeholder="رمز الغرفة (مثال: ABCD)" maxlength="6" style="letter-spacing:4px;text-transform:uppercase" autocomplete="off">
     </div>
-    <div id="lobbyList" style="max-height:220px;overflow-y:auto;margin-bottom:14px"></div>
-    <div class="smsg smsg-info" id="lobbyStatus">في انتظار المزيد...</div>
-    <div id="hostCtrl" class="hidden mt8">
-      <label for="huntSel">مدة الصيد</label>
-      <select class="inp" id="huntSel">
-        <option value="60">دقيقة</option>
-        <option value="90">دقيقة ونصف</option>
-        <option value="120" selected>دقيقتان</option>
-      </select>
-      <button class="btn btn-red" id="startBtn" onclick="launchGame()" disabled>🚀 ابدأ اللعبة</button>
+    <button class="btn btn-gold" style="width:100%" onclick="confirmName()">تأكيد والدخول →</button>
+    <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px" onclick="closeNameModal()">← إلغاء</button>
+  </div>
+</div>
+
+<!-- ══════════ LOBBY SCREEN ══════════ -->
+<div id="lobbyScreen" class="screen">
+  <div class="lobby-top">
+    <div class="lobby-title" id="lobbyTitle">🏰 صالة الانتظار</div>
+
+    <div class="room-info">
+      <div class="room-code-big" id="roomCodeBig">----</div>
+      <button class="copy-btn" onclick="copyCode()">📋 نسخ الرمز</button>
     </div>
-    <div id="guestWait" class="hidden smsg smsg-ok">✅ جاهز! في انتظار المضيف...</div>
+
+    <div class="share-row">
+      <span>🔗</span>
+      <span class="share-url" id="shareUrlEl">—</span>
+      <button class="copy-btn" onclick="copyLink()">نسخ الرابط</button>
+    </div>
+
+    <div class="conn-row">
+      <div class="dot connecting" id="connDot"></div>
+      <span id="connTxt">جارٍ الاتصال…</span>
+    </div>
+
+
+  </div>
+
+  <div class="players-grid" id="playersGrid"></div>
+  <div class="player-count-note" id="playerCountNote">👥 0 لاعب</div>
+
+  <div class="lobby-actions">
+    <button class="btn btn-gold" id="startBtn" onclick="hostStartGame()" disabled>▶ بدء اللعبة</button>
+    <button class="btn btn-ghost" onclick="removeBotLobby()">➖ إزالة بوت</button>
+    <button class="btn btn-ghost" onclick="addBotLobby()">➕ إضافة بوت</button>
+    <button class="btn btn-ghost" onclick="backToMenu()">← القائمة</button>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     SCREEN: ROLE REVEAL
-══════════════════════════════════════════════ -->
-<div class="screen" id="screen-role">
-  <div class="card" style="max-width:380px;text-align:center">
-    <div id="roleContent"></div>
-    <button class="btn btn-ghost" onclick="enterGame()" aria-label="حسناً، ادخل اللعبة">👁️ مستعد — ادخل!</button>
+<!-- ══════════ GAME SCREEN ══════════ -->
+<div id="gameScreen" class="screen">
+  <div class="game-hud">
+    <div class="role-badge rb-civilian" id="hudRole">مدني</div>
+    <div class="hud-alive" id="hudAlive">👥 —</div>
+  </div>
+
+  <div class="game-map" id="gameMap">
+    <div class="castle-floor"></div>
+    <div class="rooms-visual">
+      <div class="room-block">🛋 الصالة</div>
+      <div class="room-block">🍽 المطبخ</div>
+      <div class="room-block">📚 المكتبة</div>
+      <div class="room-block">🛏 الغرفة</div>
+      <div class="room-block">⚔ الأسلحة</div>
+      <div class="room-block">🗝 الخزنة</div>
+    </div>
+  </div>
+
+  <div class="event-log" id="eventLog"></div>
+
+  <div class="game-controls">
+    <div class="ctrl-grid">
+      <button class="act-btn" id="bWalk" onclick="doAction('walk')"><span class="ic">🚶</span>مشي</button>
+      <button class="act-btn" id="bRun"  onclick="doAction('run')"><span class="ic">🏃</span>جري</button>
+      <button class="act-btn" id="bHide" onclick="doAction('hide')"><span class="ic">🫣</span>اختباء</button>
+      <button class="act-btn" id="bLie"  onclick="doAction('lie')"><span class="ic">😴</span>استلقاء</button>
+      <button class="act-btn" id="bFly"  onclick="doAction('fly')"><span class="ic">🦅</span>طيران</button>
+      <button class="act-btn" id="bEsc"  onclick="doAction('escape')"><span class="ic">💨</span>هروب</button>
+      <button class="act-btn" id="bUnhide" onclick="doUnhide()" style="display:none;border-color:var(--gold);color:var(--gold)"><span class="ic">👁️</span>إظهار نفسي</button>
+    </div>
+    <div class="special-row" id="specialRow">
+      <button class="sp-btn sp-meeting" onclick="callMeeting()">📢<span>اجتماع</span></button>
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <span id="myStatus" style="color:var(--muted)">وضع: عادي</span>
+    <div class="conn-row">
+      <div class="dot online" id="gameDot"></div>
+      <span id="gameTxt">متصل</span>
+    </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     SCREEN: VOTE
-══════════════════════════════════════════════ -->
-<div class="screen" id="screen-vote">
-  <div style="width:100%;max-width:400px">
-    <h2>⚖️ التصويت — من القاتل؟</h2>
-    <div class="hud-timer" id="voteTimerDisp" style="text-align:center;margin-bottom:10px">30</div>
-    <div id="voteList" style="max-height:320px;overflow-y:auto;margin-bottom:14px"></div>
-    <button class="btn btn-gold" id="voteConfirmBtn" onclick="castVote()">✅ أكّد التصويت</button>
-    <div class="smsg smsg-ok hidden" id="voteWait">✅ في انتظار بقية اللاعبين...</div>
+<!-- ══════════ RESULT SCREEN ══════════ -->
+<div id="resultScreen" class="screen">
+  <div class="result-content">
+    <div class="result-emoji" id="resEmoji">🎉</div>
+    <div class="result-title" id="resTitle">—</div>
+    <div class="result-sub" id="resSub">—</div>
+    <button class="btn btn-gold" onclick="backToMenu()" style="margin-top:16px;width:240px">🏠 القائمة الرئيسية</button>
+    <button class="btn btn-ghost" onclick="playAgain()" style="margin-top:10px;width:240px">🔄 لعب مجدداً</button>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     SCREEN: RESULT
-══════════════════════════════════════════════ -->
-<div class="screen" id="screen-result">
-  <div style="width:100%;max-width:400px">
-    <div id="resultContent" class="txt-center"></div>
-    <div class="sep"></div>
-    <div id="scoreboard" style="max-height:260px;overflow-y:auto;margin-bottom:14px"></div>
-    <button class="btn btn-red" onclick="playAgain()">🔄 جولة أخرى</button>
-    <button class="btn btn-ghost" onclick="goHome()">🏠 الرئيسية</button>
+<!-- ══════════ VOTE OVERLAY ══════════ -->
+<div id="voteOverlay" class="overlay">
+  <div class="modal">
+    <div class="modal-title">🗳 التصويت</div>
+    <div class="modal-sub" id="voteReason">من تظن أنه القاتل؟</div>
+    <div class="vote-timer-big" id="voteTimerEl">30</div>
+    <div class="vote-list" id="voteList"></div>
+    <button class="btn btn-ghost" style="width:100%;margin-top:10px" onclick="skipMyVote()">تخطي</button>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     CANVAS + HUD + CONTROLS
-══════════════════════════════════════════════ -->
-<canvas id="gameCanvas" aria-label="ساحة اللعبة"></canvas>
-
-<div id="hud">
-  <div id="hud-top">
-    <span class="hud-badge" id="hud-role"></span>
-    <span class="hud-timer" id="hud-timer">02:00</span>
-    <span class="hud-badge" id="hud-kills"></span>
+<!-- ══════════ TARGET OVERLAY ══════════ -->
+<div id="targetOverlay" class="overlay">
+  <div class="modal">
+    <div class="modal-title" id="tgtTitle">🎯 اختر هدفاً</div>
+    <div class="modal-sub" id="tgtSub"></div>
+    <div class="target-list" id="tgtList"></div>
+    <button class="btn btn-ghost" style="width:100%;margin-top:10px" onclick="closeTgt()">إلغاء</button>
   </div>
 </div>
 
-<!-- Joystick -->
-<div id="joystick-zone">
-  <div id="joystick-base">
-    <div id="joystick-knob"></div>
+<!-- ══════════ ROLE OVERLAY ══════════ -->
+<div id="roleOverlay" class="overlay">
+  <div class="modal role-reveal-modal">
+    <div id="roleEmoji" style="font-size:58px;margin-bottom:10px">👤</div>
+    <div class="modal-title" id="roleTitle">دورك</div>
+    <div class="modal-sub" id="roleDesc"></div>
+    <div id="roleInstr" style="background:var(--surface2);padding:12px;border-radius:8px;margin:14px 0;text-align:right;font-size:12px;line-height:1.9;color:var(--muted);"></div>
+    <button class="btn btn-gold" style="width:100%" onclick="closeRoleOverlay()">فهمت! ابدأ 🎮</button>
   </div>
 </div>
 
-<!-- Minimap -->
-<canvas id="minimapCanvas" width="90" height="90"></canvas>
-<div id="minimap"><canvas id="minimapCanvas2" width="90" height="90"></canvas></div>
-
-<!-- Action buttons -->
-<div id="action-btns">
-  <!-- filled by JS based on role -->
-</div>
-
-<!-- ══════════════════════════════════════════════
-     OVERLAYS
-══════════════════════════════════════════════ -->
-<!-- Kill target picker -->
-<div class="overlay" id="ov-kill">
-  <div class="overlay-box">
-    <h2>🔪 اختر ضحيتك</h2>
-    <div id="killPickList"></div>
-    <button class="btn btn-ghost mt8" onclick="closeOv('ov-kill')">إلغاء</button>
-  </div>
-</div>
-<!-- Shoot picker -->
-<div class="overlay" id="ov-shoot">
-  <div class="overlay-box">
-    <h2>🔫 إطلاق النار على...</h2>
-    <p class="txt-sm" style="margin-bottom:14px">انتبه! إذا أخطأت تموت أنت!</p>
-    <div id="shootPickList"></div>
-    <button class="btn btn-ghost mt8" onclick="closeOv('ov-shoot')">إلغاء</button>
+<!-- ══════════ INVESTIGATE RESULT ══════════ -->
+<div id="invOverlay" class="overlay">
+  <div class="modal">
+    <div id="invIcon" style="font-size:48px;margin-bottom:10px">🔍</div>
+    <div class="modal-title">نتيجة التحقيق</div>
+    <div id="invResult" class="modal-sub"></div>
+    <button class="btn btn-gold" style="width:100%;margin-top:14px" onclick="closeOverlay('invOverlay')">حسناً</button>
   </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-//  AUDIO ENGINE
-// ═══════════════════════════════════════════════════════
-const AC = new (window.AudioContext || window.webkitAudioContext)();
-const masterGain = AC.createGain(); masterGain.gain.value=.55; masterGain.connect(AC.destination);
-function unlockAC(){if(AC.state==='suspended')AC.resume();}
-document.addEventListener('touchstart',unlockAC,{once:true});
-document.addEventListener('click',unlockAC,{once:true});
+// ════════════════════════════════════════════
+//  CONSTANTS
+// ════════════════════════════════════════════
+const BOT_NAMES    = ['آسيا','ليال','خيال','عمر','ليث','قيس','كرم','جود','جويل','إبك','حلا','ملك','فهد'];
+const BOT_AVATARS  = ['👩','👩‍🦱','👩‍🦰','👨','👦','👨‍🦱','👨‍🦲','👩‍🦳','👱‍♀️','👩‍🦲','👧','👩‍🦰','🧔'];
+const PLAYER_AVS   = ['😊','😎','🤠','😄','🥷','👾','🤖','🎭','🦊','🐺','🦁','🐯'];
 
-function tone(f,t='sine',d=.2,v=.25,delay=0){
-  try{
-    const o=AC.createOscillator(),g=AC.createGain();
-    o.connect(g);g.connect(masterGain);
-    o.type=t;o.frequency.value=f;
-    const s=AC.currentTime+delay;
-    g.gain.setValueAtTime(v,s);
-    g.gain.exponentialRampToValueAtTime(.001,s+d);
-    o.start(s);o.stop(s+d);
-  }catch(e){}
-}
-function noise(d=.2,v=.2,fc=800){
-  try{
-    const buf=AC.createBuffer(1,AC.sampleRate*d,AC.sampleRate);
-    const data=buf.getChannelData(0);
-    for(let i=0;i<data.length;i++)data[i]=Math.random()*2-1;
-    const src=AC.createBufferSource(),g=AC.createGain(),flt=AC.createBiquadFilter();
-    flt.type='lowpass';flt.frequency.value=fc;
-    src.buffer=buf;src.connect(flt);flt.connect(g);g.connect(masterGain);
-    g.gain.setValueAtTime(v,AC.currentTime);
-    g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+d);
-    src.start();src.stop(AC.currentTime+d);
-  }catch(e){}
-}
-
-// Footstep sound – pitch+volume based on proximity
-let footstepTimer=null;
-function playFootstep(proximity){
-  // proximity 0..1, 1=very close
-  const vol=proximity*.45;
-  const pitch=180+proximity*300;
-  noise(.05,vol,400+proximity*600);
-  tone(pitch,'sine',.04,vol*.5);
-}
-function startFootsteps(proximity){
-  stopFootsteps();
-  const interval=Math.max(120,500-proximity*380); // faster when closer
-  footstepTimer=setInterval(()=>playFootstep(proximity), interval);
-}
-function stopFootsteps(){
-  if(footstepTimer){clearInterval(footstepTimer);footstepTimer=null;}
-}
-
-// ── SFX presets
-const SFX={
-  join:()=>{tone(440,'sine',.1,.2);tone(660,'sine',.15,.2,.12);},
-  kill:()=>{noise(.3,.45);tone(90,'sawtooth',.4,.3);},
-  shoot:()=>{noise(.12,.55,600);tone(220,'square',.18,.25);},
-  click:()=>tone(900,'sine',.04,.1),
-  tick:()=>tone(1200,'square',.04,.08),
-  danger:()=>{tone(880,'square',.1,.3);tone(1100,'square',.12,.3,.16);},
-  win:()=>[523,659,784,1047].forEach((f,i)=>tone(f,'sine',.4,.3,i*.15)),
-  lose:()=>[500,400,300,180].forEach((f,i)=>tone(f,'sawtooth',.3,.3,i*.2)),
-  vote:()=>tone(600,'triangle',.2,.2),
-  step:()=>noise(.04,.12,350), // my own footstep
+// ════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════
+let G = {
+  peer: null,          // My PeerJS peer
+  conns: {},           // peerId → DataConnection (host has all; guest has one to host)
+  isHost: false,
+  myId: '',            // PeerJS peer id (= room code for host)
+  myName: '',
+  myAvatar: '😊',
+  myRole: '',
+  roomCode: '',
+  players: [],         // [{id,name,avatar,isBot,alive,role?,peerId?}]
+  phase: 'lobby',
+  roundDuration: 60,
+  timeLeft: 60,
+  timerInt: null,
+  voteTimerInt: null,
+  voteTimeLeft: 30,
+  myVote: null,
+  votes: {},
+  votesBy: {},
+  invUsed: false,
+  shootUsed: false,
+  curAction: 'walk',
+  positions: {},
+  botInt: null,
+  proximityInt: null,
+  pendingMode: 'create', // 'create' | 'random' | 'join'
+  selectedAvatar: '😊',
 };
 
-// BGM
-let bgmOn=false,bgmT;
-function startBGM(){
-  if(bgmOn)return; bgmOn=true;
-  const n=[220,196,175,165,175,196,220,220,196,175,165,196];
-  let i=0;
-  function s(){if(!bgmOn)return;tone(n[i%n.length],'triangle',.28,.055);i++;bgmT=setTimeout(s,320);}
-  s();
+// ════════════════════════════════════════════
+//  AUDIO
+// ════════════════════════════════════════════
+let AC = null, sfxOn = true, musicOn = true, srOn = true, musicTimer = null, musicPlaying = false;
+const getAC = () => { if (!AC) AC = new (window.AudioContext||window.webkitAudioContext)(); return AC; };
+
+function tone(freq,type='sine',dur=.2,vol=.3,delay=0){
+  if(!sfxOn) return;
+  try{
+    const c=getAC(),o=c.createOscillator(),g=c.createGain();
+    o.connect(g);g.connect(c.destination);
+    o.type=type;o.frequency.value=freq;
+    g.gain.setValueAtTime(vol,c.currentTime+delay);
+    g.gain.exponentialRampToValueAtTime(.001,c.currentTime+delay+dur);
+    o.start(c.currentTime+delay);o.stop(c.currentTime+delay+dur+.05);
+  }catch(e){}
 }
-function stopBGM(){bgmOn=false;clearTimeout(bgmT);}
-
-// ═══════════════════════════════════════════════════════
-//  GAME STATE
-// ═══════════════════════════════════════════════════════
-const COLORS=['#e63946','#4361ee','#06d6a0','#ffd60a','#f77f00','#9d4edd','#00b4d8','#e0c3fc','#ff6b6b','#48cae4','#90e0ef','#c77dff','#52b788','#ff9f1c','#2ec4b6'];
-const BOT_NAMES=['خالد','سارة','فهد','نورة','محمد','ريم','عمر','لين','يوسف','هند'];
-
-let myId='player_'+Math.random().toString(36).slice(2,7);
-let myName='';
-let myRole=''; // killer|police|civilian
-let gameMode=''; // 'solo'|'host'|'guest'
-let roomCode='';
-let isSolo=false;
-
-// All entities (me + bots/players)
-let entities={}; // id -> entity object
-let huntDuration=120;
-let huntTimeLeft=120;
-let voteTimeLeft=30;
-let gamePhase=''; // lobby|role|hunt|vote|result
-let selectedVoteId=null;
-let hasVoted=false;
-let myDeadFlag=false;
-let currentAction='idle'; // idle|hide|run|liedown
-
-// Map
-const MAP_W=1600, MAP_H=1200;
-const WALLS=[ // {x,y,w,h}
-  {x:200,y:150,w:200,h:40},{x:600,y:100,w:40,h:250},{x:900,y:200,w:250,h:40},
-  {x:1200,y:150,w:40,h:200},{x:300,y:400,w:350,h:40},{x:800,y:350,w:40,h:200},
-  {x:1100,y:350,w:250,h:40},{x:150,y:600,w:40,h:300},{x:400,y:650,w:300,h:40},
-  {x:750,y:550,w:200,h:40},{x:1050,y:550,w:40,h:250},{x:1300,y:500,w:250,h:40},
-  {x:200,y:900,w:300,h:40},{x:600,y:800,w:40,h:300},{x:900,y:850,w:350,h:40},
-  {x:1200,y:750,w:40,h:250},{x:500,y:1050,w:200,h:40},{x:800,y:1000,w:250,h:40},
-];
-const HIDEOUTS=[ // hiding spots
-  {x:250,y:170},{x:900,y:250},{x:350,y:680},{x:1150,y:400},{x:680,y:880},{x:1100,y:900},{x:450,y:1060},{x:1350,y:600},
-];
-// Decorative tiles
-const TREES=[
-  {x:100,y:100},{x:1450,y:100},{x:100,y:1050},{x:1450,y:1050},
-  {x:500,y:300},{x:1000,y:750},{x:700,y:1100},{x:1300,y:900},
-];
-
-// Camera
-let camX=0,camY=0;
-
-// Canvas
-const canvas=document.getElementById('gameCanvas');
-const ctx=canvas.getContext('2d');
-let cW=0,cH=0;
-function resizeCanvas(){
-  cW=canvas.width=window.innerWidth;
-  cH=canvas.height=window.innerHeight;
+function noise(vol=.2){
+  if(!sfxOn) return;
+  try{
+    const c=getAC(),b=c.createBuffer(1,c.sampleRate*.05,c.sampleRate);
+    const d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);
+    const s=c.createBufferSource(),g=c.createGain();
+    s.buffer=b;g.gain.value=vol;s.connect(g);g.connect(c.destination);s.start();
+  }catch(e){}
 }
-window.addEventListener('resize',()=>{resizeCanvas();});
-resizeCanvas();
+const sfx={
+  join:   ()=>{tone(440,'sine',.15,.25);tone(550,'sine',.15,.25,.12);},
+  kill:   ()=>{tone(100,'sawtooth',.5,.5);tone(60,'square',.3,.3,.1);},
+  shoot:  ()=>{tone(200,'sawtooth',.3,.6);tone(80,'square',.5,.4,.06);},
+  meet:   ()=>{tone(600,'sine',.1,.3);tone(800,'sine',.1,.3,.1);tone(1000,'sine',.2,.3,.2);},
+  vote:   ()=>tone(400,'sine',.15,.2),
+  inv:    ()=>{tone(800,'sine',.1,.2);tone(600,'sine',.2,.2,.15);},
+  win:    ()=>[523,659,784,1047].forEach((f,i)=>tone(f,'sine',.3,.3,i*.15)),
+  lose:   ()=>[300,250,200,150].forEach((f,i)=>tone(f,'sawtooth',.4,.3,i*.2)),
+  btn:    ()=>tone(300,'sine',.06,.15),
+  hide:   ()=>tone(200,'sine',.12,.2),
+  reveal: ()=>[400,500,700].forEach((f,i)=>tone(f,'sine',.2,.3,i*.1)),
+};
+function playSFX(n){if(sfxOn&&sfx[n])sfx[n]();}
 
-// ═══════════════════════════════════════════════════════
-//  ENTITY
-// ═══════════════════════════════════════════════════════
-function createEntity(id, name, role, x, y, isBot=false, colorIdx=0){
-  return {
-    id, name, role, x, y, isBot,
-    vx:0, vy:0,
-    color: COLORS[colorIdx % COLORS.length],
-    alive: true,
-    kills: 0, score: 0, votes: 0,
-    action: 'idle',     // idle|hide|run|liedown
-    botTarget: null,    // for bots: target entity id
-    botTimer: 0,
-    botState: 'roam',   // roam|chase|flee|hide
-    hidden: false,      // currently in hideout
-    hideoutIdx: -1,
+function startMusic(){
+  if(!musicOn||musicPlaying) return;
+  musicPlaying=true;
+  const melody=[220,246,261,293,261,246,220,196];let s=0;
+  const nxt=()=>{
+    if(!musicPlaying) return;
+    tone(melody[s++%melody.length],'triangle',.8,.04);
+    musicTimer=setTimeout(nxt,1200);
   };
+  nxt();
+}
+function stopMusic(){musicPlaying=false;clearTimeout(musicTimer);}
+
+function sr(t){
+  if(!srOn) return;
+  const el=document.getElementById('srEl');
+  el.textContent='';setTimeout(()=>el.textContent=t,50);
 }
 
-function spawnRandom(id, name, role, isBot, colorIdx){
-  let x,y,tries=0;
-  do{
-    x=100+Math.random()*(MAP_W-200);
-    y=100+Math.random()*(MAP_H-200);
-    tries++;
-  }while(tries<30 && collidesWall(x,y,16));
-  return createEntity(id,name,role,x,y,isBot,colorIdx);
+// ════════════════════════════════════════════
+//  NOTIFY / UI HELPERS
+// ════════════════════════════════════════════
+function notify(msg,err=false){
+  const n=document.getElementById('notif');
+  n.textContent=msg;n.className='notif show'+(err?' err':'');
+  setTimeout(()=>n.classList.remove('show'),3000);
 }
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function openOverlay(id){document.getElementById(id).classList.add('active');}
+function closeOverlay(id){document.getElementById(id).classList.remove('active');}
 
-// ═══════════════════════════════════════════════════════
-//  COLLISION
-// ═══════════════════════════════════════════════════════
-function collidesWall(x,y,r){
-  for(const w of WALLS){
-    if(x+r>w.x && x-r<w.x+w.w && y+r>w.y && y-r<w.y+w.h) return true;
+function uid(){return Math.random().toString(36).substr(2,8);}
+function roomCode(){return Math.random().toString(36).substr(2,4).toUpperCase();}
+
+// ════════════════════════════════════════════
+//  STAR INIT
+// ════════════════════════════════════════════
+(function initStars(){
+  const c=document.getElementById('starsEl');
+  for(let i=0;i<70;i++){
+    const s=document.createElement('div');s.className='star';
+    s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';
+    s.style.animationDelay=Math.random()*3+'s';s.style.animationDuration=(2+Math.random()*3)+'s';
+    c.appendChild(s);
   }
-  if(x-r<0||x+r>MAP_W||y-r<0||y+r>MAP_H) return true;
-  return false;
+})();
+
+// ════════════════════════════════════════════
+//  NAME MODAL
+// ════════════════════════════════════════════
+function openNameModal(mode){
+  playSFX('btn');
+  G.pendingMode=mode;
+  document.getElementById('nameModalTitle').textContent=
+    mode==='create'?'🏰 إنشاء غرفة أونلاين':
+    mode==='random'?'🎲 غرفة عشوائية':'🔗 انضم لغرفة';
+  document.getElementById('nameModalSub').textContent=
+    mode==='create'?'ستحصل على رمز تشاركه مع أصدقائك':
+    mode==='random'?'ستلعب مع اللاعبين الافتراضيين فوراً':
+    'أدخل رمز الغرفة للانضمام';
+  document.getElementById('joinCodeWrap').style.display=mode==='join'?'block':'none';
+  document.getElementById('nameInput').value='';
+  document.getElementById('joinCodeInput').value='';
+
+  // build avatar picker
+  const row=document.getElementById('avatarRow');
+  row.innerHTML=PLAYER_AVS.map((av,i)=>
+    `<button class="av-btn${i===0?' selected':''}" onclick="selectAv(this,'${av}')" aria-label="اختيار ${av}">${av}</button>`
+  ).join('');
+  G.selectedAvatar=PLAYER_AVS[0];
+
+  // pre-fill room code from URL if join
+  if(mode==='join'){
+    const p=new URLSearchParams(location.search);
+    const rc=p.get('room');
+    if(rc) document.getElementById('joinCodeInput').value=rc;
+  }
+
+  openOverlay('nameOverlay');
+  setTimeout(()=>document.getElementById('nameInput').focus(),300);
 }
-function moveEntity(e, dx, dy){
-  const R=14;
-  const nx=e.x+dx, ny=e.y+dy;
-  if(!collidesWall(nx,e.y,R)) e.x=nx;
-  if(!collidesWall(e.x,ny,R)) e.y=ny;
-}
-
-// ═══════════════════════════════════════════════════════
-//  JOYSTICK
-// ═══════════════════════════════════════════════════════
-let joyActive=false, joyX=0, joyY=0;
-let joyStartX=0, joyStartY=0;
-const joyZone=document.getElementById('joystick-zone');
-const joyBase=document.getElementById('joystick-base');
-const joyKnob=document.getElementById('joystick-knob');
-const JOY_MAX=40;
-
-joyBase.addEventListener('touchstart',e=>{
-  joyActive=true;
-  const t=e.touches[0];
-  const r=joyBase.getBoundingClientRect();
-  joyStartX=r.left+r.width/2;
-  joyStartY=r.top+r.height/2;
-  e.preventDefault();
-},{passive:false});
-joyBase.addEventListener('touchmove',e=>{
-  if(!joyActive)return;
-  const t=e.touches[0];
-  let dx=t.clientX-joyStartX, dy=t.clientY-joyStartY;
-  const dist=Math.hypot(dx,dy);
-  if(dist>JOY_MAX){dx=dx/dist*JOY_MAX;dy=dy/dist*JOY_MAX;}
-  joyX=dx/JOY_MAX; joyY=dy/JOY_MAX;
-  joyKnob.style.transform=`translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
-  e.preventDefault();
-},{passive:false});
-['touchend','touchcancel'].forEach(ev=>joyBase.addEventListener(ev,()=>{
-  joyActive=false;joyX=0;joyY=0;
-  joyKnob.style.transform='translate(-50%,-50%)';
-}));
-// Keyboard fallback
-const keys={};
-window.addEventListener('keydown',e=>keys[e.key]=true);
-window.addEventListener('keyup',e=>keys[e.key]=false);
-
-function getInputDir(){
-  let dx=joyX, dy=joyY;
-  if(keys['ArrowLeft']||keys['a']||keys['A']) dx=-1;
-  if(keys['ArrowRight']||keys['d']||keys['D']) dx=1;
-  if(keys['ArrowUp']||keys['w']||keys['W']) dy=-1;
-  if(keys['ArrowDown']||keys['s']||keys['S']) dy=1;
-  if(dx!==0&&dy!==0){const n=Math.hypot(dx,dy);dx/=n;dy/=n;}
-  return {dx,dy};
+function closeNameModal(){closeOverlay('nameOverlay');}
+function selectAv(el,av){
+  document.querySelectorAll('.av-btn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');G.selectedAvatar=av;
 }
 
-// ═══════════════════════════════════════════════════════
-//  BOT AI
-// ═══════════════════════════════════════════════════════
-const BOT_SPEED=1.2;
-function updateBot(bot, dt){
-  if(!bot.alive) return;
-  const me=entities[myId];
-  if(!me||!me.alive) return;
+function confirmName(){
+  const name=document.getElementById('nameInput').value.trim();
+  if(!name){notify('أدخل اسمك أولاً',true);return;}
+  G.myName=name.substr(0,12);
+  G.myAvatar=G.selectedAvatar;
+  closeNameModal();
 
-  bot.botTimer-=dt;
+  if(G.pendingMode==='create') doCreateRoom();
+  else if(G.pendingMode==='random') doRandomRoom();
+  else {
+    const code=document.getElementById('joinCodeInput').value.trim().toUpperCase();
+    if(!code){notify('أدخل رمز الغرفة',true);openNameModal('join');return;}
+    doJoinRoom(code);
+  }
+}
 
-  if(bot.role==='killer'){
-    // Killer bot: hunt players
-    // Find nearest alive non-killer
-    let nearest=null, nearDist=Infinity;
-    for(const [id,e] of Object.entries(entities)){
-      if(id===bot.id||!e.alive||e.role==='killer') continue;
-      const d=Math.hypot(e.x-bot.x, e.y-bot.y);
-      if(d<nearDist){nearDist=d;nearest=e;}
-    }
-    if(nearest){
-      // Move toward
-      const dx=nearest.x-bot.x, dy=nearest.y-bot.y;
-      const dist=Math.hypot(dx,dy);
-      if(dist>0){
-        moveEntity(bot, dx/dist*BOT_SPEED*1.4, dy/dist*BOT_SPEED*1.4);
-      }
-      // Kill if close enough
-      if(dist<28 && bot.botTimer<=0){
-        bot.botTimer=2000;
-        killEntity(bot.id, nearest.id);
-      }
-    }
-  } else if(bot.role==='police'){
-    // Police bot: look for killer
-    let killer=Object.values(entities).find(e=>e.role==='killer'&&e.alive);
-    if(killer){
-      const d=Math.hypot(killer.x-bot.x, killer.y-bot.y);
-      if(d<250 && bot.botTimer<=0){
-        bot.botTimer=4000;
-        // Shoot (always correct since bots know roles)
-        if(killer.alive){
-          killer.alive=false;
-          toast('الشرطي البوت قتل القاتل!');
-          SFX.shoot();
-          checkWinCondition();
-        }
-      } else if(d>150){
-        moveEntity(bot, (killer.x-bot.x)/d*BOT_SPEED, (killer.y-bot.y)/d*BOT_SPEED);
-      }
-    } else {
-      roamBot(bot, dt);
-    }
-  } else {
-    // Civilian bot: flee from killer, hide
-    let killer=Object.values(entities).find(e=>e.role==='killer'&&e.alive);
-    if(killer){
-      const d=Math.hypot(killer.x-bot.x, killer.y-bot.y);
-      if(d<200){
-        // Flee
-        const dx=bot.x-killer.x, dy=bot.y-killer.y;
-        const dist=Math.hypot(dx,dy)||1;
-        moveEntity(bot, dx/dist*BOT_SPEED*1.2, dy/dist*BOT_SPEED*1.2);
-        bot.action='run';
+// ════════════════════════════════════════════
+//  PEERJS NETWORK
+// ════════════════════════════════════════════
+function createPeer(id){
+  // id is optional - if host we pass our room code, guests get random id
+  return new Promise((resolve,reject)=>{
+    const opts={debug:0};
+    const p = id ? new Peer(id, opts) : new Peer(opts);
+    p.on('open', rid=>{G.peer=p; resolve(rid);});
+    p.on('error', e=>{
+      // if ID taken, retry without fixed id
+      if(e.type==='unavailable-id' && id){
+        const p2=new Peer(opts);
+        p2.on('open',rid=>{G.peer=p2;resolve(rid);});
+        p2.on('error',reject);
+      } else reject(e);
+    });
+  });
+}
+
+// HOST receives connections
+function setupHostListeners(){
+  G.peer.on('connection', conn=>{
+    conn.on('open',()=>{
+      G.conns[conn.peer]=conn;
+      conn.on('data',data=>handleHostData(conn,data));
+      conn.on('close',()=>handlePeerLeft(conn.peer));
+    });
+  });
+}
+
+// GUEST sends/receives through one conn to host
+function connectToHost(hostId){
+  return new Promise((resolve,reject)=>{
+    const conn=G.peer.connect(hostId,{reliable:true});
+    conn.on('open',()=>{
+      G.conns[hostId]=conn;
+      conn.on('data',data=>handleGuestData(data));
+      conn.on('close',()=>{notify('انقطع الاتصال بالغرفة',true);setConn('error','انقطع الاتصال');});
+      resolve();
+    });
+    conn.on('error',reject);
+    setTimeout(()=>reject(new Error('timeout')),8000);
+  });
+}
+
+// HOST → broadcast to all guests
+function hostBroadcast(data, exceptPeer=null){
+  Object.entries(G.conns).forEach(([pid,conn])=>{
+    if(pid!==exceptPeer) try{conn.send(data);}catch(e){}
+  });
+}
+// GUEST → send to host
+function guestSend(data){
+  const conn=Object.values(G.conns)[0];
+  if(conn) try{conn.send(data);}catch(e){}
+}
+// BOTH → convenience
+function netSend(data){
+  if(G.isHost) hostBroadcast(data);
+  else guestSend(data);
+}
+
+function setConn(status,txt){
+  document.getElementById('connDot').className='dot '+status;
+  document.getElementById('connTxt').textContent=txt;
+}
+
+// ════════════════════════════════════════════
+//  HOST DATA HANDLER
+// ════════════════════════════════════════════
+function handleHostData(conn, data){
+  if(!data||!data.type) return;
+  switch(data.type){
+    case 'join_req':{
+      const existP=G.players.find(p=>p.peerId===conn.peer);
+      if(existP){
+        // already joined, resync
+        conn.send({type:'full_state',players:G.players,roomCode:G.roomCode,roundDuration:G.roundDuration,phase:G.phase});
         return;
       }
-    }
-    // Try to hide at hideout
-    if(bot.botTimer<=0){
-      const h=HIDEOUTS[Math.floor(Math.random()*HIDEOUTS.length)];
-      bot.botTarget={x:h.x,y:h.y};
-      bot.botTimer=3000+Math.random()*3000;
-    }
-    if(bot.botTarget){
-      const dx=bot.botTarget.x-bot.x, dy=bot.botTarget.y-bot.y;
-      const dist=Math.hypot(dx,dy);
-      if(dist>8){
-        moveEntity(bot, dx/dist*BOT_SPEED*.9, dy/dist*BOT_SPEED*.9);
-        bot.action='idle';
-      } else {
-        bot.action='hide';
-        bot.botTarget=null;
+      if(G.players.filter(p=>!p.isBot).length>=15){
+        conn.send({type:'join_denied',reason:'الغرفة ممتلئة'});return;
       }
+      const np={id:uid(),name:data.name,avatar:data.avatar,isBot:false,alive:true,peerId:conn.peer};
+      G.players.push(np);
+      // Send full state to joiner
+      conn.send({type:'full_state',players:G.players,roomCode:G.roomCode,roundDuration:G.roundDuration,phase:G.phase});
+      // Announce to others
+      hostBroadcast({type:'player_joined',player:np}, conn.peer);
+      renderLobby();
+      notify(`🎮 ${np.name} انضم!`);
+      playSFX('join');
+      sr(`${np.name} انضم إلى الغرفة`);
+      break;
+    }
+    case 'action':{
+      // relay to all others
+      hostBroadcast(data, conn.peer);
+      applyAction(data);
+      break;
+    }
+    case 'chat':{
+      hostBroadcast(data, conn.peer);
+      break;
+    }
+    case 'position':{
+      applyPosition(data);
+      hostBroadcast(data, conn.peer);
+      break;
     }
   }
 }
 
-function roamBot(bot){
-  if(!bot.botTarget||Math.hypot(bot.botTarget.x-bot.x,bot.botTarget.y-bot.y)<10){
-    bot.botTarget={x:100+Math.random()*(MAP_W-200), y:100+Math.random()*(MAP_H-200)};
-  }
-  const dx=bot.botTarget.x-bot.x, dy=bot.botTarget.y-bot.y;
-  const dist=Math.hypot(dx,dy)||1;
-  moveEntity(bot, dx/dist*BOT_SPEED, dy/dist*BOT_SPEED);
+function handlePeerLeft(peerId){
+  const p=G.players.find(x=>x.peerId===peerId);
+  if(!p) return;
+  G.players=G.players.filter(x=>x.peerId!==peerId);
+  delete G.conns[peerId];
+  renderLobby();
+  notify(`${p.name} غادر`);
+  if(G.phase==='playing') addLog(`🚪 ${p.name} غادر اللعبة`,'info');
 }
 
-// ═══════════════════════════════════════════════════════
-//  KILL / WIN
-// ═══════════════════════════════════════════════════════
-function killEntity(killerId, victimId){
-  const killer=entities[killerId];
-  const victim=entities[victimId];
-  if(!killer||!victim||!victim.alive) return;
-  victim.alive=false;
-  killer.kills=(killer.kills||0)+1;
-  SFX.kill();
-  toast('💀 ' + victim.name + ' قُتل!');
-  if(victimId===myId){ myDeadFlag=true; onMyDeath(); }
-  checkWinCondition();
-}
-
-function checkWinCondition(){
-  if(gamePhase!=='hunt') return;
-  const aliveList=Object.values(entities).filter(e=>e.alive);
-  const killerAlive=aliveList.some(e=>e.role==='killer');
-  const civAlive=aliveList.some(e=>e.role!=='killer');
-  if(!killerAlive){ endHunt('civilians'); return; }
-  if(!civAlive){ endHunt('killer'); return; }
-}
-
-function onMyDeath(){
-  toast('💀 لقد مُتّ! يمكنك مشاهدة بقية اللعبة');
-  speak('أنت مت!');
-  // Disable action buttons
-  document.querySelectorAll('.act-btn').forEach(b=>b.disabled=true);
-}
-
-// ═══════════════════════════════════════════════════════
-//  PROXIMITY AUDIO
-// ═══════════════════════════════════════════════════════
-let lastProxId=null, lastProxLevel=0;
-const PROX_MAX=250; // pixels in world coords
-
-function updateProximityAudio(){
-  const me=entities[myId];
-  if(!me||!me.alive) return;
-  
-  let closestDist=Infinity, closestId=null;
-  for(const [id,e] of Object.entries(entities)){
-    if(id===myId||!e.alive) continue;
-    // Special: civilians should hear killer more intensely
-    const dist=Math.hypot(e.x-me.x, e.y-me.y);
-    if(dist<closestDist){closestDist=dist;closestId=id;}
-  }
-  
-  if(closestId && closestDist<PROX_MAX){
-    const proximity=1-(closestDist/PROX_MAX); // 0..1
-    const entity=entities[closestId];
-    
-    // Only play if moved (bot moves every frame)
-    if(Math.abs(proximity-lastProxLevel)>.05 || closestId!==lastProxId){
-      startFootsteps(proximity);
-      // Show visual ring
-      showProxRing(proximity, entity.color, me);
-    }
-    lastProxId=closestId; lastProxLevel=proximity;
-    
-    // Extra danger alert if killer nearby
-    if(entity.role==='killer' && proximity>.7 && myRole!=='killer'){
-      // Heartbeat
-    }
-  } else {
-    stopFootsteps();
-    lastProxId=null; lastProxLevel=0;
-    document.getElementById('proximity-ring').style.display='none';
+// ════════════════════════════════════════════
+//  GUEST DATA HANDLER
+// ════════════════════════════════════════════
+function handleGuestData(data){
+  if(!data||!data.type) return;
+  switch(data.type){
+    case 'full_state':
+      G.players=data.players;
+      G.roomCode=data.roomCode;
+      G.roundDuration=data.roundDuration||60;
+      if(data.phase) G.phase=data.phase;
+      renderLobby();
+      setConn('online','متصل بالغرفة');
+      break;
+    case 'player_joined':
+      if(!G.players.find(p=>p.id===data.player.id)) G.players.push(data.player);
+      renderLobby();playSFX('join');notify(`🎮 ${data.player.name} انضم!`);
+      break;
+    case 'start_game':
+      G.roundDuration=data.roundDuration;
+      G.players=data.players;
+      beginGame(data.assignments);
+      break;
+    case 'action':
+      applyAction(data);
+      break;
+    case 'position':
+      applyPosition(data);
+      break;
+    case 'join_denied':
+      notify(data.reason||'لا يمكن الانضمام',true);showScreen('menuScreen');
+      break;
   }
 }
 
-let proxRingFrame=0;
-function showProxRing(proximity, color, me){
-  const ring=document.getElementById('proximity-ring');
-  // Convert world pos to screen
-  const screenX=me.x-camX;
-  const screenY=me.y-camY;
-  const size=80+proximity*80;
-  ring.style.display='block';
-  ring.style.width=size+'px';
-  ring.style.height=size+'px';
-  ring.style.left=(screenX-size/2)+'px';
-  ring.style.top=(screenY-size/2)+'px';
-  ring.style.borderColor=color;
-  ring.style.opacity=0.2+proximity*0.5;
-  ring.style.borderWidth=(1+proximity*3)+'px';
-}
+// ════════════════════════════════════════════
+//  CREATE ROOM (HOST)
+// ════════════════════════════════════════════
+async function doCreateRoom(){
+  showScreen('lobbyScreen');
+  setConn('connecting','جارٍ إنشاء الغرفة…');
+  document.getElementById('lobbyTitle').textContent='🏰 إنشاء غرفة أونلاين';
+  document.getElementById('startBtn').style.display='block';
 
-// ═══════════════════════════════════════════════════════
-//  RENDERING
-// ═══════════════════════════════════════════════════════
-function render(){
-  ctx.clearRect(0,0,cW,cH);
-  
-  // Background – dark green grass
-  ctx.fillStyle='#0d1a0d';
-  ctx.fillRect(0,0,cW,cH);
-  
-  // Grid dots
-  ctx.fillStyle='rgba(255,255,255,.04)';
-  const gs=80;
-  const offX=(-camX%gs+gs)%gs, offY=(-camY%gs+gs)%gs;
-  for(let x=offX;x<cW;x+=gs) for(let y=offY;y<cH;y+=gs){
-    ctx.beginPath();ctx.arc(x,y,1.5,0,Math.PI*2);ctx.fill();
-  }
-  
-  // Trees
-  for(const t of TREES){
-    const sx=t.x-camX, sy=t.y-camY;
-    if(sx<-60||sx>cW+60||sy<-60||sy>cH+60) continue;
-    ctx.fillStyle='#1a3a1a';
-    ctx.beginPath();ctx.arc(sx,sy,22,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#2d5a2d';
-    ctx.beginPath();ctx.arc(sx-3,sy-5,16,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#4a3728';
-    ctx.fillRect(sx-4,sy+18,8,12);
-  }
-  
-  // Walls
-  for(const w of WALLS){
-    const sx=w.x-camX, sy=w.y-camY;
-    if(sx+w.w<0||sx>cW||sy+w.h<0||sy>cH) continue;
-    // Shadow
-    ctx.fillStyle='rgba(0,0,0,.4)';
-    ctx.fillRect(sx+4,sy+4,w.w,w.h);
-    // Wall
-    const grad=ctx.createLinearGradient(sx,sy,sx,sy+w.h);
-    grad.addColorStop(0,'#2a2a3d');grad.addColorStop(1,'#1a1a2a');
-    ctx.fillStyle=grad;
-    ctx.fillRect(sx,sy,w.w,w.h);
-    // Top edge highlight
-    ctx.fillStyle='rgba(255,255,255,.07)';
-    ctx.fillRect(sx,sy,w.w,3);
-  }
-  
-  // Hideout spots
-  for(const h of HIDEOUTS){
-    const sx=h.x-camX, sy=h.y-camY;
-    if(sx<-40||sx>cW+40) continue;
-    ctx.strokeStyle='rgba(255,214,10,.25)';
-    ctx.lineWidth=2; ctx.setLineDash([5,5]);
-    ctx.beginPath();ctx.arc(sx,sy,20,0,Math.PI*2);ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle='rgba(255,214,10,.1)';
-    ctx.beginPath();ctx.arc(sx,sy,20,0,Math.PI*2);ctx.fill();
-  }
-  
-  // Entities
-  for(const [id,e] of Object.entries(entities)){
-    if(!e.alive) continue;
-    const sx=e.x-camX, sy=e.y-camY;
-    if(sx<-50||sx>cW+50||sy<-50||sy>cH+50) continue;
-    
-    const isMe=id===myId;
-    const R=isMe?16:13;
-    
-    // Shadow
-    ctx.fillStyle='rgba(0,0,0,.35)';
-    ctx.beginPath();ctx.ellipse(sx+3,sy+R+3,R*.8,R*.3,0,0,Math.PI*2);ctx.fill();
-    
-    // Hidden effect
-    if(e.action==='hide'&&!isMe){
-      ctx.globalAlpha=0.3;
-    }
-    
-    // Body
-    const grad=ctx.createRadialGradient(sx-R*.3,sy-R*.3,R*.1,sx,sy,R);
-    grad.addColorStop(0,lighten(e.color,.3));
-    grad.addColorStop(1,e.color);
-    ctx.fillStyle=grad;
-    ctx.beginPath();ctx.arc(sx,sy,R,0,Math.PI*2);ctx.fill();
-    
-    // Lying down effect
-    if(e.action==='liedown'){
-      ctx.fillStyle='rgba(0,0,0,.4)';
-      ctx.beginPath();ctx.ellipse(sx,sy+4,R*1.5,R*.5,0,0,Math.PI*2);ctx.fill();
-    }
-    
-    // Role icon (only visible to self or spectators)
-    if(isMe || myDeadFlag){
-      const icons={killer:'🔪',police:'👮',civilian:'🙂'};
-      ctx.font='12px serif';ctx.textAlign='center';
-      ctx.fillText(icons[e.role]||'',sx,sy-R-4);
-    }
-    
-    // Name
-    ctx.globalAlpha=1;
-    ctx.fillStyle='rgba(0,0,0,.6)';
-    ctx.roundRect?ctx.roundRect(sx-30,sy+R+2,60,16,4):ctx.fillRect(sx-30,sy+R+2,60,16);
-    ctx.fill();
-    ctx.fillStyle=isMe?'#ffd60a':e.color;
-    ctx.font=`bold ${isMe?11:10}px 'Tajawal', sans-serif`;
-    ctx.textAlign='center';
-    ctx.fillText((e.isBot?'🤖':'')+e.name.slice(0,8),sx,sy+R+13);
-    
-    // "Me" indicator
-    if(isMe){
-      ctx.strokeStyle='rgba(255,255,255,.8)';
-      ctx.lineWidth=2.5;
-      ctx.beginPath();ctx.arc(sx,sy,R+4,0,Math.PI*2);ctx.stroke();
-      // Arrow above
-      ctx.fillStyle='#fff';
-      ctx.beginPath();
-      ctx.moveTo(sx,sy-R-16);
-      ctx.lineTo(sx-6,sy-R-8);
-      ctx.lineTo(sx+6,sy-R-8);
-      ctx.closePath();ctx.fill();
-    }
-    
-    // Run aura
-    if(e.action==='run'){
-      ctx.strokeStyle=isMe?'rgba(255,255,255,.3)':'rgba(255,255,255,.15)';
-      ctx.lineWidth=1;
-      ctx.beginPath();ctx.arc(sx,sy,R+8+(Date.now()%500)/50,0,Math.PI*2);ctx.stroke();
-    }
-  }
-  
-  // Dead entities (ghosts)
-  for(const [id,e] of Object.entries(entities)){
-    if(e.alive) continue;
-    const sx=e.x-camX, sy=e.y-camY;
-    if(sx<-50||sx>cW+50) continue;
-    ctx.globalAlpha=.25;
-    ctx.fillStyle='#888';
-    ctx.beginPath();ctx.arc(sx,sy,10,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#aaa';
-    ctx.font='10px sans-serif';ctx.textAlign='center';
-    ctx.fillText('💀',sx,sy+4);
-    ctx.globalAlpha=1;
+  const code=roomCode();
+  G.roomCode=code;
+  G.isHost=true;
+
+  // Build host player object
+  const meP={id:uid(),name:G.myName,avatar:G.myAvatar,isBot:false,alive:true,peerId:null};
+  G.myId=meP.id;
+  G.players=[meP];
+
+  // Add all bots
+  addAllBots();
+  renderLobby();
+
+  try{
+    const peerId=await createPeer('castle-'+code);
+    meP.peerId=peerId;
+    G.peer.options={};
+    setupHostListeners();
+
+    document.getElementById('roomCodeBig').textContent=code;
+    const link=location.href.split('?')[0]+'?room='+code;
+    document.getElementById('shareUrlEl').textContent=link;
+    setConn('online','الغرفة جاهزة • أنت المضيف');
+    notify('✅ الغرفة جاهزة! شارك الرابط');
+    sr('تم إنشاء الغرفة برمز '+code);
+    // Update URL
+    history.replaceState(null,'','?room='+code);
+  }catch(e){
+    setConn('error','فشل الاتصال');
+    notify('⚠️ فشل إنشاء الغرفة. تحقق من الاتصال.',true);
+    console.error(e);
   }
 }
 
-function lighten(hex, amt){
-  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
-  return `rgb(${Math.min(255,r+amt*255)},${Math.min(255,g+amt*255)},${Math.min(255,b+amt*255)})`;
+// ════════════════════════════════════════════
+//  RANDOM ROOM (solo + bots)
+// ════════════════════════════════════════════
+function doRandomRoom(){
+  G.isHost=true;
+  const meP={id:uid(),name:G.myName,avatar:G.myAvatar,isBot:false,alive:true,peerId:'local'};
+  G.myId=meP.id;
+  G.roomCode='LOCAL';
+  G.players=[meP];
+  addAllBots();
+
+  document.getElementById('lobbyTitle').textContent='🎲 غرفة عشوائية';
+  document.getElementById('roomCodeBig').textContent='LOCAL';
+  document.getElementById('shareUrlEl').textContent='(غرفة محلية مع لاعبين افتراضيين)';
+  document.getElementById('startBtn').style.display='block';
+  setConn('online','وضع محلي — لاعبون افتراضيون');
+
+  renderLobby();
+  showScreen('lobbyScreen');
+  notify('🎲 غرفة عشوائية مع '+BOT_NAMES.length+' لاعب افتراضي!');
+  sr('غرفة عشوائية جاهزة مع لاعبين افتراضيين');
 }
 
-// Minimap
-const minimapC=document.getElementById('minimapCanvas2');
-const minimapCtx=minimapC.getContext('2d');
-function renderMinimap(){
-  minimapCtx.clearRect(0,0,90,90);
-  minimapCtx.fillStyle='#0d1a0d';
-  minimapCtx.fillRect(0,0,90,90);
-  const sx=90/MAP_W, sy=90/MAP_H;
-  // Walls
-  minimapCtx.fillStyle='#2a2a3d';
-  for(const w of WALLS) minimapCtx.fillRect(w.x*sx,w.y*sy,w.w*sx,Math.max(2,w.h*sy));
-  // Entities
-  for(const [id,e] of Object.entries(entities)){
-    if(!e.alive) continue;
-    minimapCtx.fillStyle=id===myId?'#fff':e.color;
-    minimapCtx.beginPath();
-    minimapCtx.arc(e.x*sx,e.y*sy, id===myId?3:2, 0, Math.PI*2);
-    minimapCtx.fill();
+// ════════════════════════════════════════════
+//  JOIN ROOM (GUEST)
+// ════════════════════════════════════════════
+async function doJoinRoom(code){
+  showScreen('lobbyScreen');
+  document.getElementById('startBtn').style.display='none';
+  G.isHost=false;
+  G.roomCode=code;
+  setConn('connecting','جارٍ الاتصال بالغرفة…');
+  document.getElementById('roomCodeBig').textContent=code;
+  const link=location.href.split('?')[0]+'?room='+code;
+  document.getElementById('shareUrlEl').textContent=link;
+
+  try{
+    const myPeerId=await createPeer(null);
+    G.myId=uid();
+
+    await connectToHost('castle-'+code);
+    // send join request
+    guestSend({type:'join_req',name:G.myName,avatar:G.myAvatar,myId:G.myId});
+    setConn('connecting','جارٍ الانضمام…');
+
+    // find my player after state arrives
+    setTimeout(()=>{
+      const me=G.players.find(p=>p.name===G.myName&&!p.isBot);
+      if(me) G.myId=me.id;
+      setConn('online','متصل بالغرفة');
+      notify('✅ انضممت إلى الغرفة '+code);
+    },2000);
+
+  }catch(e){
+    setConn('error','فشل الاتصال');
+    notify('❌ تعذر الاتصال. تأكد من رمز الغرفة.',true);
+    console.error(e);
   }
 }
 
-// ═══════════════════════════════════════════════════════
-//  GAME LOOP
-// ═══════════════════════════════════════════════════════
-let lastTime=0, myStepTimer=0;
-function gameLoop(ts){
-  if(gamePhase!=='hunt') return;
-  const dt=ts-lastTime; lastTime=ts;
-  
-  const me=entities[myId];
-  
-  // Move me
-  if(me && me.alive){
-    const {dx,dy}=getInputDir();
-    const speed=currentAction==='run'?2.8:currentAction==='hide'||currentAction==='liedown'?0.5:1.8;
-    if(dx!==0||dy!==0){
-      moveEntity(me, dx*speed, dy*speed);
-      myStepTimer+=dt;
-      if(myStepTimer>300){myStepTimer=0;SFX.step();}
-    }
-  }
-  
-  // Update bots
-  for(const [id,e] of Object.entries(entities)){
-    if(e.isBot && e.alive) updateBot(e, dt);
-  }
-  
-  // Camera follow me
-  if(me){
-    const targetCX=me.x-cW/2, targetCY=me.y-cH/2;
-    camX+=(targetCX-camX)*.12;
-    camY+=(targetCY-camY)*.12;
-    camX=Math.max(0,Math.min(MAP_W-cW,camX));
-    camY=Math.max(0,Math.min(MAP_H-cH,camY));
-  }
-  
-  // Proximity audio
-  updateProximityAudio();
-  
-  // Render
-  render();
-  renderMinimap();
-  
-  requestAnimationFrame(gameLoop);
+// ════════════════════════════════════════════
+//  LOBBY HELPERS
+// ════════════════════════════════════════════
+function addAllBots(){
+  BOT_NAMES.forEach((name,i)=>{
+    if(G.players.length>=14) return;
+    if(G.players.find(p=>p.name===name)) return;
+    G.players.push({id:'bot_'+uid(),name,avatar:BOT_AVATARS[i]||'🤖',isBot:true,alive:true});
+  });
+}
+function addBotLobby(){
+  if(!G.isHost){notify('فقط المضيف يستطيع ذلك',true);return;}
+  if(G.players.length>=15){notify('الغرفة ممتلئة',true);return;}
+  const used=G.players.map(p=>p.name);
+  const av=BOT_NAMES.filter(n=>!used.includes(n));
+  if(!av.length){notify('جميع البوتات موجودون',true);return;}
+  const i=BOT_NAMES.indexOf(av[0]);
+  G.players.push({id:'bot_'+uid(),name:av[0],avatar:BOT_AVATARS[i]||'🤖',isBot:true,alive:true});
+  playSFX('join');renderLobby();
+}
+function removeBotLobby(){
+  if(!G.isHost){notify('فقط المضيف يستطيع ذلك',true);return;}
+  if(G.players.length<=4){notify('الحد الأدنى 4 لاعبين',true);return;}
+  const last=[...G.players].reverse().find(p=>p.isBot);
+  if(!last){notify('لا يوجد بوت لإزالته',true);return;}
+  G.players=G.players.filter(p=>p.id!==last.id);
+  renderLobby();
 }
 
-// ═══════════════════════════════════════════════════════
-//  HOME SCREEN ACTIONS
-// ═══════════════════════════════════════════════════════
-function getName(){ return (document.getElementById('pName').value.trim()||'لاعب مجهول').slice(0,16); }
-function showJoin(){ SFX.click(); document.getElementById('join-card').classList.remove('hidden'); }
-function hideJoin(){ SFX.click(); document.getElementById('join-card').classList.add('hidden'); }
-
-function startSolo(){
-  SFX.click();
-  myName=getName();
-  isSolo=true; gameMode='solo';
-  // 9 bots + me = 10 players
-  const totalBots=9;
-  const roles=['killer','police'];
-  // Randomly assign my role
-  const rnd=Math.random();
-  myRole=rnd<.15?'killer':rnd<.25?'police':'civilian';
-  
-  // Assign bot roles
-  const botRoles=['killer','police'];
-  // Ensure at least 1 killer and 1 police among bots if I'm not those
-  const shuffledBotRoles=[];
-  if(myRole!=='killer') shuffledBotRoles.push('killer');
-  if(myRole!=='police') shuffledBotRoles.push('police');
-  while(shuffledBotRoles.length<totalBots) shuffledBotRoles.push('civilian');
-  shuffledBotRoles.sort(()=>Math.random()-.5);
-  
-  entities={};
-  entities[myId]=spawnRandom(myId,myName,myRole,false,0);
-  for(let i=0;i<totalBots;i++){
-    const bid='bot_'+i;
-    const bname=BOT_NAMES[i]||'بوت'+(i+1);
-    entities[bid]=spawnRandom(bid,bname,shuffledBotRoles[i],true,i+1);
+function renderLobby(){
+  const grid=document.getElementById('playersGrid');
+  let html='';
+  G.players.forEach(p=>{
+    const isMe=p.id===G.myId;
+    const cls=['p-slot','filled',isMe?'me':p.isBot?'bot':'online-player'].join(' ');
+    html+=`<div class="${cls}">
+      <div class="av">${p.avatar}</div>
+      <div class="pname">${p.name}</div>
+      <div class="ptag">${isMe?'(أنت)':p.isBot?'🤖 افتراضي':'🌐 أونلاين'}</div>
+    </div>`;
+  });
+  // empty slots up to 8
+  for(let i=G.players.length;i<8;i++){
+    html+=`<div class="p-slot"><div class="empty-slot">⬜ فارغ</div></div>`;
   }
-  
-  huntDuration=120; huntTimeLeft=120;
-  showRoleReveal();
+  grid.innerHTML=html;
+  const btn=document.getElementById('startBtn');
+  if(btn) btn.disabled=G.players.length<4;
+  document.getElementById('playerCountNote').textContent=`👥 ${G.players.length} لاعب في الغرفة (الحد الأدنى 4 • الأقصى 15)`;
 }
 
-function goCreate(){
-  SFX.click();
-  myName=getName();
-  gameMode='host'; isSolo=false;
-  roomCode=String(Math.floor(1000+Math.random()*9000));
-  // Show lobby with just me
-  entities={};
-  entities[myId]={id:myId,name:myName,role:'',alive:true,kills:0,score:0,votes:0,isBot:false,color:COLORS[0]};
-  showLobby(true);
-  // (PeerJS would go here for real MP — for demo, show lobby UI)
-  toast('في اللعبة الحقيقية، يدخل أصدقاؤك عبر الكود! (هذا وضع الديمو)');
+function copyCode(){
+  navigator.clipboard.writeText(G.roomCode).then(()=>notify('✅ تم نسخ الرمز')).catch(()=>notify(G.roomCode));
 }
-function goJoin(){
-  SFX.click();
-  myName=getName();
-  const code=document.getElementById('rCode').value.trim();
-  if(!/^\d{4}$/.test(code)){toast('أدخل كود 4 أرقام');return;}
-  roomCode=code;
-  gameMode='guest'; isSolo=false;
-  toast('ميزة الغرف الحقيقية تحتاج استضافة HTTPS + PeerJS');
-  showLobby(false);
+function copyLink(){
+  const link=location.href.split('?')[0]+'?room='+G.roomCode;
+  navigator.clipboard.writeText(link).then(()=>notify('✅ تم نسخ الرابط')).catch(()=>notify(link));
+}
+function backToMenu(){
+  stopMusic();
+  clearInt();
+  if(G.peer) try{G.peer.destroy();}catch(e){}
+  G.peer=null;G.conns={};G.players=[];G.phase='lobby';
+  history.replaceState(null,'',location.pathname);
+  showScreen('menuScreen');
 }
 
-// ═══════════════════════════════════════════════════════
-//  LOBBY
-// ═══════════════════════════════════════════════════════
-function showLobby(isHost){
-  showScreen('lobby');
-  document.getElementById('lobbyCode').textContent=roomCode||'----';
-  document.getElementById('hostCtrl').classList.toggle('hidden',!isHost);
-  document.getElementById('guestWait').classList.toggle('hidden',isHost);
-  renderLobbyList();
-}
-function renderLobbyList(){
-  const el=document.getElementById('lobbyList');
-  const list=Object.values(entities);
-  document.getElementById('pCount').textContent=list.length+'/15';
-  el.innerHTML=list.map((e,i)=>`
-    <div class="vote-item" style="cursor:default;margin-bottom:6px">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div class="avatar" style="background:${e.color}">${e.name[0]}</div>
-        <span>${e.isBot?'<span class="bot-tag">بوت</span>':''}${e.name}${e.id===myId?' (أنت)':''}</span>
-      </div>
-      ${i===0?'<span style="color:var(--gold)">👑</span>':''}
-    </div>
-  `).join('');
-  const count=list.length;
-  const ready=count>=5;
-  document.getElementById('lobbyStatus').textContent=ready?'✅ جاهزون للبدء!':'في انتظار '+(5-count)+' لاعبين...';
-  document.getElementById('lobbyStatus').className='smsg '+(ready?'smsg-ok':'smsg-info');
-  const sb=document.getElementById('startBtn');
-  if(sb){sb.disabled=!ready;sb.style.opacity=ready?'1':'0.5';}
-}
-function shareRoom(){
-  SFX.click();
-  const url=location.href.split('?')[0]+'?room='+roomCode;
-  const msg='🔪 انضم لغرفة لعبة القاتل!\n\nكود الغرفة: '+roomCode+'\nأو افتح:\n'+url;
-  if(navigator.share) navigator.share({title:'لعبة القاتل',text:msg}).catch(()=>{});
-  else window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
-}
-function launchGame(){
-  SFX.click();
-  huntDuration=parseInt(document.getElementById('huntSel').value);
-  huntTimeLeft=huntDuration;
+// ════════════════════════════════════════════
+//  START GAME (HOST ONLY)
+// ════════════════════════════════════════════
+function hostStartGame(){
+  if(!G.isHost) return;
+  if(G.players.length<4){notify('تحتاج 4 لاعبين على الأقل',true);return;}
+  playSFX('btn');
   // Assign roles
-  const ids=Object.keys(entities);
-  ids.sort(()=>Math.random()-.5);
-  entities[ids[0]].role='killer';
-  entities[ids[1]].role='police';
-  for(let i=2;i<ids.length;i++) entities[ids[i]].role='civilian';
-  myRole=entities[myId].role;
+  const shuffled=[...G.players].sort(()=>Math.random()-.5);
+  const assignments={};
+  shuffled.forEach((p,i)=>{
+    assignments[p.id]=i===0?'killer':i===1?'cop':'civilian';
+  });
+
+  const startData={type:'start_game',players:G.players,assignments,roundDuration:G.roundDuration};
+  hostBroadcast(startData);
+  beginGame(assignments);
+}
+
+// ════════════════════════════════════════════
+//  BEGIN GAME (all players)
+// ════════════════════════════════════════════
+function beginGame(assignments){
+  G.phase='playing';
+  G.invUsed=false;G.shootUsed=false;G.myVote=null;G.votes={};G.votesBy={};
+
+  G.players.forEach(p=>{
+    p.role=assignments[p.id]||'civilian';
+    p.alive=true;
+  });
+  G.myRole=G.players.find(p=>p.id===G.myId)?.role||'civilian';
+
+  // init positions
+  G.players.forEach(p=>{
+    G.positions[p.id]={x:10+Math.random()*80,y:10+Math.random()*75,action:'walk'};
+  });
+
+  showScreen('gameScreen');
+  stopMusic();setTimeout(startMusic,600);
+  renderMapPlayers();
+  buildSpecialControls();
   showRoleReveal();
+  startRoundTimer();
+
+  // bots
+  clearInterval(G.botInt);
+  G.botInt=setInterval(runBots,1800);
+  clearInterval(G.proximityInt);
+  G.proximityInt=setInterval(checkProximity,900);
 }
 
-// ═══════════════════════════════════════════════════════
-//  ROLE REVEAL
-// ═══════════════════════════════════════════════════════
-const ROLE_DATA={
-  killer:{icon:'🔪',label:'القاتل',cls:'killer',desc:'اقتل أكبر عدد قبل انتهاء الوقت! تجنب الشرطي.'},
-  police:{icon:'👮',label:'الشرطي',cls:'police',desc:'أطلق النار على القاتل فقط! إذا أخطأت تموت!'},
-  civilian:{icon:'🏃',label:'مدني',cls:'civ',desc:'اختبئ وابق حياً حتى نهاية الوقت!'},
-};
-function showRoleReveal(){
-  showScreen('role');
-  const r=ROLE_DATA[myRole]||ROLE_DATA.civilian;
-  document.getElementById('roleContent').innerHTML=`
-    <span class="role-icon-big" aria-hidden="true">${r.icon}</span>
-    <div class="role-title ${r.cls}">${r.label}</div>
-    <p class="role-desc">${r.desc}</p>
-  `;
-  speak('دورك هو: '+r.label+'. '+r.desc);
-  SFX.danger();
-}
-function enterGame(){
-  SFX.click();
-  startGameCanvas();
-}
-
-// ═══════════════════════════════════════════════════════
-//  START CANVAS GAME
-// ═══════════════════════════════════════════════════════
-function startGameCanvas(){
-  gamePhase='hunt';
-  myDeadFlag=false;
-  currentAction='idle';
-  
-  // Show canvas
-  canvas.classList.add('active');
-  document.getElementById('hud').classList.add('active');
-  document.getElementById('joystick-zone').classList.add('active');
-  document.getElementById('action-btns').classList.add('active');
-  document.getElementById('minimap').classList.add('active');
-  
-  buildActionBtns();
+// ════════════════════════════════════════════
+//  ROUND TIMER
+// ════════════════════════════════════════════
+function startRoundTimer(){
+  // لا وقت محدد - اللعبة تستمر حتى يبقى شخصان
   updateHUD();
-  startBGM();
-  startHuntTimer();
-  
-  lastTime=performance.now();
-  requestAnimationFrame(gameLoop);
-  speak(myRole==='killer'?'اللعبة بدأت! أنت القاتل، اصطد الجميع!':myRole==='police'?'اللعبة بدأت! أنت الشرطي!':'اللعبة بدأت! اختبئ!');
+}
+function updateHUD(){
+  const rb=document.getElementById('hudRole');
+  const rn=G.myRole==='cop'?'شرطي':G.myRole==='killer'?'قاتل':'مدني';
+  rb.textContent=rn;rb.className='role-badge rb-'+G.myRole;
+  document.getElementById('hudAlive').textContent='👥 '+G.players.filter(p=>p.alive).length+' أحياء';
+}
+function clearInt(){
+  clearInterval(G.timerInt);clearInterval(G.botInt);
+  clearInterval(G.proximityInt);clearInterval(G.voteTimerInt);
+}
+// لا يوجد وقت محدد للجولة
+
+// ════════════════════════════════════════════
+//  ROLE REVEAL
+// ════════════════════════════════════════════
+function showRoleReveal(){
+  const r=G.myRole;
+  const info={
+    killer:{emoji:'🗡️',title:'أنت القاتل!',desc:'الجميع ضدك. تصرف ببراءة.',instr:'• اضغط زر القتل واختر ضحيتك\n• تجنب لفت الانتباه\n• تصرف كمدني عادي أمام الآخرين\n• إذا صوّت عليك الأغلبية تخسر'},
+    cop:{emoji:'🚔',title:'أنت الشرطي!',desc:'احمِ المدنيين وأوقف القاتل.',instr:'• التحقيق: يكشف دور شخص واحد (مرة واحدة)\n• إطلاق النار: إذا أصبت القاتل يربح الجميع\n• إذا أطلقت على بريء أنت من يموت!\n• استخدم المنطق قبل إطلاق النار'},
+    civilian:{emoji:'👤',title:'أنت مدني!',desc:'تعاون وابقَ حياً.',instr:'• اطلب اجتماعاً إذا رأيت شيئاً مريباً\n• صوّت بحكمة ضد القاتل\n• الشرطي حليفك — ساعده\n• الهروب والاختباء ينقذانك'}
+  };
+  const d=info[r];
+  document.getElementById('roleEmoji').textContent=d.emoji;
+  document.getElementById('roleTitle').textContent=d.title;
+  document.getElementById('roleDesc').textContent=d.desc;
+  document.getElementById('roleInstr').innerHTML=d.instr.replace(/\n/g,'<br>');
+  openOverlay('roleOverlay');playSFX('reveal');
+  sr(d.title+'. '+d.desc);
+}
+function closeRoleOverlay(){closeOverlay('roleOverlay');}
+
+// ════════════════════════════════════════════
+//  MAP
+// ════════════════════════════════════════════
+function renderMapPlayers(){
+  const map=document.getElementById('gameMap');
+  map.querySelectorAll('.map-player').forEach(e=>e.remove());
+  G.players.forEach(p=>{
+    const pos=G.positions[p.id]||{x:50,y:50,action:'walk'};
+    const isMe=p.id===G.myId;
+    const el=document.createElement('div');
+    el.className=['map-player',isMe?'me':'',!p.alive?'dead':'',pos.action==='hide'&&!isMe?'hiding':''].filter(Boolean).join(' ');
+    el.id='mp_'+p.id;
+    el.style.left=pos.x+'%';el.style.top=pos.y+'%';
+    const moving=p.alive&&(pos.action==='walk'||pos.action==='run');
+    el.innerHTML=`<div class="player-bubble">${p.avatar}${moving?'<div class="step-dot"></div>':''}</div><div class="player-label">${p.alive?p.name:'💀'+p.name}</div>`;
+    map.appendChild(el);
+  });
 }
 
-function buildActionBtns(){
-  const c=document.getElementById('action-btns');
-  const base=`
-    <div class="act-group"><button class="act-btn act-btn-hide" onclick="setAction('hide')" aria-label="اختباء">🫣</button><div class="act-btn-label">اختباء</div></div>
-    <div class="act-group"><button class="act-btn act-btn-run" onclick="setAction('run')" aria-label="هروب">🏃</button><div class="act-btn-label">هروب</div></div>
-    <div class="act-group"><button class="act-btn act-btn-lie" onclick="setAction('liedown')" aria-label="استلقاء">🛌</button><div class="act-btn-label">استلقاء</div></div>
-  `;
-  const killerBtn=myRole==='killer'?`<div class="act-group"><button class="act-btn act-btn-kill" onclick="openKillPicker()" aria-label="قتل">🔪</button><div class="act-btn-label">قتل</div></div>`:'';
-  const policeBtn=myRole==='police'?`<div class="act-group"><button class="act-btn act-btn-shoot" onclick="openShootPicker()" aria-label="إطلاق نار">🔫</button><div class="act-btn-label">إطلاق</div></div>`:'';
-  c.innerHTML=base+killerBtn+policeBtn;
+function movePlayer(pid,x,y,action){
+  G.positions[pid]={x,y,action};
+  const el=document.getElementById('mp_'+pid);
+  if(!el) return;
+  el.style.left=x+'%';el.style.top=y+'%';
+  const p=G.players.find(q=>q.id===pid);
+  const isHiding=action==='hide';
+  el.classList.toggle('hiding',isHiding&&pid!==G.myId);
+  const bub=el.querySelector('.player-bubble');
+  const sd=bub.querySelector('.step-dot');
+  const moving=p?.alive&&(action==='walk'||action==='run');
+  if(moving&&!sd){const d=document.createElement('div');d.className='step-dot';bub.appendChild(d);}
+  else if(!moving&&sd)sd.remove();
 }
 
-function setAction(a){
-  SFX.click();
-  currentAction=a;
-  const me=entities[myId]; if(me) me.action=a;
-  const labels={hide:'مختبئ 🫣',run:'هارب 🏃',liedown:'مستلقٍ 🛌'};
-  toast(labels[a]||'');
-  speak(labels[a]||'');
+function checkProximity(){
+  const myPos=G.positions[G.myId];if(!myPos) return;
+  G.players.forEach(p=>{
+    if(p.id===G.myId||!p.alive) return;
+    const pos=G.positions[p.id];if(!pos) return;
+    const dx=myPos.x-pos.x,dy=myPos.y-pos.y;
+    const dist=Math.sqrt(dx*dx+dy*dy)/100;
+    if(dist<0.25&&(pos.action==='walk'||pos.action==='run')) noise(0.35*(1-dist*4+0.1));
+  });
 }
 
-// ═══════════════════════════════════════════════════════
-//  KILL / SHOOT PICKERS
-// ═══════════════════════════════════════════════════════
-function openKillPicker(){
-  SFX.click();
-  const me=entities[myId]; if(!me||!me.alive) return;
-  const list=document.getElementById('killPickList');
-  const nearby=Object.entries(entities)
-    .filter(([id,e])=>id!==myId&&e.alive&&Math.hypot(e.x-me.x,e.y-me.y)<200)
-    .sort((a,b)=>Math.hypot(b[1].x-me.x,b[1].y-me.y)-Math.hypot(a[1].x-me.x,a[1].y-me.y));
-  
-  if(nearby.length===0){toast('لا يوجد أحد قريب منك!'); return;}
-  list.innerHTML=nearby.map(([id,e])=>`
-    <button class="btn btn-red" onclick="doKill('${id}');closeOv('ov-kill')" aria-label="قتل ${e.name}" style="margin-bottom:8px">
-      🔪 ${e.name} (${Math.round(Math.hypot(e.x-me.x,e.y-me.y))} متر)
-    </button>
-  `).join('');
-  openOv('ov-kill');
+function applyPosition(data){movePlayer(data.pid,data.x,data.y,data.action);}
+
+// ════════════════════════════════════════════
+//  PLAYER ACTIONS
+// ════════════════════════════════════════════
+function doUnhide(){
+  if(G.positions[G.myId]?.action !== 'hide') return;
+  // إزالة الاختباء والعودة للمشي
+  doAction('walk');
+  document.getElementById('bUnhide').style.display='none';
+  notify('👁️ أنت ظاهر الآن');
+  sr('تم إزالة الاختباء');
 }
 
-function doKill(targetId){
-  killEntity(myId, targetId);
+function doAction(action){
+  if(G.phase!=='playing') return;
+  playSFX('btn');if(action==='hide')playSFX('hide');
+  G.curAction=action;
+  document.getElementById('myStatus').textContent='وضع: '+actName(action);
+  document.querySelectorAll('.act-btn').forEach(b=>b.classList.remove('active'));
+  const bmap={walk:'bWalk',run:'bRun',hide:'bHide',lie:'bLie',fly:'bFly',escape:'bEsc'};
+  const btn=document.getElementById(bmap[action]);if(btn)btn.classList.add('active');
+
+  const pos=G.positions[G.myId]||{x:50,y:50};
+  const spd=action==='run'?14:action==='fly'?20:action==='walk'?7:3;
+  const nx=Math.max(2,Math.min(94,pos.x+(Math.random()-.5)*spd));
+  const ny=Math.max(2,Math.min(88,pos.y+(Math.random()-.5)*spd));
+  movePlayer(G.myId,nx,ny,action);
+  if(action==='walk'||action==='run') noise(action==='run'?.3:.18);
+
+  // إظهار زر "إزالة الاختباء" فقط عند الاختباء
+  const unhideBtn = document.getElementById('bUnhide');
+  if(unhideBtn) unhideBtn.style.display = (action==='hide') ? 'flex' : 'none';
+
+  const d={type:'position',pid:G.myId,x:nx,y:ny,action};
+  netSend(d);if(G.isHost)hostBroadcast(d);
+  sr(actName(action));
+}
+const actName=a=>({walk:'مشي',run:'جري',hide:'اختباء',lie:'استلقاء',fly:'طيران',escape:'هروب'}[a]||a);
+
+// ════════════════════════════════════════════
+//  SPECIAL CONTROLS SETUP
+// ════════════════════════════════════════════
+function buildSpecialControls(){
+  let h=`<button class="sp-btn sp-meeting" onclick="callMeeting()">📢<span>اجتماع</span></button>`;
+  if(G.myRole==='cop'){
+    h+=`<button class="sp-btn sp-investigate" id="spInv" onclick="openInvestigate()">🔍<span>تحقيق</span></button>`;
+    h+=`<button class="sp-btn sp-shoot" id="spShoot" onclick="openShoot()">🔫<span>إطلاق نار</span></button>`;
+  } else if(G.myRole==='killer'){
+    h+=`<button class="sp-btn sp-kill" id="spKill" onclick="openKill()">🗡️<span>قتل</span></button>`;
+  }
+  document.getElementById('specialRow').innerHTML=h;
 }
 
-function openShootPicker(){
-  SFX.click();
-  const me=entities[myId]; if(!me||!me.alive) return;
-  const list=document.getElementById('shootPickList');
-  const targets=Object.entries(entities).filter(([id,e])=>id!==myId&&e.alive);
-  if(targets.length===0){toast('لا يوجد أحد!');return;}
-  list.innerHTML=targets.map(([id,e])=>`
-    <button class="btn btn-shoot" onclick="doShoot('${id}');closeOv('ov-shoot')" aria-label="إطلاق النار على ${e.name}" style="margin-bottom:8px;background:var(--blue);color:#fff">
-      🔫 ${e.name}
-    </button>
-  `).join('');
-  openOv('ov-shoot');
+// ════════════════════════════════════════════
+//  MEETING
+// ════════════════════════════════════════════
+function callMeeting(){
+  if(G.phase!=='playing') return;
+  playSFX('meet');
+  addLog(`📢 ${G.myName} طلب اجتماعاً`,'alert');
+  netSend({type:'action',subtype:'meeting',callerName:G.myName,reason:`${G.myName} طلب اجتماعاً`});
+  if(G.isHost) startVoting(`${G.myName} طلب اجتماعاً. من تشك به؟`);
 }
 
-function doShoot(targetId){
-  const target=entities[targetId]; if(!target) return;
-  SFX.shoot();
-  const correct=target.role==='killer';
-  if(correct){
-    target.alive=false;
-    toast('✅ أصبت القاتل! المدنيون يفوزون!');
-    speak('أصبت القاتل!');
-    setTimeout(()=>endHunt('civilians'),1200);
+// ════════════════════════════════════════════
+//  INVESTIGATE
+// ════════════════════════════════════════════
+function openInvestigate(){
+  if(G.invUsed){notify('استخدمت التحقيق بالفعل',true);return;}
+  playSFX('btn');
+  document.getElementById('tgtTitle').textContent='🔍 تحقيق مع لاعب';
+  document.getElementById('tgtSub').textContent='يكشف دور لاعب واحد (مرة واحدة فقط)';
+  const targets=G.players.filter(p=>p.id!==G.myId&&p.alive);
+  document.getElementById('tgtList').innerHTML=targets.map(p=>
+    `<div class="tgt" onclick="doInvestigate('${p.id}')"><span style="font-size:22px">${p.avatar}</span><strong>${p.name}</strong></div>`
+  ).join('');
+  openOverlay('targetOverlay');
+}
+function doInvestigate(tid){
+  closeOverlay('targetOverlay');
+  G.invUsed=true;
+  const el=document.getElementById('spInv');if(el){el.disabled=true;el.style.opacity='.35';}
+  const t=G.players.find(p=>p.id===tid);if(!t) return;
+  playSFX('inv');
+  const isKiller=t.role==='killer';
+  document.getElementById('invIcon').textContent=isKiller?'🔴':'🟢';
+  document.getElementById('invResult').innerHTML=
+    `<strong style="color:${isKiller?'var(--red)':'var(--green)'};font-size:17px">${t.name}</strong><br>
+    ${isKiller?'⚠️ هذا الشخص هو القاتل!':'✅ هذا الشخص بريء'}`;
+  openOverlay('invOverlay');
+  addLog(`🔍 الشرطي يحقق مع أحد اللاعبين`,'info');
+  sr('نتيجة التحقيق: '+(isKiller?t.name+' هو القاتل':t.name+' بريء'));
+}
+
+// ════════════════════════════════════════════
+//  SHOOT
+// ════════════════════════════════════════════
+function openShoot(){
+  if(G.shootUsed){notify('أطلقت النار بالفعل',true);return;}
+  playSFX('btn');
+  document.getElementById('tgtTitle').textContent='🔫 إطلاق النار';
+  document.getElementById('tgtSub').textContent='إذا أصبت القاتل تربح! إذا أخطأت تموت أنت (مرة واحدة)';
+  const targets=G.players.filter(p=>p.id!==G.myId&&p.alive);
+  document.getElementById('tgtList').innerHTML=targets.map(p=>
+    `<div class="tgt" onclick="doShoot('${p.id}')"><span style="font-size:22px">${p.avatar}</span><strong>${p.name}</strong></div>`
+  ).join('');
+  openOverlay('targetOverlay');
+}
+function doShoot(tid){
+  closeOverlay('targetOverlay');
+  G.shootUsed=true;
+  const el=document.getElementById('spShoot');if(el){el.disabled=true;el.style.opacity='.35';}
+  const t=G.players.find(p=>p.id===tid);if(!t) return;
+  playSFX('shoot');showBlood(G.positions[tid]);
+
+  if(t.role==='killer'){
+    t.alive=false;
+    addLog(`🔫 الشرطي أطلق النار وأصاب القاتل ${t.name}!`,'kill');
+    netSend({type:'action',subtype:'shoot_kill',targetId:tid});
+    if(G.isHost)hostBroadcast({type:'action',subtype:'shoot_kill',targetId:tid});
+    renderMapPlayers();
+    notify('✅ أصبت القاتل!');
+    setTimeout(()=>startVoting('الشرطي أصاب القاتل! أكّدوا النتيجة'),1200);
   } else {
-    // Police dies
-    const me=entities[myId]; if(me) me.alive=false;
-    myDeadFlag=true;
-    toast('❌ أخطأت! أطلقت النار على بريء. أنت مت!');
-    speak('أخطأت! أنت مت!');
-    onMyDeath();
-    checkWinCondition();
+    const me=G.players.find(p=>p.id===G.myId);if(me)me.alive=false;
+    addLog(`🔫 الشرطي أطلق على ${t.name} (بريء) فمات الشرطي!`,'kill');
+    netSend({type:'action',subtype:'shoot_miss',shooterId:G.myId});
+    if(G.isHost)hostBroadcast({type:'action',subtype:'shoot_miss',shooterId:G.myId});
+    renderMapPlayers();
+    notify('❌ أخطأت! مت.',true);
+    setTimeout(()=>startVoting('الشرطي مات. من هو القاتل الحقيقي؟'),1500);
+  }
+}
+function closeTgt(){closeOverlay('targetOverlay');}
+
+// ════════════════════════════════════════════
+//  KILL
+// ════════════════════════════════════════════
+function openKill(){
+  if(G.phase!=='playing') return;
+  playSFX('btn');
+  document.getElementById('tgtTitle').textContent='🗡️ اختر ضحيتك';
+  document.getElementById('tgtSub').textContent='اقتل بحكمة — المختبئون محميون 🫣';
+  const targets=G.players.filter(p=>p.id!==G.myId&&p.alive);
+  document.getElementById('tgtList').innerHTML=targets.map(p=>{
+    const hiding=isHiding(p.id);
+    return `<div class="tgt" onclick="doKill('${p.id}')" style="${hiding?'opacity:.5;border-color:#555':''}">
+      <span style="font-size:22px">${p.avatar}</span>
+      <div>
+        <strong>${p.name}</strong>
+        ${hiding?'<div style="font-size:11px;color:#888">🫣 مختبئ — محمي</div>':''}
+      </div>
+    </div>`;
+  }).join('');
+  openOverlay('targetOverlay');
+}
+function doKill(tid){
+  closeOverlay('targetOverlay');
+  const t=G.players.find(p=>p.id===tid);if(!t||!t.alive) return;
+
+  // ── حماية الاختباء: إذا الهدف مختبئ يُمنع القتل ──
+  if(isHiding(tid)){
+    notify('🫣 '+t.name+' مختبئ! لا يمكن قتله الآن. جرّب شخصاً آخر.',true);
+    sr(t.name+' مختبئ، لا يمكن قتله حالياً');
+    addLog(`🫣 ${t.name} مختبئ! فشلت محاولة قتله`,'info');
+    // أعِد فتح قائمة الأهداف تلقائياً بعد ثانية
+    setTimeout(()=>openKill(),1200);
+    return;
+  }
+
+  t.alive=false;playSFX('kill');showBlood(G.positions[tid]);
+  addLog(`💀 ${t.name} قُتل!`,'kill');
+  netSend({type:'action',subtype:'kill',targetId:tid,killerId:G.myId});
+  if(G.isHost)hostBroadcast({type:'action',subtype:'kill',targetId:tid,killerId:G.myId});
+  renderMapPlayers();notify(`🗡️ قتلت ${t.name}`);sr('تم قتل '+t.name);
+
+  const alive=G.players.filter(p=>p.alive);
+  const killerAlive=alive.find(p=>p.role==='killer');
+  // إذا بقي شخصان فقط → تصويت أخير حاسم
+  if(alive.length<=2){
+    clearInt();
+    if(killerAlive) setTimeout(()=>gameEnd('killer','لم يتبق غير القاتل!'),1500);
+    else setTimeout(()=>gameEnd('civilians','تم القضاء على القاتل'),1500);
+    return;
+  }
+  // إذا بقي 3 أشخاص → تصويت أخير حاسم
+  if(alive.length<=3){
+    setTimeout(()=>startVoting(`بقي 3 لاعبين فقط! هذا هو التصويت الأخير الحاسم!`),1600);
+    return;
+  }
+  setTimeout(()=>startVoting(`تم قتل ${t.name}! من القاتل؟`),1600);
+}
+
+// ════════════════════════════════════════════
+//  APPLY REMOTE ACTIONS
+// ════════════════════════════════════════════
+function applyAction(data){
+  if(!data.subtype) return;
+  switch(data.subtype){
+    case 'kill':{
+      const t=G.players.find(p=>p.id===data.targetId);
+      if(t&&t.alive){t.alive=false;renderMapPlayers();addLog(`💀 ${t.name} قُتل!`,'kill');playSFX('kill');showBlood(G.positions[data.targetId]);}
+      const alive=G.players.filter(p=>p.alive);
+      const killerA=alive.find(p=>p.role==='killer');
+      if(alive.length<=2){
+        clearInt();
+        if(killerA) setTimeout(()=>gameEnd('killer','لم يتبق غير القاتل!'),1500);
+        else setTimeout(()=>gameEnd('civilians','تم القضاء على القاتل'),1500);
+      } else if(alive.length<=3){
+        setTimeout(()=>startVoting(`بقي 3 لاعبين فقط! هذا هو التصويت الأخير الحاسم!`),1600);
+      } else setTimeout(()=>startVoting(`تم قتل ${t?.name}! من القاتل؟`),1600);
+      break;
+    }
+    case 'shoot_kill':{
+      const t=G.players.find(p=>p.id===data.targetId);
+      if(t){t.alive=false;renderMapPlayers();addLog(`🔫 الشرطي أصاب القاتل!`,'kill');playSFX('shoot');}
+      setTimeout(()=>startVoting('الشرطي أصاب القاتل! أكّدوا'),1200);
+      break;
+    }
+    case 'shoot_miss':{
+      const me=G.players.find(p=>p.id===data.shooterId);
+      if(me){me.alive=false;renderMapPlayers();addLog(`🔫 الشرطي أطلق على بريء فمات!`,'kill');}
+      setTimeout(()=>startVoting('الشرطي مات. من القاتل؟'),1500);
+      break;
+    }
+    case 'meeting':
+      startVoting(data.reason||'اجتماع طارئ');
+      break;
+    case 'game_end':
+      gameEnd(data.winner,data.reason);
+      break;
   }
 }
 
-// ═══════════════════════════════════════════════════════
-//  HUD + TIMER
-// ═══════════════════════════════════════════════════════
-function updateHUD(){
-  const me=entities[myId];
-  const roleLabels={killer:'🔪 قاتل',police:'👮 شرطي',civilian:'🏃 مدني'};
-  document.getElementById('hud-role').textContent=roleLabels[myRole]||'';
-  document.getElementById('hud-kills').textContent=me?('قتلات: '+me.kills):'';
+// ════════════════════════════════════════════
+//  BLOOD EFFECT
+// ════════════════════════════════════════════
+function showBlood(pos){
+  if(!pos) return;
+  const map=document.getElementById('gameMap');
+  const el=document.createElement('div');
+  el.className='blood';el.textContent='💥';
+  el.style.left=pos.x+'%';el.style.top=pos.y+'%';
+  map.appendChild(el);setTimeout(()=>el.remove(),1000);
 }
 
-let huntInterval;
-function startHuntTimer(){
-  clearInterval(huntInterval);
-  huntInterval=setInterval(()=>{
-    huntTimeLeft--;
-    const m=String(Math.floor(huntTimeLeft/60)).padStart(2,'0');
-    const s=String(huntTimeLeft%60).padStart(2,'0');
-    const el=document.getElementById('hud-timer');
-    el.textContent=m+':'+s;
-    el.classList.toggle('danger',huntTimeLeft<=15);
-    if(huntTimeLeft<=10) SFX.tick();
-    updateHUD();
-    if(huntTimeLeft<=0){
-      clearInterval(huntInterval);
-      endHunt('time');
-    }
+// ════════════════════════════════════════════
+//  VOTING PHASE
+// ════════════════════════════════════════════
+function startVoting(reason){
+  if(G.phase==='voting') return;
+  G.phase='voting';
+  clearInterval(G.timerInt);
+  G.votes={};G.votesBy={};G.myVote=null;
+  playSFX('meet');stopMusic();
+  document.getElementById('voteReason').textContent=reason;
+  openOverlay('voteOverlay');
+  renderVoteList();sr('بدأ التصويت. '+reason);
+
+  G.voteTimeLeft=30;
+  document.getElementById('voteTimerEl').textContent=G.voteTimeLeft;
+  clearInterval(G.voteTimerInt);
+  G.voteTimerInt=setInterval(()=>{
+    G.voteTimeLeft--;
+    document.getElementById('voteTimerEl').textContent=G.voteTimeLeft;
+    if(G.voteTimeLeft===18) runBotVotes();
+    if(G.voteTimeLeft<=0){clearInterval(G.voteTimerInt);finalizeVote();}
   },1000);
-}
-
-function endHunt(reason){
-  clearInterval(huntInterval);
-  gamePhase='vote';
-  stopBGM();
-  stopFootsteps();
-  // Reset votes
-  Object.values(entities).forEach(e=>e.votes=0);
-  setTimeout(showVoteScreen, 500);
-}
-
-// ═══════════════════════════════════════════════════════
-//  VOTING
-// ═══════════════════════════════════════════════════════
-let voteInterval;
-function showVoteScreen(){
-  // Hide canvas
-  canvas.classList.remove('active');
-  document.getElementById('hud').classList.remove('active');
-  document.getElementById('joystick-zone').classList.remove('active');
-  document.getElementById('action-btns').classList.remove('active');
-  document.getElementById('minimap').classList.remove('active');
-  document.getElementById('proximity-ring').style.display='none';
-  
-  selectedVoteId=null; hasVoted=false;
-  showScreen('vote');
-  renderVoteList();
-  startVoteTimer();
-  speak('مرحلة التصويت! من تعتقد أنه القاتل؟');
 }
 
 function renderVoteList(){
-  const el=document.getElementById('voteList');
-  el.innerHTML=Object.entries(entities)
-    .filter(([id,e])=>id!==myId&&e.alive)
-    .map(([id,e],i)=>`
-      <div class="vote-item ${selectedVoteId===id?'selected':''}" onclick="selectVote('${id}')" role="button" tabindex="0" aria-label="التصويت ضد ${e.name} - ${e.votes} أصوات">
-        <div style="display:flex;align-items:center;gap:10px">
-          <div class="avatar" style="background:${e.color}">${e.isBot?'🤖':e.name[0]}</div>
-          <span>${e.name}</span>
+  const total=Math.max(1,Object.values(G.votes).reduce((a,b)=>a+b,0));
+  document.getElementById('voteList').innerHTML=G.players.map(p=>{
+    const cnt=G.votes[p.id]||0;
+    const pct=Math.round(cnt/total*100);
+    const voted=G.myVote===p.id;
+    const isme=p.id===G.myId;
+    return`<div class="vote-item${voted?' voted':''}${!p.alive?' dead-p':''}">
+      <div class="v-info">
+        <span style="font-size:20px">${p.avatar}</span>
+        <div>
+          <div class="v-name">${!p.alive?'💀 ':''} ${p.name}${isme?' (أنت)':''}</div>
+          <div class="v-count">${cnt} صوت</div>
+          <div class="v-bar"><div class="v-fill" style="width:${pct}%"></div></div>
         </div>
-        <span class="vote-votes">${e.votes} ✋</span>
       </div>
-    `).join('');
+      <button class="vote-btn" onclick="castVote('${p.id}')" ${G.myVote||!G.players.find(x=>x.id===G.myId)?.alive?'disabled':''}>صوّت</button>
+    </div>`;
+  }).join('');
 }
 
-function selectVote(id){
-  if(hasVoted||myDeadFlag) return;
-  SFX.vote();
-  selectedVoteId=id;
+function castVote(tid){
+  if(G.myVote) return;
+  G.myVote=tid;
+  G.votes[tid]=(G.votes[tid]||0)+1;
+  G.votesBy[G.myId]=tid;
+  playSFX('vote');
   renderVoteList();
-  toast('اخترت: '+entities[id]?.name);
+  netSend({type:'action',subtype:'vote',targetId:tid,voterId:G.myId});
+  if(G.isHost)hostBroadcast({type:'action',subtype:'vote',targetId:tid,voterId:G.myId});
+  sr('صوّتت على '+G.players.find(p=>p.id===tid)?.name);
 }
+function skipMyVote(){G.myVote='skip';}
 
-function castVote(){
-  if(!selectedVoteId){toast('اختر لاعباً أولاً');return;}
-  if(hasVoted) return;
-  hasVoted=true;
-  SFX.vote();
-  if(entities[selectedVoteId]) entities[selectedVoteId].votes++;
-  document.getElementById('voteConfirmBtn').classList.add('hidden');
-  document.getElementById('voteWait').classList.remove('hidden');
-  
-  // Bots also vote (random, but killer might vote against civilian)
-  if(isSolo){
-    Object.entries(entities).filter(([id,e])=>e.isBot&&e.alive).forEach(([bid,bot])=>{
-      // Killer bot votes against a random non-killer
-      let candidates=Object.keys(entities).filter(id=>id!==bid&&entities[id].alive);
-      if(bot.role==='killer') candidates=candidates.filter(id=>entities[id].role!=='killer');
-      if(candidates.length>0){
-        const pick=candidates[Math.floor(Math.random()*candidates.length)];
-        if(entities[pick]) entities[pick].votes++;
-      }
-    });
+function runBotVotes(){
+  G.players.filter(p=>p.isBot&&p.alive).forEach(bot=>{
+    if(G.votesBy[bot.id]) return;
+    const opts=G.players.filter(p=>p.id!==bot.id&&p.alive);
+    if(!opts.length) return;
+    const tgt=opts[Math.floor(Math.random()*opts.length)];
+    G.votes[tgt.id]=(G.votes[tgt.id]||0)+1;
+    G.votesBy[bot.id]=tgt.id;
     renderVoteList();
+  });
+}
+
+function finalizeVote(){
+  closeOverlay('voteOverlay');
+  let maxV=0,maxId=null;
+  Object.entries(G.votes).forEach(([id,c])=>{if(c>maxV){maxV=c;maxId=id;}});
+  if(!maxId||maxV===0){addLog('لا يوجد أغلبية. تكمل اللعبة.','info');resumeGame();return;}
+  const elim=G.players.find(p=>p.id===maxId);
+  if(!elim){resumeGame();return;}
+  elim.alive=false;
+  addLog(`🗳 استُبعد ${elim.name} بالتصويت`,'kill');
+  renderMapPlayers();notify(`🗳 استُبعد ${elim.name}`);sr('استُبعد '+elim.name);
+
+  if(elim.role==='killer'){gameEnd('civilians',`تم القبض على القاتل ${elim.name}!`);return;}
+
+  const alive=G.players.filter(p=>p.alive);
+  const k=alive.find(p=>p.role==='killer');
+  // إذا بقي شخصان → القاتل يربح (لا أحد يصوّت)
+  if(alive.length<=2){
+    if(k) gameEnd('killer','القاتل نجا حتى النهاية!');
+    else gameEnd('civilians','تم القضاء على القاتل');
+    return;
   }
+  resumeGame();
 }
 
-function startVoteTimer(){
-  clearInterval(voteInterval);
-  voteTimeLeft=30;
-  voteInterval=setInterval(()=>{
-    voteTimeLeft--;
-    const el=document.getElementById('voteTimerDisp');
-    el.textContent=voteTimeLeft;
-    el.classList.toggle('danger',voteTimeLeft<=5);
-    if(voteTimeLeft<=5) SFX.tick();
-    if(voteTimeLeft<=0){clearInterval(voteInterval);resolveVotes();}
-  },1000);
+function resumeGame(){
+  G.phase='playing';
+  startMusic();
+  updateHUD();
 }
 
-function resolveVotes(){
-  // Most voted
-  let maxV=0,mostId=null;
-  Object.entries(entities).filter(([id,e])=>id!==myId||true).forEach(([id,e])=>{
-    if((e.votes||0)>maxV){maxV=e.votes;mostId=id;}
+// ════════════════════════════════════════════
+//  BOT AI
+// ════════════════════════════════════════════
+// تحقق هل اللاعب مختبئ
+function isHiding(pid){ return G.positions[pid]?.action==='hide'; }
+
+function runBots(){
+  if(G.phase!=='playing') return;
+  const acts=['walk','walk','walk','run','hide','lie'];
+  G.players.filter(p=>p.isBot&&p.alive).forEach(bot=>{
+    const pos=G.positions[bot.id]||{x:50,y:50};
+    const a=acts[Math.floor(Math.random()*acts.length)];
+    const spd=a==='run'?14:8;
+    const nx=Math.max(2,Math.min(94,pos.x+(Math.random()-.5)*spd));
+    const ny=Math.max(2,Math.min(88,pos.y+(Math.random()-.5)*spd));
+    movePlayer(bot.id,nx,ny,a);
+
+    // ── القاتل الافتراضي يستهدف أي لاعب (بوت أو حقيقي) ──
+    if(bot.role==='killer'&&Math.random()<0.08){
+      // كل الأحياء ما عدا القاتل نفسه
+      const allAlive=G.players.filter(p=>p.alive&&p.id!==bot.id);
+      // فضّل غير المختبئين، إذا الكل مختبئ استهدفهم
+      const exposed=allAlive.filter(p=>!isHiding(p.id));
+      const pool=exposed.length ? exposed : allAlive;
+      if(pool.length){
+        const t=pool[Math.floor(Math.random()*pool.length)];
+        setTimeout(()=>{ botKill(bot,t); },2000);
+      }
+    }
   });
-  const killerPid=Object.entries(entities).find(([id,e])=>e.role==='killer')?.[0];
-  showResult(mostId===killerPid?'civilians':'killer');
 }
 
-// ═══════════════════════════════════════════════════════
-//  RESULT
-// ═══════════════════════════════════════════════════════
-function showResult(winner){
-  gamePhase='result';
-  stopBGM(); stopFootsteps();
-  canvas.classList.remove('active');
-  ['hud','joystick-zone','action-btns','minimap'].forEach(id=>{
-    document.getElementById(id).classList.remove('active');
+function botKill(bot,t){
+  if(!t||!t.alive||G.phase!=='playing') return;
+
+  // ── حماية الاختباء ──
+  if(isHiding(t.id)){
+    addLog(`🫣 ${t.name} مختبئ! فشلت محاولة القتل`,'info');
+    // يجرب هدفاً آخر مكشوفاً
+    const alt=G.players.filter(p=>p.alive&&p.id!==bot.id&&p.id!==t.id&&!isHiding(p.id));
+    if(alt.length){
+      const t2=alt[Math.floor(Math.random()*alt.length)];
+      setTimeout(()=>botKill(bot,t2),1500);
+    }
+    return;
+  }
+
+  t.alive=false;playSFX('kill');showBlood(G.positions[t.id]);
+  addLog(`💀 ${t.name} قُتل!`,'kill');
+  renderMapPlayers();notify('⚠️ '+t.name+' قُتل!');sr('تحذير! تم قتل '+t.name);
+  const alive=G.players.filter(p=>p.alive);
+  const killerStillAlive=alive.find(p=>p.role==='killer');
+  if(alive.length<=2){
+    clearInt();
+    if(killerStillAlive) setTimeout(()=>gameEnd('killer','لم يتبق غير القاتل!'),1500);
+    else setTimeout(()=>gameEnd('civilians','تم القضاء على القاتل'),1500);
+    return;
+  }
+  if(alive.length<=3){
+    setTimeout(()=>startVoting(`بقي 3 لاعبين فقط! هذا هو التصويت الأخير الحاسم!`),1600);
+    return;
+  }
+  setTimeout(()=>startVoting(`تم قتل ${t.name}! من القاتل؟`),1600);
+}
+
+// ════════════════════════════════════════════
+//  GAME END
+// ════════════════════════════════════════════
+function gameEnd(winner,reason){
+  clearInt();stopMusic();closeOverlay('voteOverlay');
+  G.phase='result';
+  if(winner==='civilians'){
+    document.getElementById('resEmoji').textContent='🎉';
+    document.getElementById('resTitle').textContent='فاز المدنيون والشرطة!';
+    document.getElementById('resTitle').style.color='var(--green)';
+    playSFX('win');
+  } else {
+    document.getElementById('resEmoji').textContent='🗡️';
+    document.getElementById('resTitle').textContent='فاز القاتل!';
+    document.getElementById('resTitle').style.color='var(--red)';
+    playSFX('lose');
+  }
+  document.getElementById('resSub').textContent=reason;
+  showScreen('resultScreen');
+  sr(winner==='civilians'?'فاز المدنيون! '+reason:'فاز القاتل! '+reason);
+  // Reveal all roles
+  G.players.forEach(p=>{
+    const rn=p.role==='cop'?'شرطي':p.role==='killer'?'قاتل':'مدني';
+    addLog(`${p.avatar} ${p.name}: ${rn}`,'info');
   });
-  
-  const civWin=winner==='civilians';
-  const iWin=(civWin&&myRole!=='killer')||(!civWin&&myRole==='killer');
-  iWin?SFX.win():SFX.lose();
-  
-  const killerEntry=Object.entries(entities).find(([id,e])=>e.role==='killer');
-  const killerName=killerEntry?killerEntry[1].name:'؟';
-  const killerKills=killerEntry?killerEntry[1].kills:0;
-  
-  // Calc scores
-  Object.entries(entities).forEach(([id,e])=>{
-    if(e.role==='killer') e.score=(e.kills||0)*10+(civWin?0:30);
-    else if(e.alive&&civWin) e.score=(e.score||0)+20;
-    else if(e.role==='police'&&civWin) e.score=(e.score||0)+30;
-  });
-  
-  document.getElementById('resultContent').innerHTML=`
-    <span class="result-icon">${civWin?'🎉':'💀'}</span>
-    <div class="result-title" style="color:${civWin?'var(--green)':'var(--red)'}">${civWin?'فاز المدنيون!':'فاز القاتل!'}</div>
-    <p style="color:var(--gray);margin-bottom:6px">القاتل كان: <strong style="color:var(--red)">${killerName}</strong></p>
-    <p style="color:var(--gray);margin-bottom:16px">عدد القتلى: <strong style="color:var(--gold)">${killerKills}</strong></p>
-    <div style="font-size:1.3rem;font-weight:900;color:${iWin?'var(--gold)':'var(--gray)'}">${iWin?'🏆 أنت فزت!':'😔 خسرت هذه المرة'}</div>
-  `;
-  
-  const sb=document.getElementById('scoreboard');
-  const sorted=Object.entries(entities).sort((a,b)=>(b[1].score||0)-(a[1].score||0));
-  const icons={killer:'🔪',police:'👮',civilian:'🏃'};
-  sb.innerHTML=sorted.map(([id,e],i)=>`
-    <div class="score-row">
-      <div style="display:flex;align-items:center;gap:8px">
-        <span>${['🥇','🥈','🥉'][i]||''}</span>
-        <div class="avatar" style="background:${e.color};width:28px;height:28px;font-size:.75rem">${e.name[0]}</div>
-        <span>${e.name}${id===myId?' (أنت)':''} ${icons[e.role]||''}</span>
-      </div>
-      <span class="score-pts">${e.score||0}نقطة</span>
-    </div>
-  `).join('');
-  
-  showScreen('result');
-  speak(civWin?'فاز المدنيون!':'فاز القاتل!');
-}
-
-// ═══════════════════════════════════════════════════════
-//  HELPERS
-// ═══════════════════════════════════════════════════════
-function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById('screen-'+id).classList.add('active');
-}
-function openOv(id){document.getElementById(id).classList.add('active');}
-function closeOv(id){document.getElementById(id).classList.remove('active');}
-
-function speak(text){
-  try{
-    const u=new SpeechSynthesisUtterance(text);
-    u.lang='ar-SA';u.rate=1.1;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(u);
-  }catch(e){}
-}
-
-let toastT;
-function toast(msg,d=3000){
-  const el=document.getElementById('toast');
-  el.textContent=msg;el.classList.add('show');
-  clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),d);
 }
 
 function playAgain(){
-  SFX.click();
-  isSolo?startSolo():(gameMode==='host'?showLobby(true):goHome());
+  if(G.isHost&&G.roomCode!=='LOCAL'){
+    showScreen('lobbyScreen');renderLobby();
+  } else if(G.roomCode==='LOCAL'){
+    doRandomRoom();
+  } else {
+    showScreen('lobbyScreen');
+  }
 }
-function goHome(){SFX.click();location.reload();}
 
-// ═══════════════════════════════════════════════════════
-//  AUTO-JOIN FROM URL
-// ═══════════════════════════════════════════════════════
-(function(){
+// ════════════════════════════════════════════
+//  EVENT LOG
+// ════════════════════════════════════════════
+function addLog(msg,type='info'){
+  const log=document.getElementById('eventLog');
+  const t=new Date().toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const el=document.createElement('div');
+  el.className='ev '+type;el.textContent=`${t} — ${msg}`;
+  log.insertBefore(el,log.firstChild);
+  if(log.children.length>25)log.removeChild(log.lastChild);
+  sr(msg);
+}
+
+// ════════════════════════════════════════════
+//  ACCESSIBILITY
+// ════════════════════════════════════════════
+function toggleA11yPanel(){document.getElementById('a11yPanel').classList.toggle('open');}
+function toggleSR(){srOn=!srOn;const s=document.getElementById('swSR');s.classList.toggle('on',srOn);notify(srOn?'قارئ الشاشة: مفعّل':'قارئ الشاشة: معطّل');}
+function toggleSFX(){sfxOn=!sfxOn;const s=document.getElementById('swSFX');s.classList.toggle('on',sfxOn);notify(sfxOn?'المؤثرات: مفعّلة':'المؤثرات: معطّلة');}
+function toggleMusic(){musicOn=!musicOn;const s=document.getElementById('swMusic');s.classList.toggle('on',musicOn);if(!musicOn)stopMusic();else if(G.phase==='playing')startMusic();notify(musicOn?'الموسيقى: مفعّلة':'الموسيقى: معطّلة');}
+
+// ════════════════════════════════════════════
+//  URL AUTO-JOIN
+// ════════════════════════════════════════════
+(function checkURL(){
   const p=new URLSearchParams(location.search);
-  const code=p.get('room');
-  if(code&&/^\d{4}$/.test(code)){
-    document.getElementById('rCode').value=code;
-    document.getElementById('join-card').classList.remove('hidden');
-    toast('كود الغرفة: '+code+' — أدخل اسمك وانضم!');
-    speak('مرحباً! أدخل اسمك ثم اضغط انضم الآن للدخول للغرفة');
+  const room=p.get('room');
+  if(room){
+    // Show name modal pre-filled for join
+    setTimeout(()=>openNameModal('join'),400);
   }
 })();
 </script>
